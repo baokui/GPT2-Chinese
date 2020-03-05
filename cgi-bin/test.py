@@ -211,9 +211,9 @@ def application(environ, start_response):
     # Always escape user input to avoid script injection
     print('input:%s'%inputStr)
     result = generating(inputStr,model,config,tokenizer)
-    #result_pr = generating(inputStr,model_pr,config_pr,tokenizer_pr)
+    result_pr = generating(inputStr,model_pr,config_pr,tokenizer_pr)
     #result = ['a','b']
-    result_pr = ['cd','d']
+    #result_pr = ['cd','d']
     print("result-fineture:%s"%'\n'.join(result))
     print("result-pretrain:%s"%'\n'.join(result_pr))
     hobbies = [escape(hobby) for hobby in result]
