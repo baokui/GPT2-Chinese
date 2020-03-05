@@ -209,12 +209,13 @@ def application(environ, start_response):
         inputStr = "祝你生日快乐"
     #hobbies = d.get('hobbies', [])  # Returns a list of hobbies.
     # Always escape user input to avoid script injection
-    #print('input:%s', inputStr)
+    print('input:%s', inputStr)
     result = generating(inputStr,model,config,tokenizer)
     result_pr = generating(inputStr,model_pr,config_pr,tokenizer_pr)
-    #print("result:%s"%'\n'.join(result))
+    print("result-fineture:%s"%'\n'.join(result))
+    print("result-pretrain:%s"%'\n'.join(result_pr))
     hobbies = [escape(hobby) for hobby in result]
-
+    hobbies_pr = [escape(hobby) for hobby in result_pr]
     body = re.sub("{tittle}",'python Web',b)
 
     body1 = re.sub("{content}",'hello pyweb!',body)
@@ -223,9 +224,9 @@ def application(environ, start_response):
     #hobbies = ['a', 'b']
     #inputStr = bytes(inputStr, encoding="utf8")
     body1 = body1 % (inputStr or 'Empty',
-                            '<br>'.join(hobbies or ['No Hobbies']))
-    print('bodyType',type(body1))
-    print(body1)
+                            '<br>'.join(hobbies or ['No Hobbies']),
+                            '<br>'.join(hobbies_pr or ['No Hobbies']))
+
     f.close()
 
     return [body1.encode()]
