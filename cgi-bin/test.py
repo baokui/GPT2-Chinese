@@ -207,12 +207,9 @@ def application(environ, start_response):
         inputStr = "null"
     #hobbies = d.get('hobbies', [])  # Returns a list of hobbies.
     # Always escape user input to avoid script injection
-
+    print('input:%s', inputStr)
     result = generating(inputStr,model,tokenizer,config)
-    print('before:',inputStr)
-    inputStr = escape(inputStr)
-    print('after:',inputStr)
-    print('type:',type(inputStr))
+    print("result:%s"%'\n'.join(result))
     hobbies = [escape(hobby) for hobby in result]
 
     body = re.sub("{tittle}",'python Web',b)
