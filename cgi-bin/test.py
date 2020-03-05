@@ -130,7 +130,7 @@ def getModel(path_config):
     model.to(device)
     model.eval()
     return model,tokenizer,config
-def generating(prefix,model,tokenizer,config):
+def generating(prefix):
     n_ctx = model.config.n_ctx
     fast_pattern = True
     length = config['length']
@@ -144,6 +144,7 @@ def generating(prefix,model,tokenizer,config):
     if length == -1:
         length = model.config.n_ctx
     S = []
+    #print('generating-begin...')
     while True:
         raw_text = prefix
         context_tokens = tokenizer.convert_tokens_to_ids(tokenizer.tokenize(raw_text))
@@ -170,11 +171,11 @@ def generating(prefix,model,tokenizer,config):
                         text[i] = '\n\n'
                     elif item == '[SEP]':
                         text[i] = '\n'
-                info = "=" * 40 + " SAMPLE " + str(generated) + " " + "=" * 40 + "\n"
                 text = ''.join(text).replace('##', '').strip()
                 # print(text)
                 S.append(text.split('\n')[0])
-        if generated == nsamples:
+
+        if len(S) == nsamples:
             break
     return S
 model,tokenizer,config = getModel(path_config='config.json')
@@ -202,13 +203,12 @@ def application(environ, start_response):
         inputStr = d.get('inputStr', [''])[0]  # Returns the first age value.
         #inputStr = str(inputStr, encoding="utf-8")
         inputStr = html.unescape(inputStr)
-        print(inputStr)
     else:
-        inputStr = "null"
+        inputStr = "你好"
     #hobbies = d.get('hobbies', [])  # Returns a list of hobbies.
     # Always escape user input to avoid script injection
     print('input:%s', inputStr)
-    result = generating(inputStr,model,tokenizer,config)
+    result = generating(inputStr)
     print("result:%s"%'\n'.join(result))
     hobbies = [escape(hobby) for hobby in result]
 
