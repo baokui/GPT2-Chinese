@@ -129,7 +129,7 @@ def getModel(path_config):
     model = GPT2LMHeadModel.from_pretrained(model_path)
     model.to(device)
     model.eval()
-    return model,tokenizer
+    return model,tokenizer,config
 def generating(prefix,model,tokenizer,config):
     n_ctx = model.config.n_ctx
     fast_pattern = True
@@ -177,7 +177,7 @@ def generating(prefix,model,tokenizer,config):
         if generated == nsamples:
             break
     return S
-model,tokenizer = getModel(path_config='config.json')
+model,tokenizer,config = getModel(path_config='config.json')
 def application(environ, start_response):
 
     start_response('200 OK', [('Content-Type', 'text/html')])
@@ -208,7 +208,7 @@ def application(environ, start_response):
     #hobbies = d.get('hobbies', [])  # Returns a list of hobbies.
     # Always escape user input to avoid script injection
 
-    result = generating(inputStr,model,)
+    result = generating(inputStr,model,tokenizer,config)
     print('before:',inputStr)
     inputStr = escape(inputStr)
     print('after:',inputStr)
