@@ -1,0 +1,7 @@
+{
+  "nsamples": 10,
+  "model_config": "./model/gpt2_prose/config.json",
+  "model_path": "./model/gpt2_prose/",
+  "tokenizer_path": "./model/gpt2_prose/vocab.txt",
+  "save_samples_path": "./test_godText/pretrained/"
+}

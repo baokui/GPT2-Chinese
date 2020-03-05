@@ -4,7 +4,8 @@ import os
 import argparse
 from tqdm import trange
 from transformers import GPT2LMHeadModel
-
+import json
+import sys
 
 def is_word(word):
     for item in list(word):
@@ -68,7 +69,8 @@ def top_k_top_p_filtering(logits, top_k=0, top_p=0.0, filter_value=-float('Inf')
     return logits
 
 
-def sample_sequence(model, context, length, n_ctx, tokenizer, temperature=1.0, top_k=30, top_p=0.0, repitition_penalty=1.0,
+def sample_sequence(model, context, length, n_ctx, tokenizer, temperature=1.0, top_k=30, top_p=0.0,
+                    repitition_penalty=1.0,
                     device='cpu'):
     context = torch.tensor(context, dtype=torch.long, device=device)
     context = context.unsqueeze(0)
@@ -111,20 +113,22 @@ def fast_sample_sequence(model, context, length, temperature=1.0, top_k=30, top_
 
 
 # 通过命令行参数--fast_pattern，指定模式
-def generate(n_ctx, model, context, length, tokenizer, temperature=1, top_k=0, top_p=0.0, repitition_penalty=1.0, device='cpu',
+def generate(n_ctx, model, context, length, tokenizer, temperature=1, top_k=0, top_p=0.0, repitition_penalty=1.0,
+             device='cpu',
              is_fast_pattern=False):
     if is_fast_pattern:
         return fast_sample_sequence(model, context, length, temperature=temperature, top_k=top_k, top_p=top_p,
                                     device=device)
     else:
-        return sample_sequence(model, context, length, n_ctx, tokenizer=tokenizer, temperature=temperature, top_k=top_k, top_p=top_p,
+        return sample_sequence(model, context, length, n_ctx, tokenizer=tokenizer, temperature=temperature, top_k=top_k,
+                               top_p=top_p,
                                repitition_penalty=repitition_penalty, device=device)
 
 
-def main():
+def generating(path_config,path_texts):
     parser = argparse.ArgumentParser()
     parser.add_argument('--device', default='0,1,2,3', type=str, required=False, help='生成设备')
-    parser.add_argument('--length', default=-1, type=int, required=False, help='生成长度')
+    parser.add_argument('--length', default=50, type=int, required=False, help='生成长度')
     parser.add_argument('--batch_size', default=1, type=int, required=False, help='生成的batch size')
     parser.add_argument('--nsamples', default=10, type=int, required=False, help='生成几个样本')
     parser.add_argument('--temperature', default=1, type=float, required=False, help='生成温度')
@@ -133,18 +137,27 @@ def main():
     parser.add_argument('--model_config', default='config/model_config_small.json', type=str, required=False,
                         help='模型参数')
     parser.add_argument('--tokenizer_path', default='data/vocab.txt', type=str, required=False, help='词表路径')
-    parser.add_argument('--model_path', default='model/model-test/model_epoch2931/', type=str, required=False, help='模型路径')
+    parser.add_argument('--model_path', default='model/model-test/model_epoch2931/', type=str, required=False,
+                        help='模型路径')
     parser.add_argument('--prefix', default='萧炎', type=str, required=False, help='生成文章的开头')
     parser.add_argument('--no_wordpiece', action='store_true', help='不做word piece切词')
     parser.add_argument('--segment', action='store_true', help='中文以词为单位')
-    parser.add_argument('--fast_pattern', action='store_true', help='采用更加快的方式生成文本')
+    parser.add_argument('--fast_pattern',default = True, action='store_true', help='采用更加快的方式生成文本')
     parser.add_argument('--save_samples', action='store_true', help='保存产生的样本')
     parser.add_argument('--save_samples_path', default='./test/', type=str, required=False, help="保存样本的路径")
     parser.add_argument('--repetition_penalty', default=1.0, type=float, required=False)
     parser.add_argument('--use_gpu', default=False, help='是否使用GPU')
     args = parser.parse_args()
     print('args:\n' + args.__repr__())
-
+    with open(path_config,'r') as f:
+        config = json.load(f)
+    args.nsamples = config.nsamples
+    args.model_config = config.model_config
+    args.tokenizer_path = config.tokenizer_path
+    args.model_path = config.model_path
+    args.save_samples_path = config.save_samples_path
+    with open(path_texts,'r') as f:
+        texts = f.read().strip().split('\n')
     if args.segment:
         from tokenizations import tokenization_bert_word_level as tokenization_bert
     else:
@@ -166,17 +179,17 @@ def main():
     model = GPT2LMHeadModel.from_pretrained(args.model_path)
     model.to(device)
     model.eval()
-    
+
     params = list(model.parameters())
     k = 0
     for i in params:
         l = 1
-        print("该层的结构：" + str(list(i.size())))
+        #print("该层的结构：" + str(list(i.size())))
         for j in i.size():
             l *= j
-        print("该层参数和：" + str(l))
+        #print("该层参数和：" + str(l))
         k = k + l
-    print("总参数数量和：" + str(k))    
+    print("总参数数量和：" + str(k))
 
     n_ctx = model.config.n_ctx
 
@@ -185,52 +198,55 @@ def main():
     if args.save_samples:
         if not os.path.exists(args.save_samples_path):
             os.makedirs(args.save_samples_path)
-        samples_file = open(args.save_samples_path + '/samples_'+args.prefix+'.txt', 'w', encoding='utf8')
-    print(args.save_samples_path + '/samples_'+args.prefix+'.txt')
-    while True:
-        raw_text = args.prefix
-        context_tokens = tokenizer.convert_tokens_to_ids(tokenizer.tokenize(raw_text))
-        generated = 0
-        for _ in range(nsamples // batch_size):
-            out = generate(
-                n_ctx=n_ctx,
-                model=model,
-                context=context_tokens,
-                length=length,
-                is_fast_pattern=args.fast_pattern, tokenizer=tokenizer,
-                temperature=temperature, top_k=topk, top_p=topp, repitition_penalty=repetition_penalty, device=device
-            )
-            for i in range(batch_size):
-                generated += 1
-                text = tokenizer.convert_ids_to_tokens(out)
-                for i, item in enumerate(text[:-1]):  # 确保英文前后有空格
-                    if is_word(item) and is_word(text[i + 1]):
-                        text[i] = item + ' '
-                for i, item in enumerate(text):
-                    if item == '[MASK]':
-                        text[i] = ''
-                    elif item == '[CLS]':
-                        text[i] = '\n\n'
-                    elif item == '[SEP]':
-                        text[i] = '\n'
-                info = "=" * 40 + " SAMPLE " + str(generated) + " " + "=" * 40 + "\n"
-                print(info)
-                text = ''.join(text).replace('##', '').strip()
-                #print(text)
-                print(text.split('\n')[0])
+        samples_file = open(args.save_samples_path + '/samples_' + args.prefix + '.txt', 'w', encoding='utf8')
+    print(args.save_samples_path + '/samples_' + args.prefix + '.txt')
+    for prefix in texts:
+        while True:
+            raw_text = prefix
+            context_tokens = tokenizer.convert_tokens_to_ids(tokenizer.tokenize(raw_text))
+            generated = 0
+            for _ in range(nsamples // batch_size):
+                out = generate(
+                    n_ctx=n_ctx,
+                    model=model,
+                    context=context_tokens,
+                    length=length,
+                    is_fast_pattern=args.fast_pattern, tokenizer=tokenizer,
+                    temperature=temperature, top_k=topk, top_p=topp, repitition_penalty=repetition_penalty, device=device
+                )
+                for i in range(batch_size):
+                    generated += 1
+                    text = tokenizer.convert_ids_to_tokens(out)
+                    for i, item in enumerate(text[:-1]):  # 确保英文前后有空格
+                        if is_word(item) and is_word(text[i + 1]):
+                            text[i] = item + ' '
+                    for i, item in enumerate(text):
+                        if item == '[MASK]':
+                            text[i] = ''
+                        elif item == '[CLS]':
+                            text[i] = '\n\n'
+                        elif item == '[SEP]':
+                            text[i] = '\n'
+                    info = "=" * 40 + " SAMPLE " + str(generated) + " " + "=" * 40 + "\n"
+                    print(info)
+                    text = ''.join(text).replace('##', '').strip()
+                    # print(text)
+                    print(text.split('\n')[0])
+                    if args.save_samples:
+                        samples_file.write(info)
+                        samples_file.write(text.split('\n')[0])
+                        samples_file.write('\n')
+                        samples_file.write('=' * 90)
+                        samples_file.write('\n' * 2)
+            print("=" * 80)
+            if generated == nsamples:
+                # close file when finish writing.
                 if args.save_samples:
-                    samples_file.write(info)
-                    samples_file.write(text.split('\n')[0])
-                    samples_file.write('\n')
-                    samples_file.write('=' * 90)
-                    samples_file.write('\n' * 2)
-        print("=" * 80)
-        if generated == nsamples:
-            # close file when finish writing.
-            if args.save_samples:
-                samples_file.close()
-            break
+                    samples_file.close()
+                break
 
 
 if __name__ == '__main__':
-    main()
+    path_config = sys.argv[1]
+    path_texts = sys.argv[2]
+    generating(path_config,path_texts)
