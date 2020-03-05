@@ -147,7 +147,7 @@ def main():
     parser.add_argument('--no_wordpiece', action='store_true', help='不做word piece切词')
     parser.add_argument('--segment', action='store_true', help='中文以词为单位')
     parser.add_argument('--fast_pattern',default = True, action='store_true', help='采用更加快的方式生成文本')
-    parser.add_argument('--save_samples', action='store_true', help='保存产生的样本')
+    parser.add_argument('--save_samples', default=True, action='store_true', help='保存产生的样本')
     parser.add_argument('--save_samples_path', default='./test/', type=str, required=False, help="保存样本的路径")
     parser.add_argument('--repetition_penalty', default=1.0, type=float, required=False)
     parser.add_argument('--use_gpu', default=False, help='是否使用GPU')
@@ -207,7 +207,7 @@ def main():
         if args.save_samples:
             if not os.path.exists(args.save_samples_path):
                 os.makedirs(args.save_samples_path)
-            samples_file = open(os.path.join(args.save_samples_path,'samples_' + prefix + '.txt'), 'w', encoding='utf8')
+            samples_file = open(os.path.join(args.save_samples_path,'samples_' + prefix + '.txt'), 'w')
         print(os.path.join(args.save_samples_path,'samples_' + prefix + '.txt'))
         while True:
             raw_text = prefix
