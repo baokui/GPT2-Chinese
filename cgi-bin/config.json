@@ -4,7 +4,7 @@
   "model_path": "../model/model_godText/final_model/",
   "tokenizer_path": "../model/gpt2_prose/vocab.txt",
   "save_samples_path": "../test_godText/finetuned/",
-  "batch_size":2,
+  "batch_size":1,
   "temperature": 1,
   "topk": 8,
   "topp": 0,
