@@ -199,11 +199,11 @@ def application(environ, start_response):
     # in the file like wsgi.input environment variable.
     request_body = environ['wsgi.input'].read(request_body_size)
     request_body = str(request_body, encoding="utf-8")
-    #request_body = unquote(request_body, encoding="GBK")
+    request_body = unquote(request_body, encoding="GBK")
     d = urllib.parse.parse_qs(request_body,encoding='utf-8')
     if len(d)>=1:
         inputStr = d.get('inputStr', [''])[0]  # Returns the first age value.
-        inputStr = str(inputStr, encoding="utf-8")
+        #inputStr = str(inputStr, encoding="utf-8")
         inputStr = html.unescape(inputStr)
     else:
         inputStr = ""
