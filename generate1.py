@@ -207,7 +207,7 @@ def main():
         if args.save_samples:
             if not os.path.exists(args.save_samples_path):
                 os.makedirs(args.save_samples_path)
-            samples_file = open(os.path.join(args.save_samples_path,'samples_' + prefix + '.txt'), 'w')
+        samples_file = open(os.path.join(args.save_samples_path,'samples_' + prefix + '.txt'), 'w')
         print(os.path.join(args.save_samples_path,'samples_' + prefix + '.txt'))
         while True:
             raw_text = prefix
