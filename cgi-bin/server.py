@@ -6,9 +6,9 @@ from test import application
 
 # 创建一个服务器，IP地址为空，端口是8000，处理函数是application:
 
-httpd = make_server('', 8004, application)
+httpd = make_server('', 8005, application)
 
-print("Serving HTTP on port 8004...")
+print("Serving HTTP on port 8005...")
 
 # 开始监听HTTP请求:
 
