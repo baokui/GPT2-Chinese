@@ -118,19 +118,12 @@ def generate(n_ctx, model, context, length, tokenizer, temperature=1, top_k=0, t
         return sample_sequence(model, context, length, n_ctx, tokenizer=tokenizer, temperature=temperature, top_k=top_k,
                                top_p=top_p,
                                repitition_penalty=repitition_penalty, device=device)
-def main(config):
+def getModel(path_config):
+    with open(path_config,'r') as f:
+        config = json.load(f)
     from tokenizations import tokenization_bert
-    length = config['length']
-    nsamples = config['nsamples']
-    model_config = config['model_config']
     tokenizer_path = config['tokenizer_path']
     model_path = config['model_path']
-    save_samples_path = config['save_samples_path']
-    batch_size = config['batch_size']
-    temperature = config['temperature']
-    topk = config['topk']
-    topp = config['topp']
-    repetition_penalty = config['repetition_penalty']
     device = 'cpu'
     tokenizer = tokenization_bert.BertTokenizer(vocab_file=tokenizer_path)
     model = GPT2LMHeadModel.from_pretrained(model_path)
@@ -142,10 +135,6 @@ def generating(prefix,model,tokenizer,config):
     fast_pattern = True
     length = config['length']
     nsamples = config['nsamples']
-    model_config = config['model_config']
-    tokenizer_path = config['tokenizer_path']
-    model_path = config['model_path']
-    save_samples_path = config['save_samples_path']
     batch_size = config['batch_size']
     temperature = config['temperature']
     topk = config['topk']
@@ -188,6 +177,7 @@ def generating(prefix,model,tokenizer,config):
         if generated == nsamples:
             break
     return S
+model,tokenizer = getModel(path_config='config.json')
 def application(environ, start_response):
 
     start_response('200 OK', [('Content-Type', 'text/html')])
@@ -218,12 +208,12 @@ def application(environ, start_response):
     #hobbies = d.get('hobbies', [])  # Returns a list of hobbies.
     # Always escape user input to avoid script injection
 
-    hobbies = ['a','b']
+    result = generating(inputStr,model,)
     print('before:',inputStr)
     inputStr = escape(inputStr)
     print('after:',inputStr)
     print('type:',type(inputStr))
-    hobbies = [escape(hobby) for hobby in hobbies]
+    hobbies = [escape(hobby) for hobby in result]
 
     body = re.sub("{tittle}",'python Web',b)
 
