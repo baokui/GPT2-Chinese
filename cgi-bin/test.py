@@ -206,7 +206,17 @@ def application(environ, start_response):
         #inputStr = str(inputStr, encoding="utf-8")
         inputStr = html.unescape(inputStr)
     else:
-        inputStr = "祝你生日快乐"
+        inputStr = ""
+    body = re.sub("{tittle}", 'python Web', b)
+
+    body1 = re.sub("{content}", 'hello pyweb!', body)
+    if inputStr=="":
+        body2 = body1 % ('Empty',
+                         '<br>'.join(['No results']),
+                         '<br>'.join(['No results']))
+
+        f.close()
+        return [body2.encode()]
     #hobbies = d.get('hobbies', [])  # Returns a list of hobbies.
     # Always escape user input to avoid script injection
     print('input:%s'%inputStr)
@@ -225,10 +235,10 @@ def application(environ, start_response):
     #age = "33"
     #hobbies = ['a', 'b']
     #inputStr = bytes(inputStr, encoding="utf8")
-    body1 = body1 % (inputStr or 'Empty',
+    body2 = body1 % (inputStr or 'Empty',
                             '<br>'.join(hobbies or ['No Hobbies']),
                             '<br>'.join(hobbies_pr or ['No Hobbies']))
 
     f.close()
 
-    return [body1.encode()]
+    return [body2.encode()]
