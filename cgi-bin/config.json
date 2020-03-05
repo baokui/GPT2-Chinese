@@ -8,5 +8,6 @@
   "temperature": 1,
   "topk": 8,
   "topp": 0,
-  "repetition_penalty": 1.0
+  "repetition_penalty": 1.0,
+  "length":-1
 }
