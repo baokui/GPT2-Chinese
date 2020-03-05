@@ -144,11 +144,12 @@ def generating(prefix):
     if length == -1:
         length = model.config.n_ctx
     S = []
-    print('generating-begin...')
+    print('generating-begin for %s'%prefix)
     while True:
         raw_text = prefix
         context_tokens = tokenizer.convert_tokens_to_ids(tokenizer.tokenize(raw_text))
         generated = 0
+        print(n_ctx, context_tokens, length, fast_pattern, temperature, topk, topp, repetition_penalty, device)
         for _ in range(nsamples // batch_size):
             out = generate(
                 n_ctx=n_ctx,
