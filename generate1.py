@@ -5,15 +5,11 @@ import argparse
 from tqdm import trange
 from transformers import GPT2LMHeadModel
 import json
-import sys
-
 def is_word(word):
     for item in list(word):
         if item not in 'qwertyuiopasdfghjklzxcvbnm':
             return False
     return True
-
-
 def _is_chinese_char(char):
     """Checks whether CP is the codepoint of a CJK character."""
     # This defines a "chinese character" as anything in the CJK Unicode block:
