@@ -32,8 +32,6 @@ def _is_chinese_char(char):
         return True
 
     return False
-
-
 def top_k_top_p_filtering(logits, top_k=0, top_p=0.0, filter_value=-float('Inf')):
     """ Filter a distribution of logits using top-k and/or nucleus (top-p) filtering
         Args:
@@ -63,8 +61,6 @@ def top_k_top_p_filtering(logits, top_k=0, top_p=0.0, filter_value=-float('Inf')
         indices_to_remove = sorted_indices[sorted_indices_to_remove]
         logits[indices_to_remove] = filter_value
     return logits
-
-
 def sample_sequence(model, context, length, n_ctx, tokenizer, temperature=1.0, top_k=30, top_p=0.0,
                     repitition_penalty=1.0,
                     device='cpu'):
@@ -85,8 +81,6 @@ def sample_sequence(model, context, length, n_ctx, tokenizer, temperature=1.0, t
             next_token = torch.multinomial(F.softmax(filtered_logits, dim=-1), num_samples=1)
             generated = torch.cat((generated, next_token.unsqueeze(0)), dim=1)
     return generated.tolist()[0]
-
-
 def fast_sample_sequence(model, context, length, temperature=1.0, top_k=30, top_p=0.0, device='cpu'):
     inputs = torch.LongTensor(context).view(1, -1).to(device)
     if len(context) > 1:
@@ -106,8 +100,6 @@ def fast_sample_sequence(model, context, length, temperature=1.0, top_k=30, top_
             generate.append(next_token.item())
             prev = next_token.view(1, 1)
     return generate
-
-
 # 通过命令行参数--fast_pattern，指定模式
 def generate(n_ctx, model, context, length, tokenizer, temperature=1, top_k=0, top_p=0.0, repitition_penalty=1.0,
              device='cpu',
@@ -119,7 +111,6 @@ def generate(n_ctx, model, context, length, tokenizer, temperature=1, top_k=0, t
         return sample_sequence(model, context, length, n_ctx, tokenizer=tokenizer, temperature=temperature, top_k=top_k,
                                top_p=top_p,
                                repitition_penalty=repitition_penalty, device=device)
-
 
 def main():
     parser = argparse.ArgumentParser()
