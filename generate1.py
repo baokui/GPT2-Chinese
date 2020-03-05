@@ -156,11 +156,11 @@ def main():
     if os.path.exists(args.path_generateConfig):
         with open(args.path_generateConfig,'r') as f:
             config = json.load(f)
-        args.nsamples = config.nsamples
-        args.model_config = config.model_config
-        args.tokenizer_path = config.tokenizer_path
-        args.model_path = config.model_path
-        args.save_samples_path = config.save_samples_path
+        args.nsamples = config['nsamples']
+        args.model_config = config['model_config']
+        args.tokenizer_path = config['tokenizer_path']
+        args.model_path = config['model_path']
+        args.save_samples_path = config['save_samples_path']
     if os.path.exists(args.path_texts):
         with open(args.path_texts,'r') as f:
             texts = f.read().strip().split('\n')
