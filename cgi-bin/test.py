@@ -8,7 +8,7 @@ def application(environ, start_response):
 
     start_response('200 OK', [('Content-Type', 'text/html')])
 
-    f = open("text.html","r",encoding="utf-8")
+    f = open("text1.html","r",encoding="utf-8")
 
     b = f.read()
 
