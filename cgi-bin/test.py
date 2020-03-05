@@ -198,9 +198,9 @@ def application(environ, start_response):
     # in the HTTP request body which is passed by the WSGI server
     # in the file like wsgi.input environment variable.
     request_body = environ['wsgi.input'].read(request_body_size)
-    request_body = str(request_body, encoding="utf-8")
+    #request_body = str(request_body, encoding="utf-8")
     print(request_body)
-    request_body = unquote(request_body, encoding="GBK")
+    request_body = unquote(request_body, encoding="utf-8")
     print(request_body)
     d = urllib.parse.parse_qs(request_body,encoding='utf-8')
     if len(d)>=1:
