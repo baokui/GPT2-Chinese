@@ -229,6 +229,8 @@ def application(environ, start_response):
     result_pr = generating(inputStr,model_pr,config_pr,tokenizer_pr)
     #result = ['a','b']
     #result_pr = ['cd','d']
+    result = ['\t'+str(i)+'. '+result[i] for i in range(len(result))]
+    result_pr = ['\t' + str(i) + '. ' + result_pr[i] for i in range(len(result_pr))]
     print("result-fineture:%s"%'\n'.join(result))
     print("result-pretrain:%s"%'\n'.join(result_pr))
     hobbies = [escape(hobby) for hobby in result]
