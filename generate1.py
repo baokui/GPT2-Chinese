@@ -125,8 +125,12 @@ def generate(n_ctx, model, context, length, tokenizer, temperature=1, top_k=0, t
                                repitition_penalty=repitition_penalty, device=device)
 
 
-def generating(path_config,path_texts):
+def main():
     parser = argparse.ArgumentParser()
+
+    parser.add_argument('--path_generateConfig', default='config.json', type=str, required=False, help='生成配置')
+    parser.add_argument('--path_texts', default='texts.txt', type=str, required=False, help='文本集')
+
     parser.add_argument('--device', default='0,1,2,3', type=str, required=False, help='生成设备')
     parser.add_argument('--length', default=50, type=int, required=False, help='生成长度')
     parser.add_argument('--batch_size', default=1, type=int, required=False, help='生成的batch size')
@@ -149,15 +153,19 @@ def generating(path_config,path_texts):
     parser.add_argument('--use_gpu', default=False, help='是否使用GPU')
     args = parser.parse_args()
     print('args:\n' + args.__repr__())
-    with open(path_config,'r') as f:
-        config = json.load(f)
-    args.nsamples = config.nsamples
-    args.model_config = config.model_config
-    args.tokenizer_path = config.tokenizer_path
-    args.model_path = config.model_path
-    args.save_samples_path = config.save_samples_path
-    with open(path_texts,'r') as f:
-        texts = f.read().strip().split('\n')
+    if os.path.exists(args.path_generateConfig):
+        with open(args.path_generateConfig,'r') as f:
+            config = json.load(f)
+        args.nsamples = config.nsamples
+        args.model_config = config.model_config
+        args.tokenizer_path = config.tokenizer_path
+        args.model_path = config.model_path
+        args.save_samples_path = config.save_samples_path
+    if os.path.exists(args.path_texts):
+        with open(args.path_texts,'r') as f:
+            texts = f.read().strip().split('\n')
+    else:
+        texts = [args.prefix]
     if args.segment:
         from tokenizations import tokenization_bert_word_level as tokenization_bert
     else:
@@ -247,6 +255,4 @@ def generating(path_config,path_texts):
 
 
 if __name__ == '__main__':
-    path_config = sys.argv[1]
-    path_texts = sys.argv[2]
-    generating(path_config,path_texts)
+    main()
