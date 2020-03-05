@@ -130,7 +130,7 @@ def getModel(path_config):
     model.to(device)
     model.eval()
     return model,tokenizer,config
-def generating(prefix):
+def generating(prefix,model,config,tokenizer):
     n_ctx = model.config.n_ctx
     fast_pattern = True
     length = config['length']
@@ -180,6 +180,7 @@ def generating(prefix):
             break
     return S
 model,tokenizer,config = getModel(path_config='config.json')
+model_pr,tokenizer_pr,config_pr = getModel(path_config='config_pretrained.json')
 def application(environ, start_response):
 
     start_response('200 OK', [('Content-Type', 'text/html')])
@@ -205,12 +206,13 @@ def application(environ, start_response):
         #inputStr = str(inputStr, encoding="utf-8")
         inputStr = html.unescape(inputStr)
     else:
-        inputStr = "你好"
+        inputStr = "祝你生日快乐"
     #hobbies = d.get('hobbies', [])  # Returns a list of hobbies.
     # Always escape user input to avoid script injection
-    print('input:%s', inputStr)
-    result = generating(inputStr)
-    print("result:%s"%'\n'.join(result))
+    #print('input:%s', inputStr)
+    result = generating(inputStr,model,config,tokenizer)
+    result_pr = generating(inputStr,model_pr,config_pr,tokenizer_pr)
+    #print("result:%s"%'\n'.join(result))
     hobbies = [escape(hobby) for hobby in result]
 
     body = re.sub("{tittle}",'python Web',b)
