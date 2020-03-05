@@ -3,21 +3,22 @@
 <body>
    <form method="post" action="">
       <p>
-         Input_prefix: <input type="text" name="inputStr">
+         输入文本: <input type="text" name="inputStr">
          </p>
       <p>
-         model:
-         <input name="hobbies" type="checkbox" value="pretrain_model" checked="checked"> pretrain model
-         <input name="hobbies" type="checkbox" value="finetune_model" checked="checked"> finetune model
+         模型:
+         <input name="hobbies" type="checkbox" value="pretrain_model" checked="checked"> 原模型
+         <input name="hobbies" type="checkbox" value="finetune_model" checked="checked"> 训练后模型
          </p>
       <p>
          <input type="submit" value="Submit">
          </p>
       </form>
    <p>
-      input: %s<br>
-      result-finetune: <br>%s<br><br>
-      result-pretrain: <br>%s
+      输入: %s<br>
+      生成结果: <br>
+      训练后模型: <br>%s<br><br>
+      原模型: <br>%s
       </p>
    </body>
 </html>
