@@ -1,1 +1,1 @@
-python datapro.py ../data/sogouInput/0000 0000
+nohup python -u datapro.py ../data/sogouInput/0000 0000 >> log/0000.log 2>&1 &
