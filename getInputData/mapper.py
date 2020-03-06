@@ -5,7 +5,8 @@ for line in sys.stdin:
     fields = line.strip().split('\t')
     if len(fields)!=5:
         continue
-    if len(fields[3])<10 or len(fields[3])>60:
+    s = fields[3].decode('utf-8')
+    if len(s)<10 or len(s)>60:
         continue
     random.shuffle(idx)
     Id = ''.join(idx)
