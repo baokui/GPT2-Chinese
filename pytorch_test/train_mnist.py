@@ -52,7 +52,6 @@ class CNN(nn.Module):
             nn.MaxPool2d(2),# 32x7x7
         )
         self.out = nn.Linear(32*7*7, 10)
-
     def forward(self, x):
         x = self.conv1(x)
         x = self.conv2(x)
