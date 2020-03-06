@@ -13,6 +13,8 @@ def build_files(data_path, dataname, tokenized_data_path, full_tokenizer, min_le
             lines.append(line.replace('\n', ' [SEP] '))  # 用[SEP]表示换行, 段落之间使用SEP表示段落结束
             if len(lines)<max_nb:
                 continue
+            if len(lines)%1000==0:
+                print('processing file %s, %d, %0.2f'%(data_path,len(lines),len(lines)/float(max_nb)))
             all_len = len(lines)
             for i in range(num_pieces):
                 sublines = lines[all_len // num_pieces * i: all_len // num_pieces * (i + 1)]
