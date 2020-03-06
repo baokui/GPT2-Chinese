@@ -1,0 +1,1 @@
+python datapro.py ../data/sogouInput/0000 0000
