@@ -28,7 +28,7 @@ def build_files(data_path, dataname, tokenized_data_path, full_tokenizer, min_le
             full_line.extend(subline)
             full_line.append(full_tokenizer.convert_tokens_to_ids('[CLS]'))  # 文章之间添加CLS表示文章结束
             if nb_lines>=max_nb:
-                with open(tokenized_data_path + dataname+'{}.txt'.format(k), 'w') as f:
+                with open(tokenized_data_path + dataname+'-{}.txt'.format(k), 'w') as f:
                     for id in full_line:
                         f.write(str(id) + ' ')
                 k += 1
