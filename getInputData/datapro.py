@@ -11,9 +11,12 @@ def build_files(data_path, dataname, tokenized_data_path, full_tokenizer, min_le
     for ii in range(5):
         f = open(data_path+'/part-0000'+str(ii), 'r', encoding='utf8')
         for line in f:
-            line = line.strip().split('\t')[1]
+            tmp = line.strip().split('\t')
+            if len(tmp)!=2:
+                continue
+            line = tmp[1]
             if len(full_line)%1000==0:
-                print('processing file %s, %d, %0.2f'%(data_path,len(full_line),len(full_line)/float(max_nb)))
+                print('processing file %s, %d, %0.2f'%(data_path,nb_lines,nb_lines/float(max_nb)))
             if len(line)<min_length:
                 continue
             nb_lines += 1
