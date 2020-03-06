@@ -15,7 +15,7 @@ def build_files(data_path, dataname, tokenized_data_path, full_tokenizer, min_le
             if len(tmp)!=2:
                 continue
             line = tmp[1]
-            if len(full_line)%1000==0:
+            if nb_lines%10000==0:
                 print('processing file %s, %d, %0.2f'%(data_path,nb_lines,nb_lines/float(max_nb)))
             if len(line)<min_length:
                 continue
