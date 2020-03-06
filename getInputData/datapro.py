@@ -1,5 +1,6 @@
 import sys
 import os
+import shutil
 from tokenizations import tokenization_bert
 def build_files(data_path, dataname, tokenized_data_path, full_tokenizer, min_length=10,num_pieces=1, max_nb = 10000000):
     if not os.path.exists(tokenized_data_path):
@@ -41,7 +42,7 @@ def main(data_path,dataname):
     tokenized_data_path = '../data/sogouInput_tokenized/'
     full_tokenizer = tokenization_bert.BertTokenizer(vocab_file=tokenizer_path)
     build_files(data_path, dataname, tokenized_data_path, full_tokenizer)
-    os.remove(data_path)
+    shutil.rmtree(data_path)
 if __name__=='__main__':
     data_path,dataname = sys.argv[1:3]
     main(data_path,dataname)
