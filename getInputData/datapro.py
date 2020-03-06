@@ -15,6 +15,9 @@ def build_files(data_path, dataname, tokenized_data_path, full_tokenizer, min_le
             if len(line)<min_length:
                 continue
             subline = full_tokenizer.convert_tokens_to_ids(line)
+            print(full_tokenizer.convert_tokens_to_ids('[MASK]'))
+            print(subline)
+            print(full_tokenizer.convert_tokens_to_ids('[CLS]'))
             full_line.append(full_tokenizer.convert_tokens_to_ids('[MASK]'))  # 文章开头添加MASK表示文章开始
             full_line.extend(subline)
             full_line.append(full_tokenizer.convert_tokens_to_ids('[CLS]'))  # 文章之间添加CLS表示文章结束
