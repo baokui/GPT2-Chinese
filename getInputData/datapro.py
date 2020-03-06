@@ -5,34 +5,25 @@ def build_files(data_path, dataname, tokenized_data_path, full_tokenizer, min_le
     if not os.path.exists(tokenized_data_path):
         os.mkdir(tokenized_data_path)
     k = 0
+    full_line = []
+    print('reading lines')
     for ii in range(5):
-        lines = []
         f = open(data_path+'/part-0000'+str(ii), 'r', encoding='utf8')
-        print('reading lines')
         for line in f:
-            lines.append(line.replace('\n', ' [SEP] '))  # 用[SEP]表示换行, 段落之间使用SEP表示段落结束
-            if len(lines)<max_nb:
+            if len(full_line)%1000==0:
+                print('processing file %s, %d, %0.2f'%(data_path,len(full_line),len(full_line)/float(max_nb)))
+            if len(line)<min_length:
                 continue
-            if len(lines)%1000==0:
-                print('processing file %s, %d, %0.2f'%(data_path,len(lines),len(lines)/float(max_nb)))
-            all_len = len(lines)
-            for i in range(num_pieces):
-                sublines = lines[all_len // num_pieces * i: all_len // num_pieces * (i + 1)]
-                if i == num_pieces - 1:
-                    sublines.extend(lines[all_len // num_pieces * (i + 1):])  # 把尾部例子添加到最后一个piece
-                sublines = [full_tokenizer.tokenize(line) for line in sublines if
-                            len(line) > min_length]  # 只考虑长度超过min_length的句子
-                sublines = [full_tokenizer.convert_tokens_to_ids(line) for line in sublines]
-                full_line = []
-                for subline in sublines:
-                    full_line.append(full_tokenizer.convert_tokens_to_ids('[MASK]'))  # 文章开头添加MASK表示文章开始
-                    full_line.extend(subline)
-                    full_line.append(full_tokenizer.convert_tokens_to_ids('[CLS]'))  # 文章之间添加CLS表示文章结束
+            subline = full_tokenizer.convert_tokens_to_ids(line)
+            full_line.append(full_tokenizer.convert_tokens_to_ids('[MASK]'))  # 文章开头添加MASK表示文章开始
+            full_line.extend(subline)
+            full_line.append(full_tokenizer.convert_tokens_to_ids('[CLS]'))  # 文章之间添加CLS表示文章结束
+            if len(full_line)>=max_nb:
                 with open(tokenized_data_path + dataname+'.txt'.format(k), 'w') as f:
                     for id in full_line:
                         f.write(str(id) + ' ')
                 k += 1
-                lines = []
+                full_line = []
         f.close()
     print('finish')
 def main(data_path,dataname):
