@@ -1,6 +1,6 @@
 mkdir log
 Month=202001
-for((k=0;i<4;k++))
+for((k=0;k<4;k++))
 do
     for((i=0;i<9;i++))
     do
