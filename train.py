@@ -141,8 +141,8 @@ def main():
     print('total steps = {}'.format(total_steps))
 
     optimizer = transformers.AdamW(model.parameters(), lr=lr, correct_bias=True)
-    scheduler = transformers.WarmupLinearSchedule(optimizer, warmup_steps=warmup_steps,
-                                                          t_total=total_steps)
+    #scheduler = transformers.WarmupLinearSchedule(optimizer, warmup_steps=warmup_steps,
+    #                                                      t_total=total_steps)
     if fp16:
         try:
             from apex import amp
@@ -211,7 +211,7 @@ def main():
                     running_loss += loss.item()
                     optimizer.step()
                     optimizer.zero_grad()
-                    scheduler.step()
+                    #scheduler.step()
                 if (overall_step + 1) % log_step == 0:
                     tb_writer.add_scalar('loss', loss.item() * gradient_accumulation, overall_step)
                     print('now time: {}:{}. Step {} of piece {} of epoch {}, loss {}'.format(
