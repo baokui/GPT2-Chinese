@@ -15,7 +15,7 @@ def build_files(data_path, dataname, tokenized_data_path, full_tokenizer, min_le
                 print('processing file %s, %d, %0.2f'%(data_path,len(full_line),len(full_line)/float(max_nb)))
             if len(line)<min_length:
                 continue
-            subline = full_tokenizer.convert_tokens_to_ids(line)
+            subline = full_tokenizer.convert_tokens_to_ids(list(line))
             print(full_tokenizer.convert_tokens_to_ids('[MASK]'))
             print(subline)
             print(full_tokenizer.convert_tokens_to_ids('[CLS]'))
