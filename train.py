@@ -68,6 +68,7 @@ def main():
     parser.add_argument('--encoder_json', default="tokenizations/encoder.json", type=str, help="encoder.json")
     parser.add_argument('--vocab_bpe', default="tokenizations/vocab.bpe", type=str, help="vocab.bpe")
     parser.add_argument('--max_steps_perEpoch_perPiece', default=1000000, type=int, required=False)
+    parser.add_argument('--steps_savemodel', default=10000, type=int, required=False, help='保存模型步数')
     args = parser.parse_args()
     print('args:\n' + args.__repr__())
 
@@ -225,14 +226,16 @@ def main():
                         epoch + 1,
                         running_loss * gradient_accumulation / (log_step / gradient_accumulation)))
                     running_loss = 0
+                if overall_step%args.steps_savemodel==0:
+                    print('saving model for epoch {}'.format(epoch + 1))
+                    if not os.path.exists(output_dir + 'model_epoch{}_step{}'.format(epoch + 1, overall_step)):
+                        os.mkdir(output_dir + 'model_epoch{}_step{}'.format(epoch + 1, overall_step))
+                    model_to_save = model.module if hasattr(model, 'module') else model
+                    model_to_save.save_pretrained(output_dir + 'model_epoch{}_step{}'.format(epoch + 1, overall_step))
                 overall_step += 1
             piece_num += 1
 
-        print('saving model for epoch {}'.format(epoch + 1))
-        if not os.path.exists(output_dir + 'model_epoch{}'.format(epoch + 1)):
-            os.mkdir(output_dir + 'model_epoch{}'.format(epoch + 1))
-        model_to_save = model.module if hasattr(model, 'module') else model
-        model_to_save.save_pretrained(output_dir + 'model_epoch{}'.format(epoch + 1))
+
         # torch.save(scheduler.state_dict(), output_dir + 'model_epoch{}/scheduler.pt'.format(epoch + 1))
         # torch.save(optimizer.state_dict(), output_dir + 'model_epoch{}/optimizer.pt'.format(epoch + 1))
         print('epoch {} finished'.format(epoch + 1))
