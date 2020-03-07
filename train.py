@@ -67,7 +67,7 @@ def main():
     parser.add_argument('--bpe_token', action='store_true', help='subword')
     parser.add_argument('--encoder_json', default="tokenizations/encoder.json", type=str, help="encoder.json")
     parser.add_argument('--vocab_bpe', default="tokenizations/vocab.bpe", type=str, help="vocab.bpe")
-
+    parser.add_argument('--max_steps_perEpoch_perPiece', default=1000000, type=int, required=False)
     args = parser.parse_args()
     print('args:\n' + args.__repr__())
 
@@ -178,8 +178,8 @@ def main():
             if start_point < len(tokens):
                 samples.append(tokens[len(tokens)-n_ctx:])
             random.shuffle(samples)
-            for step in range(len(samples) // batch_size):  # drop last
-
+            nb_steps = min(args.max_steps_perEpoch_perPiece,len(samples) // batch_size)
+            for step in range(nb_steps):  # drop last
                 #  prepare data
                 batch = samples[step * batch_size: (step + 1) * batch_size]
                 batch_inputs = []
@@ -215,11 +215,12 @@ def main():
                     #scheduler.step()
                 if (overall_step + 1) % log_step == 0:
                     tb_writer.add_scalar('loss', loss.item() * gradient_accumulation, overall_step)
-                    print('now time: {}:{}. Step {} of piece {} of epoch {}, loss {}'.format(
+                    print('now time: {}:{}. Step {} of piece {} (total {}) of epoch {}, loss {}'.format(
                         datetime.now().hour,
                         datetime.now().minute,
                         step + 1,
                         piece_num,
+                        nb_steps,
                         epoch + 1,
                         running_loss * gradient_accumulation / (log_step / gradient_accumulation)))
                     running_loss = 0
