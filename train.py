@@ -133,13 +133,14 @@ def main():
 
     multi_gpu = False
     full_len = 0
+    '''
     print('calculating total steps')
     for i in tqdm(range(num_pieces)):
         with open(tokenized_data_path + 'tokenized_train_{}.txt'.format(i), 'r') as f:
             full_len += len([int(item) for item in f.read().strip().split()])
     total_steps = int(full_len / stride * epochs / batch_size / gradient_accumulation)
     print('total steps = {}'.format(total_steps))
-
+    '''
     optimizer = transformers.AdamW(model.parameters(), lr=lr, correct_bias=True)
     #scheduler = transformers.WarmupLinearSchedule(optimizer, warmup_steps=warmup_steps,
     #                                                      t_total=total_steps)

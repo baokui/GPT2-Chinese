@@ -1,6 +1,7 @@
 import sys
 import os
 import shutil
+import tqdm
 from tokenizations import tokenization_bert
 def build_files(data_path, dataname, tokenized_data_path, full_tokenizer, min_length=10,num_pieces=1, max_nb = 10000000):
     if not os.path.exists(tokenized_data_path):
@@ -37,6 +38,17 @@ def build_files(data_path, dataname, tokenized_data_path, full_tokenizer, min_le
                 nb_lines = 0
         f.close()
     print('finish')
+def changenames():
+    path = './data/sogouInput_tokenized/'
+    filename_list = os.listdir(path)
+    for i in range(len(filename_list)):
+        file = filename_list[i]
+        oldpath = os.path.join(path,file)
+        newpath = oldpath[:len(path)]+'tokenized_train_{}.txt'.format(i)
+        os.rename(oldpath, newpath)
+        if i%100==0:
+            print(i,oldpath,newpath)
+
 def main(data_path,dataname):
     tokenizer_path = '../model/gpt2_prose/vocab.txt'
     tokenized_data_path = '../data/sogouInput_tokenized/'
