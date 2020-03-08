@@ -4,7 +4,7 @@ import os
 import argparse
 from tqdm import trange
 from transformers import GPT2LMHeadModel
-
+from torchsummary import summary
 
 def is_word(word):
     for item in list(word):
@@ -177,7 +177,8 @@ def main():
         print("该层参数和：" + str(l))
         k = k + l
     print("总参数数量和：" + str(k))    
-
+    print(model)
+    summary(model)
     n_ctx = model.config.n_ctx
 
     if length == -1:
