@@ -178,7 +178,7 @@ def main():
         k = k + l
     print("总参数数量和：" + str(k))    
     print(model)
-    summary(model)
+    summary(model,(3,1024))
     n_ctx = model.config.n_ctx
 
     if length == -1:
