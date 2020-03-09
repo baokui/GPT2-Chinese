@@ -1,6 +1,6 @@
 {
   "nsamples": 10,
-  "model_config": "../model/model_godText/final_model/config.json",
+  "model_config": "../model/model_sogou/final_model/config.json",
   "model_path": "../model/model_sogou/final_model/",
   "tokenizer_path": "../model/gpt2_prose/vocab.txt",
   "save_samples_path": "../test_godText/finetuned/",
