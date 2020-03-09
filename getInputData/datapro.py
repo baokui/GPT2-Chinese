@@ -3,7 +3,8 @@ import os
 import shutil
 import tqdm
 from tokenizations import tokenization_bert
-def build_files(data_path, dataname, tokenized_data_path, full_tokenizer, min_length=10,num_pieces=1, max_nb = 10000000):
+import random
+def build_files(data_path, dataname, tokenized_data_path, full_tokenizer,n_ctx = 1024, min_length=15,num_pieces=1, max_nb = 10000000):
     if not os.path.exists(tokenized_data_path):
         os.mkdir(tokenized_data_path)
     k = 0
@@ -26,9 +27,14 @@ def build_files(data_path, dataname, tokenized_data_path, full_tokenizer, min_le
             #print(full_tokenizer.convert_tokens_to_ids('[MASK]'))
             #print(subline)
             #print(full_tokenizer.convert_tokens_to_ids('[CLS]'))
-            full_line.append(full_tokenizer.convert_tokens_to_ids('[MASK]'))  # 文章开头添加MASK表示文章开始
-            full_line.extend(subline)
-            full_line.append(full_tokenizer.convert_tokens_to_ids('[CLS]'))  # 文章之间添加CLS表示文章结束
+            tmp = [full_tokenizer.convert_tokens_to_ids('[MASK]')]
+            tmp = tmp + subline
+            if len(tmp)>n_ctx-1:
+                tmp = tmp[:n_ctx-1]
+            else:
+                tmp = tmp+(n_ctx-1-len(tmp))*[full_tokenizer.convert_tokens_to_ids('[PAD]')]
+            tmp = tmp + [full_tokenizer.convert_tokens_to_ids('[CLS]')]
+            full_line.extend(tmp)
             if nb_lines>=max_nb:
                 with open(tokenized_data_path + dataname+'-{}.txt'.format(k), 'w') as f:
                     for id in full_line:
@@ -51,7 +57,7 @@ def changenames():
 
 def main(data_path,dataname):
     tokenizer_path = '../model/gpt2_prose/vocab.txt'
-    tokenized_data_path = '../data/sogouInput_tokenized/'
+    tokenized_data_path = '../data/dabaigou_tokenized/'
     full_tokenizer = tokenization_bert.BertTokenizer(vocab_file=tokenizer_path)
     build_files(data_path, dataname, tokenized_data_path, full_tokenizer)
     shutil.rmtree(data_path)

@@ -1,4 +1,4 @@
-sleep 3h
+
 for((i=1;i<9;i++))
 do
 name=001$i
