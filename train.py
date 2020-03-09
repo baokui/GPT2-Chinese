@@ -235,10 +235,10 @@ def main():
                     model_to_save.save_pretrained(output_dir + 'model_epoch{}_step{}'.format(epoch + 1, overall_step))
                 overall_step += 1
             piece_num += 1
-            if not os.path.exists(output_dir + 'model_epoch{}'.format(epoch + 1)):
-                os.mkdir(output_dir + 'model_epoch{}'.format(epoch + 1))
-            model_to_save = model.module if hasattr(model, 'module') else model
-            model_to_save.save_pretrained(output_dir + 'model_epoch{}'.format(epoch + 1))
+        if not os.path.exists(output_dir + 'model_epoch{}'.format(epoch + 1)):
+            os.mkdir(output_dir + 'model_epoch{}'.format(epoch + 1))
+        model_to_save = model.module if hasattr(model, 'module') else model
+        model_to_save.save_pretrained(output_dir + 'model_epoch{}'.format(epoch + 1))
 
         # torch.save(scheduler.state_dict(), output_dir + 'model_epoch{}/scheduler.pt'.format(epoch + 1))
         # torch.save(optimizer.state_dict(), output_dir + 'model_epoch{}/optimizer.pt'.format(epoch + 1))
