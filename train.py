@@ -110,7 +110,8 @@ def main():
     output_dir = args.output_dir
     tb_writer = SummaryWriter(log_dir=args.writer_dir)
     assert log_step % gradient_accumulation == 0
-
+    trainfiles = os.listdir(args.tokenized_data_path)
+    num_pieces = len(trainfiles)
     if not os.path.exists(output_dir):
         os.mkdir(output_dir)
 
@@ -168,12 +169,12 @@ def main():
         random.shuffle(x)
         piece_num = 0
         for i in x:
-            with open(tokenized_data_path + 'tokenized_train_{}.txt'.format(i), 'r') as f:
+            with open(os.path.join(tokenized_data_path,trainfiles[i]), 'r') as f:
                 line = f.read().strip()
             tokens = line.split()
             tokens = [int(token) for token in tokens]
             start_point = 0
-            #start_point = random.randint(0,n_ctx-1)
+            start_point = random.randint(0,n_ctx-1)
             samples = []
             while start_point < len(tokens) - n_ctx:
                 samples.append(tokens[start_point: start_point + n_ctx])
@@ -218,11 +219,12 @@ def main():
                     #scheduler.step()
                 if (overall_step + 1) % log_step == 0:
                     tb_writer.add_scalar('loss', loss.item() * gradient_accumulation, overall_step)
-                    print('now time: {}:{}. Step {} of piece {} (total {}) of epoch {}, loss {}'.format(
+                    print('now time: {}:{}. Step {} (total {}) of piece {} (total {})  of epoch {}, loss {}'.format(
                         datetime.now().hour,
                         datetime.now().minute,
                         step + 1,
                         piece_num,
+                        num_pieces,
                         nb_steps,
                         epoch + 1,
                         running_loss * gradient_accumulation / (log_step / gradient_accumulation)))
