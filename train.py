@@ -1,3 +1,4 @@
+#-- coding:UTF-8 --
 import transformers
 import torch
 import os
@@ -234,7 +235,10 @@ def main():
                     model_to_save.save_pretrained(output_dir + 'model_epoch{}_step{}'.format(epoch + 1, overall_step))
                 overall_step += 1
             piece_num += 1
-
+            if not os.path.exists(output_dir + 'model_epoch{}'.format(epoch + 1)):
+                os.mkdir(output_dir + 'model_epoch{}_step{}'.format(epoch + 1, overall_step))
+            model_to_save = model.module if hasattr(model, 'module') else model
+            model_to_save.save_pretrained(output_dir + 'model_epoch{}'.format(epoch + 1))
 
         # torch.save(scheduler.state_dict(), output_dir + 'model_epoch{}/scheduler.pt'.format(epoch + 1))
         # torch.save(optimizer.state_dict(), output_dir + 'model_epoch{}/optimizer.pt'.format(epoch + 1))
@@ -243,12 +247,12 @@ def main():
         then = datetime.now()
         print('time: {}'.format(then))
         print('time for one epoch: {}'.format(then - now))
-
+        if not os.path.exists(output_dir + 'final_model'):
+            os.mkdir(output_dir + 'final_model')
+        model_to_save = model.module if hasattr(model, 'module') else model
+        model_to_save.save_pretrained(output_dir + 'final_model')
     print('training finished')
-    if not os.path.exists(output_dir + 'final_model'):
-        os.mkdir(output_dir + 'final_model')
-    model_to_save = model.module if hasattr(model, 'module') else model
-    model_to_save.save_pretrained(output_dir + 'final_model')
+
     # torch.save(scheduler.state_dict(), output_dir + 'final_model/scheduler.pt')
     # torch.save(optimizer.state_dict(), output_dir + 'final_model/optimizer.pt')
 
