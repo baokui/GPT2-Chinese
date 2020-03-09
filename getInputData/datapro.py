@@ -29,11 +29,11 @@ def build_files(data_path, dataname, tokenized_data_path, full_tokenizer,n_ctx =
             #print(full_tokenizer.convert_tokens_to_ids('[CLS]'))
             tmp = [full_tokenizer.convert_tokens_to_ids('[MASK]')]
             tmp = tmp + subline
-            if len(tmp)>n_ctx-1:
-                tmp = tmp[:n_ctx-1]
-            else:
-                tmp = tmp+(n_ctx-1-len(tmp))*[full_tokenizer.convert_tokens_to_ids('[PAD]')]
-            tmp = tmp + [full_tokenizer.convert_tokens_to_ids('[CLS]')]
+            #if len(tmp)>n_ctx-1:
+                #tmp = tmp[:n_ctx-1]
+            #else:
+                #tmp = tmp+(n_ctx-1-len(tmp))*[full_tokenizer.convert_tokens_to_ids('[PAD]')]
+            tmp = tmp + [full_tokenizer.convert_tokens_to_ids('[PAD]')]*3 +[full_tokenizer.convert_tokens_to_ids('[CLS]')]
             full_line.extend(tmp)
             if nb_lines>=max_nb:
                 with open(tokenized_data_path + dataname+'-{}.txt'.format(k), 'w') as f:

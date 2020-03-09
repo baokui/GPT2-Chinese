@@ -172,8 +172,8 @@ def main():
                 line = f.read().strip()
             tokens = line.split()
             tokens = [int(token) for token in tokens]
-            #start_point = 0
-            start_point = random.randint(0,n_ctx-1)
+            start_point = 0
+            #start_point = random.randint(0,n_ctx-1)
             samples = []
             while start_point < len(tokens) - n_ctx:
                 samples.append(tokens[start_point: start_point + n_ctx])
