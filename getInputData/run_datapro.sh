@@ -1,5 +1,5 @@
-filename=dabaigou
-for((i=1;i<9;i++))
+filename=202001
+for((i=0;i<9;i++))
 do
 name=000$i
 nohup python -u datapro.py ../data/$filename/$name $name >> log/$name.log 2>&1 &
