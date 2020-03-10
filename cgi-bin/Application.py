@@ -234,7 +234,6 @@ def application(environ, start_response):
     body1 = re.sub("{content}", 'hello pyweb!', body)
     if inputStr=="":
         body2 = body1 % ('Empty',
-                         '<br>'.join(['No results']),
                          '<br>'.join(['No results']))
 
         f.close()
