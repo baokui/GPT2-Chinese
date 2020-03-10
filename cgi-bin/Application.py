@@ -188,7 +188,8 @@ def generating(prefix,model,config,tokenizer):
         if len(S) == nsamples:
             break
     return S
-path_configs = ['config_pretrained.json','config_godText.json','config_dabaigou.json']
+path_configs = ['config_pretrained.json','config_godText.json','config_raw_multiReplace.json','config_dabaigou.json']
+models = []
 model = []
 tokenizer = []
 config = []
@@ -238,22 +239,20 @@ def application(environ, start_response):
 
         f.close()
         return [body2.encode()]
-    hobbies = d.get('model', [])  # Returns a list of hobbies.
-    print(hobbies)
+    models = d.get('model', [])  # Returns a list of hobbies.
+    print(models)
     # Always escape user input to avoid script injection
     print('input:%s'%inputStr)
-    i0 = 0
-    i1 = 1
-    result = generating(inputStr,model[i0],config[i0],tokenizer[i0])
-    result_pr = generating(inputStr,model[i1],config[i1],tokenizer[i1])
-    #result = ['a','b']
-    #result_pr = ['cd','d']
-    result = ['\t'+str(i)+'. '+result[i] for i in range(len(result))]
-    result_pr = ['\t' + str(i) + '. ' + result_pr[i] for i in range(len(result_pr))]
-    print("result-fineture:%s"%'\n'.join(result))
-    print("result-pretrain:%s"%'\n'.join(result_pr))
-    hobbies = [escape(hobby) for hobby in result]
-    hobbies_pr = [escape(hobby) for hobby in result_pr]
+    R = []
+    for mm in models:
+        i0 = path_configs.index(mm)
+        result = generating(inputStr,model[i0],config[i0],tokenizer[i0])
+        result = ['\t' + str(i) + '. ' + result[i] for i in range(len(result))]
+        print("result of model-%s is %s"%(mm,'\n'.join(result)))
+        hobbies = [escape(hobby) for hobby in result]
+        hobbies = ['<br>%s'%mm] +hobbies
+        R.append('<br>'.join(hobbies or ['No Hobbies']))
+
     body = re.sub("{tittle}",'python Web',b)
 
     body1 = re.sub("{content}",'hello pyweb!',body)
@@ -262,8 +261,7 @@ def application(environ, start_response):
     #hobbies = ['a', 'b']
     #inputStr = bytes(inputStr, encoding="utf8")
     body2 = body1 % (inputStr or 'Empty',
-                            '<br>'.join(hobbies or ['No Hobbies']),
-                            '<br>'.join(hobbies_pr or ['No Hobbies']))
+                            '<br>'.join(R or ['No Hobbies']))
 
     f.close()
 
