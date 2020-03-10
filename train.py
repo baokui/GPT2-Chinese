@@ -110,8 +110,6 @@ def main():
     output_dir = args.output_dir
     tb_writer = SummaryWriter(log_dir=args.writer_dir)
     assert log_step % gradient_accumulation == 0
-    trainfiles = os.listdir(args.tokenized_data_path)
-    num_pieces = len(trainfiles)
     if not os.path.exists(output_dir):
         os.mkdir(output_dir)
 
@@ -120,7 +118,8 @@ def main():
         build_files(data_path=raw_data_path, tokenized_data_path=tokenized_data_path, num_pieces=num_pieces,
                     full_tokenizer=full_tokenizer, min_length=min_length)
         print('files built')
-
+    trainfiles = os.listdir(args.tokenized_data_path)
+    num_pieces = len(trainfiles)
     if not args.pretrained_model:
         model = transformers.modeling_gpt2.GPT2LMHeadModel(config=model_config)
     else:
