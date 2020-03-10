@@ -223,9 +223,9 @@ def main():
                         datetime.now().hour,
                         datetime.now().minute,
                         step + 1,
+                        nb_steps,
                         piece_num,
                         num_pieces,
-                        nb_steps,
                         epoch + 1,
                         running_loss * gradient_accumulation / (log_step / gradient_accumulation)))
                     running_loss = 0

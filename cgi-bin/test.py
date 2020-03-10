@@ -168,6 +168,8 @@ def generating(prefix,model,config,tokenizer):
                 for i, item in enumerate(text):
                     if item == '[MASK]':
                         text[i] = ''
+                    elif item == '[PAD]':
+                        text[i] = ''
                     elif item == '[CLS]':
                         text[i] = '\n\n'
                     elif item == '[SEP]':
