@@ -57,7 +57,7 @@ def changenames():
 
 def main(data_path,dataname):
     tokenizer_path = '../model/gpt2_prose/vocab.txt'
-    tokenized_data_path = '../data/dabaigou_tokenized/'
+    tokenized_data_path = '../data/dabaigou_tokenized_new/'
     full_tokenizer = tokenization_bert.BertTokenizer(vocab_file=tokenizer_path)
     build_files(data_path, dataname, tokenized_data_path, full_tokenizer)
     shutil.rmtree(data_path)
