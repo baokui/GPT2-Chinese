@@ -250,7 +250,7 @@ def application(environ, start_response):
         result = ['\t' + str(i) + '. ' + result[i] for i in range(len(result))]
         print("result of model-%s is %s"%(mm,'\n'.join(result)))
         hobbies = [escape(hobby) for hobby in result]
-        hobbies = ['<br>%s'%mm] +hobbies
+        hobbies = ['<br>%s'%name_models[i0]] +hobbies
         R.append('<br>'.join(hobbies or ['No Hobbies']))
 
     body = re.sub("{tittle}",'python Web',b)
