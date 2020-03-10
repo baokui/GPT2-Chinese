@@ -242,8 +242,10 @@ def application(environ, start_response):
     print(hobbies)
     # Always escape user input to avoid script injection
     print('input:%s'%inputStr)
-    result = generating(inputStr,model,config,tokenizer)
-    result_pr = generating(inputStr,model_pr,config_pr,tokenizer_pr)
+    i0 = 0
+    i1 = 1
+    result = generating(inputStr,model[i0],config[i0],tokenizer[i0])
+    result_pr = generating(inputStr,model[i1],config[i1],tokenizer[i1])
     #result = ['a','b']
     #result_pr = ['cd','d']
     result = ['\t'+str(i)+'. '+result[i] for i in range(len(result))]
