@@ -1,7 +1,7 @@
 {
   "nsamples": 10,
-  "model_config": "../model/model_sogou/final_model/config.json",
-  "model_path": "../model/model_sogou/final_model/",
+  "model_config": "../model/model_dabaigou/model_epoch1_step20000/config.json",
+  "model_path": "../model/model_dabaigou/model_epoch1_step20000/",
   "tokenizer_path": "../model/gpt2_prose/vocab.txt",
   "save_samples_path": "../test_godText/finetuned/",
   "batch_size":1,
