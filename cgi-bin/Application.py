@@ -189,7 +189,7 @@ def generating(prefix,model,config,tokenizer):
             break
     return S
 path_configs = ['config_pretrained.json','config_godText.json','config_raw_multiReplace.json','config_dabaigou.json']
-name_models = ['原模型','神配文数据训练模型','美化原始语料训练模型','大白狗数据训练模型']
+name_models = ['原模型-base','神配文数据训练模型-0306','美化原始语料训练模型-0309','大白狗数据训练模型-0309']
 models = []
 model = []
 tokenizer = []
