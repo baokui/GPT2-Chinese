@@ -1,8 +1,8 @@
-idx=48
+idx=47
 nohup python -u datapro_dabaigou_remvoveUNK.py idx >> log/remove-$idx.log 2>&1 &
-idx=78
+idx=77
 nohup python -u datapro_dabaigou_remvoveUNK.py idx >> log/remove-$idx.log 2>&1 &
-idx=108
+idx=107
 nohup python -u datapro_dabaigou_remvoveUNK.py idx >> log/remove-$idx.log 2>&1 &
-idx=138
+idx=137
 nohup python -u datapro_dabaigou_remvoveUNK.py idx >> log/remove-$idx.log 2>&1 &
