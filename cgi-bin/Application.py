@@ -133,7 +133,7 @@ def getModel(path_config):
 def generating(prefix,model,config,tokenizer):
     n_ctx = model.config.n_ctx
     fast_pattern = True
-    length = config['length']
+    length = min(config['length'],n_ctx-len(prefix))
     nsamples = config['nsamples']
     batch_size = config['batch_size']
     temperature = config['temperature']
