@@ -327,8 +327,6 @@ def application_post(environ, start_response):
 
     body = re.sub("{tittle}", 'python Web', b)
 
-    body1 = re.sub("{content}", 'hello pyweb!', body)
-    
     # Always escape user input to avoid script injection
     print('input:%s'%inputStr)
     i0 = modelidex
