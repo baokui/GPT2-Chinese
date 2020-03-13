@@ -24,7 +24,7 @@ def is_number(s):
         pass
     return False
 def url_parse(urlstr):
-    modelidex,inputStr,nsamples = 0,'祝你',10
+    modelidex,inputStr,nsamples = 0,'祝你',3
     D = {}
     if '?' in urlstr:
         s0 = urlstr[urlstr.find('?')+1:]
@@ -318,9 +318,9 @@ def application_post(environ, start_response):
     if 'HTTP_REFERER' in environ:
         print(environ['HTTP_REFERER'])
         modelidex,inputStr,nsamples = url_parse(environ['HTTP_REFERER'])
-        inputStr = urllib.parse(inputStr)
+        inputStr = urllib.parse.unquote(inputStr)
     else:
-        modelidex, inputStr, nsamples = 0,"祝你",10
+        modelidex, inputStr, nsamples = 0,"祝你",2
     # When the method is POST the query string will be sent
     # in the HTTP request body which is passed by the WSGI server
     # in the file like wsgi.input environment variable.
