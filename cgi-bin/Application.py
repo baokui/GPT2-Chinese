@@ -333,11 +333,14 @@ def application_post(environ, start_response):
         request_body_size = 0
     if 'HTTP_REFERER' in environ:
         print(environ['HTTP_REFERER'])
-        modelidex,inputStr,nsamples = url_parse1(environ['HTTP_REFERER'])
-        inputStr = urllib.parse.unquote(inputStr)
+        #modelidex,inputStr,nsamples = url_parse1(environ['HTTP_REFERER'])
+        #inputStr = urllib.parse.unquote(inputStr)
     else:
+        print('no http')
         pass
         #modelidex, inputStr, nsamples = 0,"祝你",2
+    modelidex, inputStr, nsamples = url_parse1(environ['HTTP_REFERER'])
+    inputStr = urllib.parse.unquote(inputStr)
     # When the method is POST the query string will be sent
     # in the HTTP request body which is passed by the WSGI server
     # in the file like wsgi.input environment variable.
