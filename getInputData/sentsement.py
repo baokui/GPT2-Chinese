@@ -9,7 +9,7 @@ def segment(path_source,path_target):
     for file in files:
         if 'part' not in file:
             continue
-        f = open(os.path.join(path_source,file),'w')
+        f = open(os.path.join(path_source,file),'r')
         for line in f:
             data = line.strip().split('\t')
             if len(data)!=2:
