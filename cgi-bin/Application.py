@@ -325,8 +325,6 @@ def application_post(environ, start_response):
     # in the HTTP request body which is passed by the WSGI server
     # in the file like wsgi.input environment variable.
 
-    body = re.sub("{tittle}", 'python Web', b)
-
     # Always escape user input to avoid script injection
     print('input:%s'%inputStr)
     i0 = modelidex
