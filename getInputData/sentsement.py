@@ -14,7 +14,7 @@ def segment(path_source,path_target):
             data = line.strip().split('\t')
             if len(data)!=2:
                 continue
-            sent = ' '.join(list(jieba.cut(data[1])))
+            sent = ' '.join(list(jieba.cut(data[1].lower())))
             n+=1
             S.append('\t'.join([data[0],sent])+'\n')
             if n%100000==0:
