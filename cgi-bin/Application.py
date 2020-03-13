@@ -356,7 +356,6 @@ def application_post(environ, start_response):
     #R = json.dumps(hobbies)
     #R = R.encode('utf-8').decode('utf-8')
     R = '\n'.join(hobbies)
-    print('json-result:%s'%R)
     body = re.sub("{tittle}",'python Web',b)
 
     body1 = re.sub("{content}",'hello pyweb!',body)
