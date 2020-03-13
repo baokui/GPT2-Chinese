@@ -328,10 +328,7 @@ def application_post(environ, start_response):
     body = re.sub("{tittle}", 'python Web', b)
 
     body1 = re.sub("{content}", 'hello pyweb!', body)
-    if inputStr=="":
-        body2 = body1 % 'Empty'
-        f.close()
-        return [body2.encode()]
+    
     # Always escape user input to avoid script injection
     print('input:%s'%inputStr)
     i0 = modelidex
