@@ -337,7 +337,7 @@ def application_post(environ, start_response):
     i0 = modelidex
     mm = name_models[i0]
     result = generating(inputStr,model[i0],config[i0],tokenizer[i0],nsamples)
-    result = ['\t' + str(i) + '. ' + result[i] for i in range(len(result))]
+    #result = ['\t' + str(i) + '. ' + result[i] for i in range(len(result))]
     print("result of model-%s is %s"%(mm,'\n'.join(result)))
     hobbies = [escape(hobby) for hobby in result]
     R = json.dumps(hobbies)
