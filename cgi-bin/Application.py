@@ -44,6 +44,22 @@ def url_parse(urlstr):
         if is_number(D['nsamples']):
             nsamples = int(float(D['nsamples']))
     return modelidex,inputStr,nsamples
+def url_parse1(urlstr):
+    modelidex, inputStr, nsamples = 0, '祝你', 3
+    D = {}
+    if '?' in urlstr:
+        s0 = urlstr[urlstr.find('?') + 1:]
+        T = s0.split('&')
+        for t in T:
+            tt = t.split('=')
+            D[tt[0]] = tt[1]
+    print('url:%s' % urlstr)
+    print('result:')
+    print(D)
+    modelidex = int(float(D['model']))
+    inputStr = D['inputStr']
+    nsamples = int(float(D['nsamples']))
+    return modelidex,inputStr,nsamples
 def is_word(word):
     for item in list(word):
         if item not in 'qwertyuiopasdfghjklzxcvbnm':
@@ -317,7 +333,7 @@ def application_post(environ, start_response):
         request_body_size = 0
     if 'HTTP_REFERER' in environ:
         print(environ['HTTP_REFERER'])
-        modelidex,inputStr,nsamples = url_parse(environ['HTTP_REFERER'])
+        modelidex,inputStr,nsamples = url_parse1(environ['HTTP_REFERER'])
         inputStr = urllib.parse.unquote(inputStr)
     else:
         pass
