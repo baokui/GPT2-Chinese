@@ -1,19 +1,13 @@
 #-- coding:UTF-8 --
 import transformers
-import torch
 import os
 import json
-import random
-import numpy as np
 import argparse
-from torch.utils.tensorboard import SummaryWriter
-from datetime import datetime
 from tqdm import tqdm
-from torch.nn import DataParallel
 from tokenizations.bpe_tokenizer import get_encoder
 
 
-def build_files(data_path, tokenized_data_path, num_pieces, full_tokenizer, min_length):
+def build_files(data_path, tokenized_data_path, num_pieces, full_tokenizer, min_length,n_ctx, padding=False):
     with open(data_path, 'r', encoding='utf8') as f:
         print('reading lines')
         lines = json.load(f)
@@ -30,9 +24,19 @@ def build_files(data_path, tokenized_data_path, num_pieces, full_tokenizer, min_
         sublines = [full_tokenizer.convert_tokens_to_ids(line) for line in sublines]
         full_line = []
         for subline in sublines:
-            full_line.append(full_tokenizer.convert_tokens_to_ids('[MASK]'))  # 文章开头添加MASK表示文章开始
-            full_line.extend(subline)
-            full_line.append(full_tokenizer.convert_tokens_to_ids('[CLS]'))  # 文章之间添加CLS表示文章结束
+            if padding:
+                tmp = [full_tokenizer.convert_tokens_to_ids('[MASK]')]
+                tmp = tmp + subline
+                if len(tmp) > n_ctx - 1:
+                    tmp = tmp[:n_ctx - 1]
+                else:
+                    tmp = tmp + (n_ctx - 1 - len(tmp)) * [full_tokenizer.convert_tokens_to_ids('[PAD]')]
+                tmp = tmp + [full_tokenizer.convert_tokens_to_ids('[CLS]')]
+                full_line.extend(tmp)
+            else:
+                full_line.append(full_tokenizer.convert_tokens_to_ids('[MASK]'))  # 文章开头添加MASK表示文章开始
+                full_line.extend(subline)
+                full_line.append(full_tokenizer.convert_tokens_to_ids('[CLS]'))  # 文章之间添加CLS表示文章结束
         with open(tokenized_data_path + 'tokenized_train_{}.txt'.format(i), 'w') as f:
             for id in full_line:
                 f.write(str(id) + ' ')
@@ -60,12 +64,14 @@ def main():
     parser.add_argument('--fp16_opt_level', default='O1', type=str, required=False)
     parser.add_argument('--max_grad_norm', default=1.0, type=float, required=False)
     parser.add_argument('--num_pieces', default=100, type=int, required=False, help='将训练语料分成多少份')
-    parser.add_argument('--min_length', default=128, type=int, required=False, help='最短收录文章长度')
+    parser.add_argument('--min_length', default=20, type=int, required=False, help='最短收录文章长度')
+    parser.add_argument('--n_ctx', default=50, type=int, required=False, help='训练样本长度')
     parser.add_argument('--output_dir', default='model/', type=str, required=False, help='模型输出路径')
     parser.add_argument('--pretrained_model', default='', type=str, required=False, help='模型训练起点路径')
     parser.add_argument('--writer_dir', default='tensorboard_summary/', type=str, required=False, help='Tensorboard路径')
     parser.add_argument('--segment', action='store_true', help='中文以词为单位')
     parser.add_argument('--bpe_token', action='store_true', help='subword')
+    parser.add_argument('--padding', action='store_true', help='padding')
     parser.add_argument('--encoder_json', default="tokenizations/encoder.json", type=str, help="encoder.json")
     parser.add_argument('--vocab_bpe', default="tokenizations/vocab.bpe", type=str, help="vocab.bpe")
     parser.add_argument('--max_steps_perEpoch_perPiece', default=1000000, type=int, required=False)
@@ -77,10 +83,6 @@ def main():
         from tokenizations import tokenization_bert_word_level as tokenization_bert
     else:
         from tokenizations import tokenization_bert
-
-    model_config = transformers.modeling_gpt2.GPT2Config.from_json_file(args.model_config)
-    print('config:\n' + model_config.to_json_string())
-
     if args.bpe_token:
         full_tokenizer = get_encoder(args.encoder_json, args.vocab_bpe)
     else:
@@ -88,14 +90,13 @@ def main():
     full_tokenizer.max_len = 999999
     raw_data_path = args.raw_data_path
     tokenized_data_path = args.tokenized_data_path
-    log_step = args.log_step
-    gradient_accumulation = args.gradient_accumulation
     num_pieces = args.num_pieces
     min_length = args.min_length
-    assert log_step % gradient_accumulation == 0
+    n_ctx = args.n_ctx
+    padding = args.padding
     print('building files')
     build_files(data_path=raw_data_path, tokenized_data_path=tokenized_data_path, num_pieces=num_pieces,
-                full_tokenizer=full_tokenizer, min_length=min_length)
+                full_tokenizer=full_tokenizer, min_length=min_length,n_ctx=n_ctx, padding=padding)
     print('files built')
 
 if __name__ == '__main__':
