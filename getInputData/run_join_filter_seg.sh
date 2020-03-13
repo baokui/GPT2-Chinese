@@ -1,4 +1,4 @@
-input0=$1
+input1=$1
 hpoutput=$2
 hadoop fs -rmr $hpoutput
 mars="hdfs://MarsNameNode2"
