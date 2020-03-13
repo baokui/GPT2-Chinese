@@ -318,12 +318,13 @@ def application_post(environ, start_response):
     if 'HTTP_REFERER' in environ:
         print(environ['HTTP_REFERER'])
         modelidex,inputStr,nsamples = url_parse(environ['HTTP_REFERER'])
+        inputStr = urllib.parse(inputStr)
     else:
         modelidex, inputStr, nsamples = 0,"祝你",10
     # When the method is POST the query string will be sent
     # in the HTTP request body which is passed by the WSGI server
     # in the file like wsgi.input environment variable.
-    inputStr = html.unescape(inputStr)
+
     body = re.sub("{tittle}", 'python Web', b)
 
     body1 = re.sub("{content}", 'hello pyweb!', body)
@@ -335,12 +336,12 @@ def application_post(environ, start_response):
     print('input:%s'%inputStr)
     i0 = modelidex
     mm = name_models[i0]
-    result = generating(inputStr,model[i0],config[i0],tokenizer[i0])
+    result = generating(inputStr,model[i0],config[i0],tokenizer[i0],nsamples)
     result = ['\t' + str(i) + '. ' + result[i] for i in range(len(result))]
     print("result of model-%s is %s"%(mm,'\n'.join(result)))
     hobbies = [escape(hobby) for hobby in result]
     R = json.dumps(hobbies)
-    print('json-result:%'%R)
+    print('json-result:%s'%R)
     body = re.sub("{tittle}",'python Web',b)
 
     body1 = re.sub("{content}",'hello pyweb!',body)
