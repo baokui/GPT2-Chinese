@@ -1,17 +1,46 @@
 import re
 import html
-import os
 import urllib.parse
 from html import escape
-import codecs
 from urllib.parse import unquote
 import torch
 import torch.nn.functional as F
-import os
-import argparse
+import json
 from tqdm import trange
 from transformers import GPT2LMHeadModel
 import json
+def is_number(s):
+    try:
+        float(s)
+        return True
+    except ValueError:
+        pass
+
+    try:
+        import unicodedata
+        unicodedata.numeric(s)
+        return True
+    except (TypeError, ValueError):
+        pass
+    return False
+def url_parse(urlstr):
+    modelidex,inputStr,nsamples = 0,'祝你',10
+    D = {}
+    if '?' in urlstr:
+        s0 = urlstr[urlstr.find('?')+1:]
+        T = s0.split('&')
+        for t in T:
+            tt = t.split('=')
+            D[tt[0]] = tt[1]
+    if 'model' in D:
+        if is_number(D['model']):
+            modelidex = int(float(D['model']))
+    if 'inputStr' in D:
+        inputStr = D['inputStr']
+    if 'nsamples' in D:
+        if is_number(D['nsamples']):
+            nsamples = int(float(D['nsamples']))
+    return modelidex,inputStr,nsamples
 def is_word(word):
     for item in list(word):
         if item not in 'qwertyuiopasdfghjklzxcvbnm':
@@ -130,11 +159,11 @@ def getModel(path_config):
     model.to(device)
     model.eval()
     return model,tokenizer,config
-def generating(prefix,model,config,tokenizer):
+def generating(prefix,model,config,tokenizer,nsamples=10):
     n_ctx = model.config.n_ctx
     fast_pattern = True
     length = min(config['length'],n_ctx-len(prefix))
-    nsamples = config['nsamples']
+    #nsamples = config['nsamples']
     batch_size = config['batch_size']
     temperature = config['temperature']
     topk = config['topk']
@@ -266,6 +295,57 @@ def application(environ, start_response):
     #inputStr = bytes(inputStr, encoding="utf8")
     body2 = body1 % (inputStr or 'Empty',
                             '<br>'.join(R or ['No Hobbies']))
+
+    f.close()
+
+    return [body2.encode()]
+def application_post(environ, start_response):
+
+    start_response('200 OK', [('Content-Type', 'text/html')])
+
+    f = open("generating_post.html","r",encoding="utf-8")
+
+    b = f.read()
+
+    # the environment variable CONTENT_LENGTH may be empty or missing
+    try:
+        request_body_size = int(environ.get('CONTENT_LENGTH', 0))
+    except (ValueError):
+        request_body_size = 0
+    if 'HTTP_REFERER' in environ:
+        print(environ['HTTP_REFERER'])
+        modelidex,inputStr,nsamples = url_parse(environ['HTTP_REFERER'])
+    else:
+        modelidex, inputStr, nsamples = 0,"祝你",10
+    # When the method is POST the query string will be sent
+    # in the HTTP request body which is passed by the WSGI server
+    # in the file like wsgi.input environment variable.
+    inputStr = html.unescape(inputStr)
+    body = re.sub("{tittle}", 'python Web', b)
+
+    body1 = re.sub("{content}", 'hello pyweb!', body)
+    if inputStr=="":
+        body2 = body1 % 'Empty'
+        f.close()
+        return [body2.encode()]
+    # Always escape user input to avoid script injection
+    print('input:%s'%inputStr)
+    i0 = modelidex
+    mm = name_models[i0]
+    result = generating(inputStr,model[i0],config[i0],tokenizer[i0])
+    result = ['\t' + str(i) + '. ' + result[i] for i in range(len(result))]
+    print("result of model-%s is %s"%(mm,'\n'.join(result)))
+    hobbies = [escape(hobby) for hobby in result]
+    R = json.dumps(hobbies)
+    print('json-result:%'%R)
+    body = re.sub("{tittle}",'python Web',b)
+
+    body1 = re.sub("{content}",'hello pyweb!',body)
+
+    #age = "33"
+    #hobbies = ['a', 'b']
+    #inputStr = bytes(inputStr, encoding="utf8")
+    body2 = body1 % R
 
     f.close()
 
