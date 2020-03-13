@@ -350,8 +350,9 @@ def application_post(environ, start_response):
     #result = ['\t' + str(i) + '. ' + result[i] for i in range(len(result))]
     print("result of model-%s is %s"%(mm,'\n'.join(result)))
     hobbies = [escape(hobby) for hobby in result]
-    R = json.dumps(hobbies)
-    R = R.encode('utf-8').decode('utf-8')
+    #R = json.dumps(hobbies)
+    #R = R.encode('utf-8').decode('utf-8')
+    R = '\n'.join(hobbies)
     print('json-result:%s'%R)
     body = re.sub("{tittle}",'python Web',b)
 
