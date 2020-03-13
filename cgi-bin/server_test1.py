@@ -1,18 +1,20 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+from http.server import BaseHTTPRequestHandler, HTTPServer
+from wsgiref.simple_server import WSGIServer
 import socket
 import sys
 from io import StringIO
 #from app import application
 from datetime import datetime
-
+import threading
 
 def application(env, start_response):
     s = env['PATH_INFO']
     start_response('200 OK', [('Content-Type', 'text/html'), ('X-Coder', 'Cooffeeli')])
     return ['<h1>'+s+'你好！！世界</h1>']
 
-class WSGIServer(object):
+class WSGIServer_local(WSGIServer):
 
     def __init__(self, server_address):
         """初始构造函数, 创建监听socket"""
@@ -22,6 +24,8 @@ class WSGIServer(object):
         (host, port) = self.listen_sock.getsockname()
         self.server_port = port
         self.server_name = socket.getfqdn(host)
+        self.__is_shut_down = threading.Event()
+        self.__shutdown_request = False
 
     def set_application(self, application):
         """设置wsgi application, 供server 调用"""
@@ -102,9 +106,11 @@ class WSGIServer(object):
         # 脚本运行完毕也会结束
         conn.close()
 
+    def serve_forever(self):
+        super().serve_forever()
 def make_server(server_address, application):
     """创建WSGI Server 负责监听端口，接受请求"""
-    wsgi_server = WSGIServer(server_address)
+    wsgi_server = WSGIServer_local(server_address)
     wsgi_server.set_application(application)
 
     return wsgi_server
@@ -113,3 +119,4 @@ def make_server(server_address, application):
 SERVER_ADDRESS = (HOST, PORT) = '', 8001
 wsgi_server = make_server(SERVER_ADDRESS, application)
 wsgi_server.handle_request()
+wsgi_server.serve_forever()
