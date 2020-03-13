@@ -320,7 +320,8 @@ def application_post(environ, start_response):
         modelidex,inputStr,nsamples = url_parse(environ['HTTP_REFERER'])
         inputStr = urllib.parse.unquote(inputStr)
     else:
-        modelidex, inputStr, nsamples = 0,"祝你",2
+        pass
+        #modelidex, inputStr, nsamples = 0,"祝你",2
     # When the method is POST the query string will be sent
     # in the HTTP request body which is passed by the WSGI server
     # in the file like wsgi.input environment variable.
