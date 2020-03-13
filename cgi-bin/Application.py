@@ -212,6 +212,10 @@ def application(environ, start_response):
         request_body_size = int(environ.get('CONTENT_LENGTH', 0))
     except (ValueError):
         request_body_size = 0
+    if 'HTTP_REFERER' in environ:
+        print(environ['HTTP_REFERER'])
+    else:
+        pass
     # When the method is POST the query string will be sent
     # in the HTTP request body which is passed by the WSGI server
     # in the file like wsgi.input environment variable.

@@ -1,4 +1,7 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 import sys
+sys.path.append("jieba")
 import jieba
 for data in sys.stdin:
     data = data.strip()
