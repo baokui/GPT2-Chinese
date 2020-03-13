@@ -32,6 +32,9 @@ def url_parse(urlstr):
         for t in T:
             tt = t.split('=')
             D[tt[0]] = tt[1]
+    print('url:%s'%urlstr)
+    print('result:')
+    print(D)
     if 'model' in D:
         if is_number(D['model']):
             modelidex = int(float(D['model']))
