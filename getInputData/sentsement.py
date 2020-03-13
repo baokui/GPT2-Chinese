@@ -20,7 +20,7 @@ def segment(path_source,path_target):
             if n%100000==0:
                 f_w.write(''.join(S))
                 S = []
-                print('sengment file %s with %d lines'(file,n))
+                print('sengment file %s with %d lines'%(file,n))
     if len(S)>0:
         f_w.write(''.join(S))
 if __name__=="__main__":
