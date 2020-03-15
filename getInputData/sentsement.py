@@ -77,7 +77,7 @@ def vocab_join_all(path_source,path_target):
     D = {}
     files = os.listdir(path_source)
     for file in files:
-        if 'join' not in files:
+        if 'join' not in file:
             continue
         with open(os.path.join(path_source, file), 'r') as f:
             s = f.read().strip().split('\n')
