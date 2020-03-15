@@ -56,6 +56,23 @@ def getVocab(path_source,path_target,filname,max_line=10000000):
         with open(os.path.join(path_target, filname + '_' + str(N) + '.txt'), 'w') as f_w:
             f_w.write('\n'.join(S))
     f.close()
+def vocab_join(path_source,path_target):
+    D = {}
+    files = os.listdir(path_source)
+    for file in files:
+        with open(os.path.join(path_source,file),'r') as f:
+            s = f.read().strip().split('\n')
+        s = [ss.split('\t') for ss in s]
+        d = {ss[0]:int(ss[1]) for ss in s}
+        for k in d:
+            if k not in D:
+                D[k] = d[k]
+            else:
+                D[k] += d[k]
+        print('proceed for %s'%os.path.join(path_source,file))
+    S = ['\t'.join([k,str(D[k])]) for k in D]
+    with open(path_target,'w') as f:
+        f.write('\n'.join(S))
 if __name__=="__main__":
     mode = sys.argv[1]
     if mode=='segment':
@@ -64,3 +81,6 @@ if __name__=="__main__":
     if mode=='vocab':
         path_source, path_target,filename = sys.argv[2:5]
         getVocab(path_source,path_target,filename)
+    if mode=='vocab_join0':
+        path_source, path_target = sys.argv[2:4]
+        vocab_join(path_source,path_target)
