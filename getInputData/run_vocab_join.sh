@@ -16,3 +16,8 @@ do
     filename=$file
     nohup python -u sentsement.py $mode $path_source $path_target $filename >> log/seg-$mode-$file.log 2>&1
 done
+
+mode=vocab_join_all
+path_source=../data/202002_seg_vocab
+path_target=../data/202002_seg_vocab/join-all.txt
+nohup python -u sentsement.py $mode $path_source $path_target $filename >> log/seg-$mode-$file.log 2>&1 &

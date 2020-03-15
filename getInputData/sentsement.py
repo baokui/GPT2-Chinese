@@ -73,6 +73,27 @@ def vocab_join(path_source,path_target):
     S = ['\t'.join([k,str(D[k])]) for k in D]
     with open(path_target,'w') as f:
         f.write('\n'.join(S))
+def vocab_join_all(path_source,path_target):
+    D = {}
+    files = os.listdir(path_source)
+    for file in files:
+        if 'join' not in files:
+            continue
+        with open(os.path.join(path_source, file), 'r') as f:
+            s = f.read().strip().split('\n')
+        s = [ss.split('\t') for ss in s]
+        d = {ss[0]: int(ss[1]) for ss in s if len(ss) == 2}
+        for k in d:
+            if k not in D:
+                D[k] = d[k]
+            else:
+                D[k] += d[k]
+        print('proceed for %s' % os.path.join(path_source, file))
+    S = [[k, D[k]] for k in D]
+    S = sorted(S,key=lambda x:-x[-1])
+    S = ['\t'.join([k[0], str(k[1])]) for k in S]
+    with open(path_target, 'w') as f:
+        f.write('\n'.join(S))
 if __name__=="__main__":
     mode = sys.argv[1]
     if mode=='segment':
@@ -84,3 +105,6 @@ if __name__=="__main__":
     if mode=='vocab_join0':
         path_source, path_target = sys.argv[2:4]
         vocab_join(path_source,path_target)
+    if mode=='vocab_join_all':
+        path_source, path_target = sys.argv[2:4]
+        vocab_join_all(path_source,path_target)
