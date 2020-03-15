@@ -90,7 +90,7 @@ def vocab_join_all(path_source,path_target):
                 D[k] = d[k]
             else:
                 D[k] += d[k]
-        print('proceed for %s' % os.path.join(path_source, file))
+        print('proceed for %s with %d' % (os.path.join(path_source, file),len(D)))
     S = [[k, D[k]] for k in D]
     S = sorted(S,key=lambda x:-x[-1])
     S = ['\t'.join([k[0], str(k[1])]) for k in S]
