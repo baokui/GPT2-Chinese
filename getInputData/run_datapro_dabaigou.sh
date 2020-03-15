@@ -5,9 +5,9 @@ do
 for((i=0;i<9;i++))
 do
 name=00$j$i
-nohup python -u datapro_dabaigou.py $mode ../data/$filename/$name.txt $name >> log/$name.log 2>&1 &
+nohup python -u datapro_dabaigou.py $mode ../data/$filename/$name.txt $name >> log/datapro-dabaigou-seg-$name.log 2>&1 &
 done
 i=9
 name=00$j$i
-nohup python -u datapro_dabaigou.py $mode ../data/$filename/$name.txt $name >> log/$name.log
+nohup python -u datapro_dabaigou.py $mode ../data/$filename/$name.txt $name >> log/datapro-dabaigou-seg-$name.log
 done
