@@ -67,13 +67,13 @@ def build_files_seg(data_path, dataname, tokenized_data_path, full_tokenizer,n_c
         tmp = line.strip().split('\t')
         if len(tmp)!=2:
             continue
-        line = tmp[1]
+        line = tmp[1].split(' ')
         if nb_lines%10000==0:
             print('processing file %s, %d, %0.2f'%(data_path,nb_lines,nb_lines/float(max_nb)))
         if len(line)<min_length:
             continue
         nb_lines += 1
-        subline = full_tokenizer.convert_tokens_to_ids(list(line))
+        subline = full_tokenizer.convert_tokens_to_ids(line)
         #print(full_tokenizer.convert_tokens_to_ids('[MASK]'))
         #print(subline)
         #print(full_tokenizer.convert_tokens_to_ids('[CLS]'))
