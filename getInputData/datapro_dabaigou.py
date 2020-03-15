@@ -55,6 +55,45 @@ def changenames():
         os.rename(oldpath, newpath)
         if i%100==0:
             print(i,oldpath,newpath)
+def build_files_seg(data_path, dataname, tokenized_data_path, full_tokenizer,n_ctx = 20, min_length=5,num_pieces=1, max_nb = 10000000):
+    if not os.path.exists(tokenized_data_path):
+        os.mkdir(tokenized_data_path)
+    k = 0
+    full_line = []
+    print('reading lines')
+    nb_lines = 0
+    f = open(data_path, 'r', encoding='utf8')
+    for line in f:
+        tmp = line.strip().split('\t')
+        if len(tmp)!=2:
+            continue
+        line = tmp[1]
+        if nb_lines%10000==0:
+            print('processing file %s, %d, %0.2f'%(data_path,nb_lines,nb_lines/float(max_nb)))
+        if len(line)<min_length:
+            continue
+        nb_lines += 1
+        subline = full_tokenizer.convert_tokens_to_ids(list(line))
+        #print(full_tokenizer.convert_tokens_to_ids('[MASK]'))
+        #print(subline)
+        #print(full_tokenizer.convert_tokens_to_ids('[CLS]'))
+        tmp = [full_tokenizer.convert_tokens_to_ids('[MASK]')]
+        tmp = tmp + subline
+        if len(tmp)>n_ctx-1:
+            tmp = tmp[:n_ctx-1]
+        else:
+            tmp = tmp+(n_ctx-1-len(tmp))*[full_tokenizer.convert_tokens_to_ids('[PAD]')]
+        tmp = tmp + [full_tokenizer.convert_tokens_to_ids('[CLS]')]
+        full_line.extend(tmp)
+        if nb_lines>=max_nb:
+            with open(tokenized_data_path + dataname+'-{}.txt'.format(k), 'w') as f:
+                for id in full_line:
+                    f.write(str(id) + ' ')
+            k += 1
+            full_line = []
+            nb_lines = 0
+    f.close()
+    print('finish')
 
 def main(data_path,dataname):
     tokenizer_path = '../model/gpt2_prose/vocab.txt'
@@ -62,6 +101,12 @@ def main(data_path,dataname):
     full_tokenizer = tokenization_bert.BertTokenizer(vocab_file=tokenizer_path)
     build_files(data_path, dataname, tokenized_data_path, full_tokenizer)
     shutil.rmtree(data_path)
+def main_seg(data_path,dataname):
+    tokenizer_path = '../model/model_dabaigou_seg/vocab.txt'
+    tokenized_data_path = '../data/dabaigou_tokenized_seg/'
+    full_tokenizer = tokenization_bert.BertTokenizer(vocab_file=tokenizer_path)
+    build_files_seg(data_path, dataname, tokenized_data_path, full_tokenizer)
+    #shutil.rmtree(data_path)
 def remove_unk(idx = 0,unk='100'):
     def count_list(std: list, tongji):
         name = Counter()
@@ -93,5 +138,10 @@ def remove_unk(idx = 0,unk='100'):
             f.write(' '.join(S))
 
 if __name__=='__main__':
-    data_path,dataname = sys.argv[1:3]
-    main(data_path,dataname)
+    mode = sys.argv[1]
+    if mode=='char':
+        data_path,dataname = sys.argv[2:4]
+        main(data_path,dataname)
+    if mode=='word':
+        data_path, dataname = sys.argv[2:4]
+        main_seg(data_path, dataname)

@@ -96,6 +96,13 @@ def vocab_join_all(path_source,path_target):
     S = ['\t'.join([k[0], str(k[1])]) for k in S]
     with open(path_target, 'w') as f:
         f.write('\n'.join(S))
+def vocab_tokenizer():
+    with open('../data/202002_seg_vocab/join-all.txt','r') as f:
+        s = f.read().strip().split('\n')
+    w = [s[i].split('\t')[0] for i in range(30000)]
+    W = ['[PAD]','[UNK]','[CLS]','[SEP]','[MASK]']+['unused'+str(i) for i in range(100)]
+    W.extend(w)
+
 if __name__=="__main__":
     mode = sys.argv[1]
     if mode=='segment':
