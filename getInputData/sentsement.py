@@ -84,6 +84,8 @@ def vocab_join_all(path_source,path_target):
         s = [ss.split('\t') for ss in s]
         d = {ss[0]: int(ss[1]) for ss in s if len(ss) == 2}
         for k in d:
+            if d[k]<1000:
+                continue
             if k not in D:
                 D[k] = d[k]
             else:
