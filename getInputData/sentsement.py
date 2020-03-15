@@ -63,7 +63,7 @@ def vocab_join(path_source,path_target):
         with open(os.path.join(path_source,file),'r') as f:
             s = f.read().strip().split('\n')
         s = [ss.split('\t') for ss in s]
-        d = {ss[0]:int(ss[1]) for ss in s}
+        d = {ss[0]:int(ss[1]) for ss in s if len(ss)==2}
         for k in d:
             if k not in D:
                 D[k] = d[k]
