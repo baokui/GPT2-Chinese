@@ -253,7 +253,7 @@ def generating(prefix,model,config,tokenizer,segment=False,nsamples=10):
         if len(S) == nsamples:
             break
     return S
-path_configs = ['config_pretrained.json','config_raw_multiReplace.json','config_dabaigou_seg.json','config_dabaigou.json']
+path_configs = ['config_pretrained.json','config_raw_multiReplace.json','config_dabaigou.json','config_dabaigou_seg.json']
 name_models = ['原模型(base)','神配文模型(0311)','大白狗模型(0311)','大白狗模型(分词版，0311)']
 models = []
 model = []
