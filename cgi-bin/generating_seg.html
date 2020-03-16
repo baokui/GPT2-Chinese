@@ -1,0 +1,25 @@
+﻿<html>
+<meta http-equiv=”Content-Type” content=”text/html; charset=utf-8″>
+<body>
+   <form method="post" action="">
+      <p>
+         输入文本: <input type="text" name="inputStr">
+         </p>
+      <p>
+         模型:
+         <input name="model" type="checkbox" value="config_pretrained.json" checked="checked"> 原模型(base)
+         <input name="model" type="checkbox" value="config_raw_multiReplace.json" checked="checked"> 神配文模型(0311)
+          <input name="model" type="checkbox" value="config_dabaigou.json" checked="checked"> 大白狗模型(0311)
+          <input name="model" type="checkbox" value="config_dabaigou_seg.json" checked="checked"> 大白狗模型(分词版，0311)
+
+         </p>
+      <p>
+         <input type="submit" value="Submit">
+         </p>
+      </form>
+   <p>
+      输入: %s<br><br>
+      生成结果: <br>%s<br>
+      </p>
+   </body>
+</html>
