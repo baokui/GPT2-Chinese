@@ -207,10 +207,12 @@ def generating(prefix,model,config,tokenizer,segment=False,nsamples=10):
     print('generating-begin for %s'%prefix)
     while True:
         raw_text = prefix
+        print(raw_text)
         if segment:
             context_tokens = tokenizer_seg(list(jieba.cut(raw_text)))
         else:
             context_tokens = tokenizer.convert_tokens_to_ids(tokenizer.tokenize(raw_text))
+        print(context_tokens)
         generated = 0
         print(n_ctx, context_tokens, length, fast_pattern, temperature, topk, topp, repetition_penalty, device)
         for _ in range(nsamples // batch_size):
