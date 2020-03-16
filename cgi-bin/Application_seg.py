@@ -10,6 +10,17 @@ from tqdm import trange
 from transformers import GPT2LMHeadModel
 import json
 import jieba
+def tokenizer_seg(words,path_words='../model/model_dabaigou_seg/vocab.txt'):
+    with open(path_words,'r') as f:
+        v = f.read().strip().split('\n')
+    token_unk = v.index('[UNK]')
+    r = []
+    for w in words:
+        if w not in v:
+            r.append(token_unk)
+        else:
+            r.append(v.index(w))
+    return r
 def is_number(s):
     try:
         float(s)
@@ -195,13 +206,11 @@ def generating(prefix,model,config,tokenizer,segment=False,nsamples=10):
     S = []
     print('generating-begin for %s'%prefix)
     while True:
+        raw_text = prefix
         if segment:
-            raw_text = list(jieba.cut(prefix))
+            context_tokens = tokenizer_seg(list(jieba.cut(raw_text)))
         else:
-            raw_text = prefix
-        print(raw_text)
-        context_tokens = tokenizer.convert_tokens_to_ids(tokenizer.tokenize(raw_text))
-        print(context_tokens)
+            context_tokens = tokenizer.convert_tokens_to_ids(tokenizer.tokenize(raw_text))
         generated = 0
         print(n_ctx, context_tokens, length, fast_pattern, temperature, topk, topp, repetition_penalty, device)
         for _ in range(nsamples // batch_size):
