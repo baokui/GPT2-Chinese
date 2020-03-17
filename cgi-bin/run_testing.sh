@@ -2,7 +2,7 @@ path_configs = ['config_pretrained.json','config_raw_multiReplace.json','config_
 
 mkdir result
 
-path_source=input.txt
+path_source=data/input.txt
 name=pretrained
 path_config=config_$name.json
 mode=noseg
