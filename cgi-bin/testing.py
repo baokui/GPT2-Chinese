@@ -278,5 +278,5 @@ def main(path_config,mode,path_source,path_target):
     with open(path_target, 'w') as f:
         json.dump(S, f, ensure_ascii=False, indent=4)
 if __name__=='__main__':
-    path_config,path_source,path_target,mode = sys.argv[1:5]
+    path_config,mode,path_source,path_target = sys.argv[1:5]
     main(path_config,mode,path_source,path_target)
