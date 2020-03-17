@@ -1,11 +1,5 @@
-import re
-import html
-import urllib.parse
-from html import escape
-from urllib.parse import unquote
 import torch
 import torch.nn.functional as F
-import json
 from tqdm import trange
 from transformers import GPT2LMHeadModel
 import json
@@ -235,6 +229,8 @@ def generating(prefix,model,config,tokenizer,segment=False,nsamples=10):
                     if item == '[MASK]':
                         text[i] = ''
                     elif item == '[PAD]':
+                        text[i] = ''
+                    elif item == '[UNK]':
                         text[i] = ''
                     elif item == '[CLS]':
                         text[i] = '\n\n'
