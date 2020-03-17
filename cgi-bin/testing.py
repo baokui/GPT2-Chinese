@@ -231,7 +231,7 @@ def generating(prefix,model,config,tokenizer,segment=False,nsamples=10):
                     elif item == '[PAD]':
                         text[i] = ''
                     elif item == '[UNK]':
-                        text[i] = ''
+                        text[i] = ' '
                     elif item == '[CLS]':
                         text[i] = '\n\n'
                     elif item == '[SEP]':
