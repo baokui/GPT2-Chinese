@@ -11,7 +11,7 @@ def build_files(data_path, dataname, tokenized_data_path, full_tokenizer, idx, m
     nb_lines = 0
     files = os.listdir(data_path)
     for file in files:
-        if 'part' not in files:
+        if 'part' not in file:
             continue
         if int(file[7:9])!=idx:
             continue
