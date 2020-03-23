@@ -1,0 +1,46 @@
+nohup: 忽略输入
+/root/anaconda3/envs/pytorch/lib/python3.6/site-packages/tensorflow/python/framework/dtypes.py:523: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  _np_qint8 = np.dtype([("qint8", np.int8, 1)])
+/root/anaconda3/envs/pytorch/lib/python3.6/site-packages/tensorflow/python/framework/dtypes.py:524: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  _np_quint8 = np.dtype([("quint8", np.uint8, 1)])
+/root/anaconda3/envs/pytorch/lib/python3.6/site-packages/tensorflow/python/framework/dtypes.py:525: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  _np_qint16 = np.dtype([("qint16", np.int16, 1)])
+/root/anaconda3/envs/pytorch/lib/python3.6/site-packages/tensorflow/python/framework/dtypes.py:526: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  _np_quint16 = np.dtype([("quint16", np.uint16, 1)])
+/root/anaconda3/envs/pytorch/lib/python3.6/site-packages/tensorflow/python/framework/dtypes.py:527: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  _np_qint32 = np.dtype([("qint32", np.int32, 1)])
+/root/anaconda3/envs/pytorch/lib/python3.6/site-packages/tensorflow/python/framework/dtypes.py:532: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  np_resource = np.dtype([("resource", np.ubyte, 1)])
+To use data.metrics please install scikit-learn. See https://scikit-learn.org/stable/index.html
+load model......
+use device:cuda
+load model......
+use device:cuda
+ * Serving Flask app "app" (lazy loading)
+ * Environment: production
+   WARNING: This is a development server. Do not use it in a production deployment.
+   Use a production WSGI server instead.
+ * Debug mode: off
+ * Running on http://0.0.0.0:5002/ (Press CTRL+C to quit)
+[2020-03-20 20:33:55,260] INFO in app: 想你了
+[2020-03-20 20:33:55,261] INFO in app: time: 2020-03-20 20:33:55.261206
+[2020-03-20 20:34:02,852] INFO in app: time: 2020-03-20 20:34:02.851915
+[2020-03-20 20:34:02,852] INFO in app: input:想你了
+[2020-03-20 20:34:02,852] INFO in app: output:
+想你了。
+想你了，我的心中有一份牵挂和思念		人生就像是在沙滩上捡贝壳而不当回忆时又丢失得那么快
+想你了，我的心跳得那么急促。
+想你了，我不在乎别人怎么看自己。		一年之计在于春！愿全体师生都能心情愉快、身体健康!
+想你了，祝福的话语永远都说不完。
+想你了，我不要面子的嘛？？！！嗯呢。
+想你了，没有啊，我在看电视剧呢，那就不聊呗，哦！好吧，嗯哼？
+想你了，嗯呐，好吧。我睡觉去啦！晚安喽！爱您老人家么么哒，亲一口嘛？
+想你了，嗯呢呗！不过我还是喜欢你的声音，那也行啊，就算有时间可以找个人聊天呀。
+想你了，我们一起跨年吧！宝贝儿，爱你么么哒老婆大人，好的呢，等着我哦⊙⊙！
+10.161.13.91 - - [20/Mar/2020 20:34:02] "[37mPOST /api/gen HTTP/1.1[0m" 200 -
+Traceback (most recent call last):
+  File "app.py", line 5, in <module>
+    import gpt_gen
+  File "/search/odin/guobk/vpa/GPT2-Chinese/web/gpt_gen.py", line 9, in <module>
+    import torch
+ModuleNotFoundError: No module named 'torch'

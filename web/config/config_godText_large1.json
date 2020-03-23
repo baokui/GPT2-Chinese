@@ -1,0 +1,15 @@
+{
+  "nsamples": 5,
+  "model_config": "./model/model_godText_large1/model_epoch6_step140000/config.json",
+  "model_path": "./model/model_godText_large1/model_epoch6_step140000/",
+  "tokenizer_path": "./model/model_godText_large1/vocab.txt",
+  "save_samples_path": "result/finetuned/",
+  "batch_size":1,
+  "temperature": 0.7,
+  "topk": 8,
+  "topp": 0.9,
+  "repetition_penalty": 1.5,
+  "length":40,
+  "min_length": 20,
+  "fast_pattern":"False"
+}

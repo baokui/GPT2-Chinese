@@ -1,0 +1,155 @@
+/root/anaconda3/envs/pytorch/lib/python3.6/site-packages/tensorflow/python/framework/dtypes.py:523: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  _np_qint8 = np.dtype([("qint8", np.int8, 1)])
+/root/anaconda3/envs/pytorch/lib/python3.6/site-packages/tensorflow/python/framework/dtypes.py:524: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  _np_quint8 = np.dtype([("quint8", np.uint8, 1)])
+/root/anaconda3/envs/pytorch/lib/python3.6/site-packages/tensorflow/python/framework/dtypes.py:525: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  _np_qint16 = np.dtype([("qint16", np.int16, 1)])
+/root/anaconda3/envs/pytorch/lib/python3.6/site-packages/tensorflow/python/framework/dtypes.py:526: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  _np_quint16 = np.dtype([("quint16", np.uint16, 1)])
+/root/anaconda3/envs/pytorch/lib/python3.6/site-packages/tensorflow/python/framework/dtypes.py:527: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  _np_qint32 = np.dtype([("qint32", np.int32, 1)])
+/root/anaconda3/envs/pytorch/lib/python3.6/site-packages/tensorflow/python/framework/dtypes.py:532: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  np_resource = np.dtype([("resource", np.ubyte, 1)])
+To use data.metrics please install scikit-learn. See https://scikit-learn.org/stable/index.html
+Traceback (most recent call last):
+  File "app.py", line 14, in <module>
+    port = int(arg1[2])
+NameError: name 'arg1' is not defined
+/root/anaconda3/envs/pytorch/lib/python3.6/site-packages/tensorflow/python/framework/dtypes.py:523: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  _np_qint8 = np.dtype([("qint8", np.int8, 1)])
+/root/anaconda3/envs/pytorch/lib/python3.6/site-packages/tensorflow/python/framework/dtypes.py:524: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  _np_quint8 = np.dtype([("quint8", np.uint8, 1)])
+/root/anaconda3/envs/pytorch/lib/python3.6/site-packages/tensorflow/python/framework/dtypes.py:525: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  _np_qint16 = np.dtype([("qint16", np.int16, 1)])
+/root/anaconda3/envs/pytorch/lib/python3.6/site-packages/tensorflow/python/framework/dtypes.py:526: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  _np_quint16 = np.dtype([("quint16", np.uint16, 1)])
+/root/anaconda3/envs/pytorch/lib/python3.6/site-packages/tensorflow/python/framework/dtypes.py:527: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  _np_qint32 = np.dtype([("qint32", np.int32, 1)])
+/root/anaconda3/envs/pytorch/lib/python3.6/site-packages/tensorflow/python/framework/dtypes.py:532: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  np_resource = np.dtype([("resource", np.ubyte, 1)])
+To use data.metrics please install scikit-learn. See https://scikit-learn.org/stable/index.html
+Traceback (most recent call last):
+  File "app.py", line 14, in <module>
+    port = int(argv[2])
+NameError: name 'argv' is not defined
+/root/anaconda3/envs/pytorch/lib/python3.6/site-packages/tensorflow/python/framework/dtypes.py:523: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  _np_qint8 = np.dtype([("qint8", np.int8, 1)])
+/root/anaconda3/envs/pytorch/lib/python3.6/site-packages/tensorflow/python/framework/dtypes.py:524: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  _np_quint8 = np.dtype([("quint8", np.uint8, 1)])
+/root/anaconda3/envs/pytorch/lib/python3.6/site-packages/tensorflow/python/framework/dtypes.py:525: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  _np_qint16 = np.dtype([("qint16", np.int16, 1)])
+/root/anaconda3/envs/pytorch/lib/python3.6/site-packages/tensorflow/python/framework/dtypes.py:526: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  _np_quint16 = np.dtype([("quint16", np.uint16, 1)])
+/root/anaconda3/envs/pytorch/lib/python3.6/site-packages/tensorflow/python/framework/dtypes.py:527: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  _np_qint32 = np.dtype([("qint32", np.int32, 1)])
+/root/anaconda3/envs/pytorch/lib/python3.6/site-packages/tensorflow/python/framework/dtypes.py:532: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  np_resource = np.dtype([("resource", np.ubyte, 1)])
+To use data.metrics please install scikit-learn. See https://scikit-learn.org/stable/index.html
+Traceback (most recent call last):
+  File "app.py", line 14, in <module>
+    port = int(sys.argv[2])
+IndexError: list index out of range
+/root/anaconda3/envs/pytorch/lib/python3.6/site-packages/tensorflow/python/framework/dtypes.py:523: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  _np_qint8 = np.dtype([("qint8", np.int8, 1)])
+/root/anaconda3/envs/pytorch/lib/python3.6/site-packages/tensorflow/python/framework/dtypes.py:524: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  _np_quint8 = np.dtype([("quint8", np.uint8, 1)])
+/root/anaconda3/envs/pytorch/lib/python3.6/site-packages/tensorflow/python/framework/dtypes.py:525: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  _np_qint16 = np.dtype([("qint16", np.int16, 1)])
+/root/anaconda3/envs/pytorch/lib/python3.6/site-packages/tensorflow/python/framework/dtypes.py:526: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  _np_quint16 = np.dtype([("quint16", np.uint16, 1)])
+/root/anaconda3/envs/pytorch/lib/python3.6/site-packages/tensorflow/python/framework/dtypes.py:527: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  _np_qint32 = np.dtype([("qint32", np.int32, 1)])
+/root/anaconda3/envs/pytorch/lib/python3.6/site-packages/tensorflow/python/framework/dtypes.py:532: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  np_resource = np.dtype([("resource", np.ubyte, 1)])
+To use data.metrics please install scikit-learn. See https://scikit-learn.org/stable/index.html
+load model......
+Traceback (most recent call last):
+  File "app.py", line 21, in <module>
+    m0,t0,c0,d0 = gpt_gen.getModel(path_config=path_config)
+  File "/search/odin/guobk/vpa/GPT2-Chinese/web/gpt_gen.py", line 170, in getModel
+    with open(path_config,'r') as f:
+FileNotFoundError: [Errno 2] No such file or directory: 'config/config_godText_small.txt'
+/root/anaconda3/envs/pytorch/lib/python3.6/site-packages/tensorflow/python/framework/dtypes.py:523: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  _np_qint8 = np.dtype([("qint8", np.int8, 1)])
+/root/anaconda3/envs/pytorch/lib/python3.6/site-packages/tensorflow/python/framework/dtypes.py:524: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  _np_quint8 = np.dtype([("quint8", np.uint8, 1)])
+/root/anaconda3/envs/pytorch/lib/python3.6/site-packages/tensorflow/python/framework/dtypes.py:525: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  _np_qint16 = np.dtype([("qint16", np.int16, 1)])
+/root/anaconda3/envs/pytorch/lib/python3.6/site-packages/tensorflow/python/framework/dtypes.py:526: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  _np_quint16 = np.dtype([("quint16", np.uint16, 1)])
+/root/anaconda3/envs/pytorch/lib/python3.6/site-packages/tensorflow/python/framework/dtypes.py:527: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  _np_qint32 = np.dtype([("qint32", np.int32, 1)])
+/root/anaconda3/envs/pytorch/lib/python3.6/site-packages/tensorflow/python/framework/dtypes.py:532: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  np_resource = np.dtype([("resource", np.ubyte, 1)])
+To use data.metrics please install scikit-learn. See https://scikit-learn.org/stable/index.html
+load model......
+use device:cuda
+Traceback (most recent call last):
+  File "app.py", line 21, in <module>
+    m0,t0,c0,d0 = gpt_gen.getModel(path_config=path_config)
+  File "/search/odin/guobk/vpa/GPT2-Chinese/web/gpt_gen.py", line 177, in getModel
+    tokenizer = tokenization_bert.BertTokenizer(vocab_file=tokenizer_path)
+  File "/search/odin/guobk/vpa/GPT2-Chinese/web/tokenizations/tokenization_bert.py", line 131, in __init__
+    "model use `tokenizer = BertTokenizer.from_pretrained(PRETRAINED_MODEL_NAME)`".format(vocab_file))
+ValueError: Can't find a vocabulary file at path './model/model_join/vocab.txt'. To load the vocabulary from a Google pretrained model use `tokenizer = BertTokenizer.from_pretrained(PRETRAINED_MODEL_NAME)`
+/root/anaconda3/envs/pytorch/lib/python3.6/site-packages/tensorflow/python/framework/dtypes.py:523: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  _np_qint8 = np.dtype([("qint8", np.int8, 1)])
+/root/anaconda3/envs/pytorch/lib/python3.6/site-packages/tensorflow/python/framework/dtypes.py:524: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  _np_quint8 = np.dtype([("quint8", np.uint8, 1)])
+/root/anaconda3/envs/pytorch/lib/python3.6/site-packages/tensorflow/python/framework/dtypes.py:525: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  _np_qint16 = np.dtype([("qint16", np.int16, 1)])
+/root/anaconda3/envs/pytorch/lib/python3.6/site-packages/tensorflow/python/framework/dtypes.py:526: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  _np_quint16 = np.dtype([("quint16", np.uint16, 1)])
+/root/anaconda3/envs/pytorch/lib/python3.6/site-packages/tensorflow/python/framework/dtypes.py:527: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  _np_qint32 = np.dtype([("qint32", np.int32, 1)])
+/root/anaconda3/envs/pytorch/lib/python3.6/site-packages/tensorflow/python/framework/dtypes.py:532: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  np_resource = np.dtype([("resource", np.ubyte, 1)])
+To use data.metrics please install scikit-learn. See https://scikit-learn.org/stable/index.html
+load model......
+use device:cuda
+load model......
+use device:cuda
+ * Serving Flask app "app" (lazy loading)
+ * Environment: production
+   WARNING: This is a development server. Do not use it in a production deployment.
+   Use a production WSGI server instead.
+ * Debug mode: off
+ * Running on http://0.0.0.0:5001/ (Press CTRL+C to quit)
+[2020-03-20 20:30:48,773] INFO in app: 你在干嘛
+[2020-03-20 20:30:48,774] INFO in app: time: 2020-03-20 20:30:48.774045
+[2020-03-20 20:30:56,981] INFO in app: time: 2020-03-20 20:30:56.981580
+[2020-03-20 20:30:56,982] INFO in app: input:你在干嘛
+[2020-03-20 20:30:56,982] INFO in app: output:
+你在干嘛		我们的爱情，不是天生一对；有了地球引力和激情，还要正视相隔。
+你在干嘛呢！		我们都是孤独的人，但要有自己保护自己拯救世界。
+你在干嘛呢，人家是个秃顶的啊。
+你在干嘛呢？
+你在干嘛呢！		我的心里已经什么都没有了。
+你在干嘛，好吧~原谅我了。不知道啊！怎么会这样子？嗯呐，没有啦！真的呀！
+你在干嘛，好的呢宝贝老婆，嗯哼？没有啊。我就问一下而已啦！怎么了呀！那是什么意思？
+你在干嘛，那么早睡觉吗？还是没有起床呢。不然会很累的呀！我都快要疯了啊！
+你在干嘛呀，不要生气哦，嗯呢，我也是，哈喽啊？好吧！那么晚才回信息，早点休息吧。
+你在干嘛，那么早啊？我都没睡醒呢。好吧！不想理就算了呗。还要这样子吗？哦！
+10.161.13.91 - - [20/Mar/2020 20:30:56] "[37mPOST /api/gen HTTP/1.1[0m" 200 -
+[2020-03-20 20:31:12,403] INFO in app: 想你了
+[2020-03-20 20:31:12,403] INFO in app: time: 2020-03-20 20:31:12.403396
+[2020-03-20 20:31:19,454] INFO in app: time: 2020-03-20 20:31:19.454434
+[2020-03-20 20:31:19,455] INFO in app: input:想你了
+[2020-03-20 20:31:19,455] INFO in app: output:
+想你了！		我是一个孤独的守望者，渴求着温暖。
+想你了。
+想你了，真的好喜欢。		我爱上一个人是什么感觉？就是说明知道没有可能！
+想你了！
+想你了。
+想你了，我在看小说，嗯呐。好的呢！
+想你了，我们都好久没见面啦！不知道怎么样才能相聚。可是又很难在一起的时候呢？
+想你了，嗯哼？没事啊！我不嫌弃就好。那也是爱呀！只要一见钟情都会有的嘛！
+想你了，我也爱死你啦老婆，嗯呐，知道的呢，好哒宝贝儿子乖哦，等一下啊，我去吃饭呀，嘿嘿
+想你了，我也是啊！不要这样嘛。真的吗？那好吧。
+10.161.13.91 - - [20/Mar/2020 20:31:19] "[37mPOST /api/gen HTTP/1.1[0m" 200 -
+Traceback (most recent call last):
+  File "app.py", line 5, in <module>
+    import gpt_gen
+  File "/search/odin/guobk/vpa/GPT2-Chinese/web/gpt_gen.py", line 9, in <module>
+    import torch
+ModuleNotFoundError: No module named 'torch'
