@@ -11,11 +11,18 @@ import torch.nn.functional as F
 from tqdm import trange
 from transformers import GPT2LMHeadModel
 import json
+import random
 from time import strftime, localtime
 print_log = False
 # 打印当前时间
 def printTime():
     print(strftime("%Y-%m-%d %H:%M:%S", localtime()))
+def word_trim(s0):
+    stopwords = [" ","　"," ",",","，",".","。","、","!","！","?","？",";","；","~","～","·","·",".","…","-","#_","—","+","=","'","\"","‘","’","“","”","*","&","^","%","$","/","\\","@"]
+    sn = s0
+    for t in stopwords:
+        sn = sn.replace(t,'')
+    return sn
 def is_word(word):
     for item in list(word):
         if item not in 'qwertyuiopasdfghjklzxcvbnm':
@@ -332,5 +339,29 @@ def generating_sentence(prefix,model,config,tokenizer):
         if len(S) == nsamples:
             break
     return S
-
+def nnlm_modelpredict(D_simi,D_next,inputStr=['怎么了','你好','讨厌'],maxNext=5,maxChoice=10):
+    output = []
+    for s in inputStr:
+        S = []
+        s0 = s
+        S.append(s0)
+        s0 = word_trim(s0)
+        for i in range(maxNext):
+            if s0 in D_next:
+                p = [float(tt) for tt in D_next[s0]['probs']]
+                w = D_next[s0]['words']
+                t = random.choices(w[:maxChoice],p[:maxChoice])[0]
+                S.append(t)
+            elif s0 in D_simi:
+                p = [float(tt) for tt in D_simi[s0]['probs']]
+                w = D_simi[s0]['words']
+                t0 = random.choices(w, p)[0]
+                p = [float(tt) for tt in D_next[t0]['probs']]
+                w = D_next[t0]['words']
+                t = random.choice(w[maxChoice], p[:maxChoice])[0]
+                S.append(t)
+            else:
+                break
+        output.append('，'.join(S))
+    return output
 
