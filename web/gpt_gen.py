@@ -349,12 +349,15 @@ def nnlm_modelpredict(D_simi,D_next,inputStr=['怎么了','你好','讨厌'],max
             s0 = s
             S.append(s0)
             s0 = word_trim(s0)
+            lastsent = s0
             for i in range(maxNext):
                 if s0 in D_next:
                     p = [float(tt) for tt in D_next[s0]['probs']]
                     w = D_next[s0]['words']
                     t = random.choices(w[:maxChoice],p[:maxChoice])[0]
-                    S.append(t)
+                    if t!=lastsent:
+                        S.append(t)
+                        lastsent = t
                 elif s0 in D_simi:
                     p = [float(tt) for tt in D_simi[s0]['probs']]
                     w = D_simi[s0]['words']
@@ -362,7 +365,9 @@ def nnlm_modelpredict(D_simi,D_next,inputStr=['怎么了','你好','讨厌'],max
                     p = [float(tt) for tt in D_next[t0]['probs']]
                     w = D_next[t0]['words']
                     t = random.choice(w[maxChoice], p[:maxChoice])[0]
-                    S.append(t)
+                    if t!=lastsent:
+                        S.append(t)
+                        lastsent = t
                 else:
                     break
             S = '，'.join(S)
