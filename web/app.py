@@ -55,7 +55,7 @@ def test2():
         for ii in range(len(path_configs)):
             r0 = gpt_gen.generating(app,data, model[ii], config[ii], tokenizer[ii],device[ii],quick,num0[ii])
             if ii==1:
-                r0 = r0+'(*)'
+                r0 = [rr+'(*)' for rr in r0]
             result.extend(r0)
         result_nnlm = gpt_gen.nnlm_modelpredict(D_simi,D_next,inputStr=[data],maxNext=maxNext,maxChoice=10,num=num)
         result += [tmp+'(#)' for tmp in result_nnlm]
