@@ -13,8 +13,8 @@ style = 0#0大白狗, 1散文
 if len(sys.argv)>1:
    port = int(sys.argv[1])
 num0 = [10,3]
-path_next = 'nnlm/D_next.json'
-path_simi = 'nnlm/D_simi.json'
+path_next = 'model/nnlm/D_next.json'
+path_simi = 'model/nnlm/D_simi.json'
 D_simi = json.load(open(path_simi,'r',encoding='utf-8'))
 D_next = json.load(open(path_next,'r',encoding='utf-8'))
 D_simi = {k:json.loads(D_simi[k]) for k in D_simi}
