@@ -12,7 +12,7 @@ port = 5000
 style = 0#0大白狗, 1散文
 if len(sys.argv)>1:
    port = int(sys.argv[1])
-num0 = [10,3]
+maxNext = 5
 path_next = 'model/nnlm/D_next.json'
 path_simi = 'model/nnlm/D_simi.json'
 D_simi = json.load(open(path_simi,'r',encoding='utf-8'))
@@ -36,7 +36,7 @@ def test2():
     try:
         now = datetime.now()
         app.logger.info('time: {}'.format(now))
-        result = gpt_gen.nnlm_modelpredict(D_simi,D_next,inputStr=[data],maxNext=num,maxChoice=10)[0]
+        result = gpt_gen.nnlm_modelpredict(D_simi,D_next,inputStr=[data],maxNext=maxNext,maxChoice=10,num=num)
         then = datetime.now()
         app.logger.info('time: {}'.format(then))
         #app.logger.info('time for : {}'.format(then - now))
