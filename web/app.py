@@ -15,7 +15,7 @@ if len(sys.argv)>1:
 if len(sys.argv)>2:
    style = int(sys.argv[2])
 path_configs = ['config/config_godText_large1.json','config/config_dabaigou.json']
-num0 = [10,3]
+num0 = [10,3,5]
 model,tokenizer,config,device = [], [], [], []
 for path_config in path_configs:
     m0,t0,c0,d0 = gpt_gen.getModel(path_config=path_config)
@@ -23,6 +23,13 @@ for path_config in path_configs:
     tokenizer.append(t0)
     config.append(c0)
     device.append(d0)
+maxNext = 5
+path_next = 'model/nnlm/D_next.json'
+path_simi = 'model/nnlm/D_simi.json'
+D_simi = json.load(open(path_simi,'r',encoding='utf-8'))
+D_next = json.load(open(path_next,'r',encoding='utf-8'))
+D_simi = {k:json.loads(D_simi[k]) for k in D_simi}
+D_next = {k:json.loads(D_next[k]) for k in D_next}
 @app.route('/api/gen', methods=['POST'])
 def test2():
     r = request.json
@@ -48,6 +55,8 @@ def test2():
         for ii in range(len(path_configs)):
             r0 = gpt_gen.generating(app,data, model[ii], config[ii], tokenizer[ii],device[ii],quick,num0[ii])
             result.extend(r0)
+        result_nnlm = gpt_gen.nnlm_modelpredict(D_simi,D_next,inputStr=[data],maxNext=maxNext,maxChoice=10,num=num)
+        result += result_nnlm
         then = datetime.now()
         app.logger.info('time: {}'.format(then))
         #app.logger.info('time for : {}'.format(then - now))
