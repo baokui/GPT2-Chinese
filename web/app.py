@@ -57,7 +57,7 @@ def test2():
             if ii==1:
                 r0 = [rr+'(*)' for rr in r0]
             result.extend(r0)
-        result_nnlm = gpt_gen.nnlm_modelpredict(D_simi,D_next,inputStr=[data],maxNext=maxNext,maxChoice=10,num=num)
+        result_nnlm = gpt_gen.nnlm_modelpredict(D_simi,D_next,inputStr=data,maxNext=maxNext,maxChoice=10,num=num)
         result += [tmp+'(#)' for tmp in result_nnlm]
         then = datetime.now()
         app.logger.info('time: {}'.format(then))
