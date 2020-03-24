@@ -362,6 +362,6 @@ def nnlm_modelpredict(D_simi,D_next,inputStr=['怎么了','你好','讨厌'],max
             S = '，'.join(S)
             if S not in output:
                 output.append(S)
-    output = postprocess(output, prefix,sentEndcontent=False)
+    output = postprocess(output, inputStr[0],sentEndcontent=False)
     return output
 
