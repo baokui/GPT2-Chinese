@@ -256,7 +256,6 @@ def generating(app,prefix,model,config,tokenizer,device,quick=False,num=5):
                         tmp.append(tt+'，')
                 tmp.append(tmptext[-1])
                 tmptext = ''.join(tmp)
-                tmptext = postprocess(tmptext)
                 S.append(tmptext)
             if quick_pattern:
                     break
@@ -266,6 +265,7 @@ def generating(app,prefix,model,config,tokenizer,device,quick=False,num=5):
         printTime()
         print("input:%s"%raw_text)
         print("output:\n%s"%'\n'.join(S))
+    S = postprocess(S)
     return S
 def generating_sentence(prefix,model,config,tokenizer):
     print("start:",prefix,config)
@@ -361,7 +361,7 @@ def nnlm_modelpredict(D_simi,D_next,inputStr=['怎么了','你好','讨厌'],max
                     break
             S = '，'.join(S)
             if S not in output:
-                S = postprocess(S,False,True)
                 output.append(S)
+    output = postprocess(output, sentEndcontent=False)
     return output
 

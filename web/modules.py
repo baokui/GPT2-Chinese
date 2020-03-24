@@ -1,14 +1,63 @@
+import unicodedata
+stopwords = [" ", "　", " ", ",", "，", ".", "。", "、", "!", "！", "?", "？", ";", "；", "~", "～", "·", "·", ".", "…", "-",
+             "#_", "—", "+", "=", "'", "\"", "‘", "’", "“", "”", "*", "&", "^", "%", "$", "/", "\\", "@"]
+punc_zh = "！？｡＂＃＄％＆＇（）＊＋，－／：；＜＝＞＠［＼］＾＿｀｛｜｝～｟｠｢｣､、〃》「」『』【】〔〕〖〗〘〙〚〛〜〝〞〟〰〾〿–—‘’‛“”„‟‧﹏.…"
+punc_en = unicodedata.normalize('NFKC', punc_zh[:-1])+unicodedata.normalize('NFKC', punc_zh[-1])[-1]
+map_e2z = {punc_en[i]:punc_zh[i] for i in range(len(punc_en))}
+stopwords = stopwords+list(punc_zh)+list(punc_en)
+stopwords = list(set(stopwords))
 def remove_stopwords(s0):
-    stopwords = [" ","　"," ",",","，",".","。","、","!","！","?","？",";","；","~","～","·","·",".","…","-","#_","—","+","=","'","\"","‘","’","“","”","*","&","^","%","$","/","\\","@"]
     sn = s0
     for t in stopwords:
         sn = sn.replace(t,'')
     return sn
-def postprocess(s0,sentEndcontent=True,removeDupulicate=True):
-    if sentEndcontent:
-        s0 = sent_endcontent(s0)
-    if removeDupulicate:
-        s0 = remove_duplicate(s0)
+def postprocess(S,prefix,transfer = True,sentEndcontent=True,removeDupulicate=True,removeSpecial=True,min_contenlen=8,r=1.5):
+    R = []
+    for s0 in S:
+        if transfer:
+            s0 = Transfer(s0)
+        if sentEndcontent:
+            s0 = sent_endcontent(s0)
+        if removeDupulicate:
+            s0 = remove_duplicate(s0)
+        if removeSpecial:
+            s0 = remove_special(s0)
+        if len(s0)>min_contenlen and len(s0)-len(prefix)> r*len(prefix):
+            R.append(s0)
+    return R
+def Transfer(s0):
+    s0 = strQ2B(s0)
+    for t in map_e2z:
+        if t in s0:
+            s0 = s0.replace(t,map_e2z[t])
+    return s0
+def strQ2B(ustring):
+    """全角转半角"""
+    rstring = ""
+    for uchar in ustring:
+        inside_code = ord(uchar)
+        if inside_code == 12288:  # 全角空格直接转换
+            inside_code = 32
+        elif (inside_code >= 65281 and inside_code <= 65374):  # 全角字符（除空格）根据关系转化
+            inside_code -= 65248
+        rstring += chr(inside_code)
+    return rstring
+def strB2Q(ustring):
+    """半角转全角"""
+    rstring = ""
+    for uchar in ustring:
+        inside_code = ord(uchar)
+        if inside_code == 32:  # 半角空格直接转化
+            inside_code = 12288
+        elif inside_code >= 32 and inside_code <= 126:  # 半角字符（除空格）根据关系转化
+            inside_code += 65248
+        rstring += chr(inside_code)
+    return rstring
+def remove_special(s0):
+    spe = '他她'
+    for s in spe:
+        if s in s0:
+            return ''
     return s0
 def sent_endcontent(tmptext):
     punc_end = '.?!。？！'
