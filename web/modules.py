@@ -8,6 +8,7 @@ punc_en = punc_en+'｡'
 map_e2z = {punc_en[i]:punc_zh[i] for i in range(len(punc_en))}
 stopwords = stopwords+list(punc_zh)+list(punc_en)
 stopwords = list(set(stopwords))
+blackwords = ['他','她','自杀','去死']
 def remove_stopwords(s0):
     sn = s0
     for t in stopwords:
@@ -56,7 +57,7 @@ def strB2Q(ustring):
         rstring += chr(inside_code)
     return rstring
 def remove_special(s0):
-    spe = '他她'
+    spe = blackwords 
     for s in spe:
         if s in s0:
             return ''
