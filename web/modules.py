@@ -57,7 +57,7 @@ def strB2Q(ustring):
         rstring += chr(inside_code)
     return rstring
 def remove_special(s0):
-    spe = blackwords 
+    spe = blackwords
     for s in spe:
         if s in s0:
             return ''
