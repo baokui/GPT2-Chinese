@@ -13,16 +13,11 @@ from transformers import GPT2LMHeadModel
 import json
 import random
 from time import strftime, localtime
+from modules import remove_stopwords,postprocess
 print_log = False
 # 打印当前时间
 def printTime():
     print(strftime("%Y-%m-%d %H:%M:%S", localtime()))
-def word_trim(s0):
-    stopwords = [" ","　"," ",",","，",".","。","、","!","！","?","？",";","；","~","～","·","·",".","…","-","#_","—","+","=","'","\"","‘","’","“","”","*","&","^","%","$","/","\\","@"]
-    sn = s0
-    for t in stopwords:
-        sn = sn.replace(t,'')
-    return sn
 def is_word(word):
     for item in list(word):
         if item not in 'qwertyuiopasdfghjklzxcvbnm':
@@ -187,11 +182,9 @@ def getModel(path_config):
     model.eval()
     return model,tokenizer,config,device
 
-a=""
 def generating(app,prefix,model,config,tokenizer,device,quick=False,num=5):
     print("start:",prefix)
     punc = '.,?!;\t 。，？！；'
-    punc_end = '.?!。？！'
     global a
     a = app
     n_ctx = model.config.n_ctx
@@ -263,11 +256,7 @@ def generating(app,prefix,model,config,tokenizer,device,quick=False,num=5):
                         tmp.append(tt+'，')
                 tmp.append(tmptext[-1])
                 tmptext = ''.join(tmp)
-                for ii in range(len(tmptext)):
-                    if tmptext[len(tmptext)-ii-1] in punc_end:
-                        break
-                if ii != len(tmptext)-1:
-                    tmptext = tmptext[:len(tmptext)-ii]
+                tmptext = postprocess(tmptext)
                 S.append(tmptext)
             if quick_pattern:
                     break
@@ -348,7 +337,7 @@ def nnlm_modelpredict(D_simi,D_next,inputStr=['怎么了','你好','讨厌'],max
             S = []
             s0 = s
             S.append(s0)
-            s0 = word_trim(s0)
+            s0 = remove_stopwords(s0)
             lastsent = s0
             for i in range(maxNext):
                 if s0 in D_next:
@@ -372,6 +361,7 @@ def nnlm_modelpredict(D_simi,D_next,inputStr=['怎么了','你好','讨厌'],max
                     break
             S = '，'.join(S)
             if S not in output:
+                S = postprocess(S,False,True)
                 output.append(S)
     return output
 
