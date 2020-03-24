@@ -38,6 +38,7 @@ def remove_duplicate(s0="眼疾手快，相信自己哈，我也是，哈哈哈�
         else:
             i1 = i1+1
     R = ''.join(L0)
-    if R[-1] in stopwords:
-        R = R[:-1]
+    if len(R)>0:
+        if R[-1] in stopwords:
+            R = R[:-1]
     return R
