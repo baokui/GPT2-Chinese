@@ -254,6 +254,62 @@ def generating(prefix,model,config,tokenizer,segment=False,nsamples=10,modelType
         if len(S) == nsamples:
             break
     return S
+def generating_head(prefix,model,config,tokenizer,segment=False,nsamples=10):
+    sep = '，。？'
+    n_ctx = model.config.n_ctx
+    fast_pattern = True
+    length = min(config['length'],n_ctx-len(prefix))
+    #nsamples = config['nsamples']
+    batch_size = config['batch_size']
+    temperature = config['temperature']
+    topk = config['topk']
+    topp = config['topp']
+    repetition_penalty = config['repetition_penalty']
+    device = 'cpu'
+    if length == -1:
+        length = model.config.n_ctx
+    S = []
+    print('generating-begin for %s'%prefix)
+    while True:
+        raw_text = prefix[0]+prefix[0]
+        for kk in range(len(prefix)):
+            context_tokens = tokenizer.convert_tokens_to_ids(tokenizer.tokenize(raw_text))
+            out = generate(
+                n_ctx=n_ctx,
+                model=model,
+                context=context_tokens,
+                length=length,
+                is_fast_pattern=fast_pattern, tokenizer=tokenizer,
+                temperature=temperature, top_k=topk, top_p=topp, repitition_penalty=repetition_penalty, device=device
+            )
+            text = tokenizer.convert_ids_to_tokens(out)
+            for i, item in enumerate(text[:-1]):  # 确保英文前后有空格
+                if is_word(item) and is_word(text[i + 1]):
+                    text[i] = item + ' '
+            for i, item in enumerate(text):
+                if item == '[MASK]':
+                    text[i] = ''
+                elif item == '[PAD]':
+                    text[i] = ''
+                elif item == '[UNK]':
+                    text[i] = ' '
+                elif item == '[CLS]':
+                    text[i] = '\n\n'
+                elif item == '[SEP]':
+                    text[i] = '\n'
+            text = ''.join(text).replace('##', '').strip()
+            # print(text)
+            texts = text.split('\n')
+            tmptext = texts[0]
+            jj = len(raw_text)
+            for jj in range(len(raw_text),len(tmptext)):
+                if tmptext[jj] in sep:
+                    break
+            raw_text = tmptext[:jj]
+        S.append(tmptext[1:])
+        if len(S) == nsamples:
+            break
+    return S
 def main(path_config,mode,path_source,path_target,modelType):
     model, tokenizer, config = getModel(path_config=path_config)
     if mode=='seg':
@@ -265,7 +321,10 @@ def main(path_config,mode,path_source,path_target,modelType):
     S = []
     for i in range(len(lines)):
         inputStr = lines[i].strip().lower()
-        result = generating(inputStr, model, config, tokenizer, segment,modelType=modelType)
+        if modelType=='poem_head':
+            result = generating_head(inputStr, model, config, tokenizer, segment)
+        else:
+            result = generating(inputStr, model, config, tokenizer, segment,modelType=modelType)
         d = {}
         d['inputStr'] = inputStr
         d['generatingStr'] = result
