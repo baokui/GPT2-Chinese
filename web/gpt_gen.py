@@ -13,7 +13,7 @@ from transformers import GPT2LMHeadModel
 import json
 import random
 from time import strftime, localtime
-from modules import remove_stopwords,postprocess
+from modules import remove_stopwords,postprocess,poemFilter
 print_log = False
 # 打印当前时间
 def printTime():
@@ -368,3 +368,70 @@ def nnlm_modelpredict(D_simi,D_next,inputStr='怎么了',maxNext=5,maxChoice=10,
     output = postprocess(output, inputStr[0],sentEndcontent=False)
     return output
 
+def generating_poem(app,prefix,model,config,tokenizer,device,quick=False,num=5):
+    print("start:", prefix)
+    punc = '.,?!;\t 。，？！；'
+    global a
+    a = app
+    n_ctx = model.config.n_ctx
+    fast_pattern = False
+    if config['fast_pattern'] == "True":
+        fast_pattern = True
+    length = config['length']
+    nsamples = num
+    batch_size = config['batch_size']
+    temperature = config['temperature']
+    topk = config['topk']
+    topp = config['topp']
+    quick_pattern = quick
+    repetition_penalty = config['repetition_penalty']
+    if length == -1:
+        length = model.config.n_ctx
+    S = []
+    print('generating-begin for %s'%prefix)
+    while True:
+        raw_text = prefix[0]+prefix
+        context_tokens = tokenizer.convert_tokens_to_ids(tokenizer.tokenize(raw_text))
+        generated = 0
+        for _ in range(nsamples*2):
+            out = generate(
+                n_ctx=n_ctx,
+                model=model,
+                context=context_tokens,
+                length=length,
+                is_fast_pattern=fast_pattern, tokenizer=tokenizer,
+                temperature=temperature, top_k=topk, top_p=topp, repitition_penalty=repetition_penalty, device=device
+            )
+            for i in range(batch_size):
+                generated += 1
+                text = tokenizer.convert_ids_to_tokens(out)
+                for i, item in enumerate(text[:-1]):  # 确保英文前后有空格
+                    if is_word(item) and is_word(text[i + 1]):
+                        text[i] = item + ' '
+                for i, item in enumerate(text):
+                    if item == '[MASK]':
+                        text[i] = ''
+                    elif item == '[PAD]':
+                        text[i] = ''
+                    elif item == '[UNK]':
+                        text[i] = ' '
+                    elif item == '[CLS]':
+                        text[i] = '\n\n'
+                    elif item == '[SEP]':
+                        text[i] = '\n'
+                text = ''.join(text).replace('##', '').strip()
+                # print(text)
+                texts = text.split('\n')
+                tmptext = texts[0]
+                if len(tmptext)<config["min_length"]:
+                    for ii in range(1,len(texts)):
+                        tmptext += '\t'
+                        tmptext += texts[ii]
+                        if len(tmptext)>=config["min_length"]:
+                            break
+                poem = poemFilter(tmptext[1:])
+                if poem:
+                    S.append(poem)
+        if len(S) == nsamples:
+            break
+    return S

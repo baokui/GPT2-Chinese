@@ -94,3 +94,21 @@ def remove_duplicate(s0="眼疾手快，相信自己哈，我也是，哈哈哈�
         if R[-1] in stopwords:
             R = R[:-1]
     return R
+
+def poemFilter(poem):
+    sents = poem.split('。')[:-1]
+    n = [len(s) for s in sents]
+    if max(n)!=min(n):
+        return []
+    flag = True
+    for s in sents:
+        ws = s.split('，')
+        if len(ws)!=2:
+            flag = False
+            break
+        if len(ws[0])!=len(ws[1]):
+            flag = False
+            break
+    if not flag:
+        return []
+    return poem

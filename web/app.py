@@ -14,8 +14,8 @@ if len(sys.argv)>1:
    port = int(sys.argv[1])
 if len(sys.argv)>2:
    style = int(sys.argv[2])
-path_configs = ['config/config_godText_large1.json','config/config_dabaigou.json']
-num0 = [10,3,5]
+path_configs = ['config/config_godText_large1.json','config/config_poem.json','config/config_dabaigou.json']
+num0 = [10,5,3]
 model,tokenizer,config,device = [], [], [], []
 for path_config in path_configs:
     m0,t0,c0,d0 = gpt_gen.getModel(path_config=path_config)
@@ -55,6 +55,8 @@ def test2():
         for ii in range(len(path_configs)):
             r0 = gpt_gen.generating(app,data, model[ii], config[ii], tokenizer[ii],device[ii],quick,num0[ii])
             if ii==1:
+                r0 = [rr + '(诗)' for rr in r0]
+            if ii==2:
                 r0 = [rr+'(*)' for rr in r0]
             result.extend(r0)
         result_nnlm = gpt_gen.nnlm_modelpredict(D_simi,D_next,inputStr=data,maxNext=maxNext,maxChoice=10,num=num)
