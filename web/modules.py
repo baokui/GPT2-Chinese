@@ -97,7 +97,19 @@ def remove_duplicate(s0="眼疾手快，相信自己哈，我也是，哈哈哈�
 
 def poemFilter(poem):
     flag = True
-    sents = poem.split('。')[:-1]
+    syms = '。？'
+    sents = []
+    i0 = 0
+    i1 = 0
+    while i1<len(poem):
+        if poem[i1] in syms:
+            sents.append(poem[i0:i1])
+            i0 = i1+1
+            i1 = i1+1
+        else:
+            i1 = i1+1
+    if i1>i0:
+        sents.append(poem[i0:i1])
     if len(sents)==0:
         return False
     n = [len(s) for s in sents]
