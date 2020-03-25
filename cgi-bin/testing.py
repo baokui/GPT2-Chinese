@@ -339,6 +339,6 @@ def main(path_config,mode,path_source,path_target,modelType):
 if __name__=='__main__':
     path_config,mode,path_source,path_target = sys.argv[1:5]
     modelType = sys.argv[-1]
-    if modelType!='poem':
+    if modelType!='poem' or modelType!='poem_head':
         modelType = 'other'
     main(path_config,mode,path_source,path_target,modelType)
