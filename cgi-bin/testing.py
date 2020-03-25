@@ -265,7 +265,7 @@ def main(path_config,mode,path_source,path_target,modelType):
     S = []
     for i in range(len(lines)):
         inputStr = lines[i].strip().lower()
-        result = generating(inputStr, model, config, tokenizer, segment,modelType)
+        result = generating(inputStr, model, config, tokenizer, segment,modelType=modelType)
         d = {}
         d['inputStr'] = inputStr
         d['generatingStr'] = result
