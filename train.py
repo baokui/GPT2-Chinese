@@ -13,11 +13,12 @@ from torch.nn import DataParallel
 from tokenizations.bpe_tokenizer import get_encoder
 
 
-def build_files(data_path, tokenized_data_path, num_pieces, full_tokenizer, min_length):
+def build_files(data_path, tokenized_data_path, num_pieces, full_tokenizer, min_length,padding=False,max_length=100):
     with open(data_path, 'r', encoding='utf8') as f:
         print('reading lines')
         lines = json.load(f)
         lines = [line.replace('\n', ' [SEP] ') for line in lines]  # 用[SEP]表示换行, 段落之间使用SEP表示段落结束
+    padid = full_tokenizer.convert_tokens_to_ids('[PAD]')
     all_len = len(lines)
     if not os.path.exists(tokenized_data_path):
         os.mkdir(tokenized_data_path)
@@ -30,9 +31,19 @@ def build_files(data_path, tokenized_data_path, num_pieces, full_tokenizer, min_
         sublines = [full_tokenizer.convert_tokens_to_ids(line) for line in sublines]
         full_line = []
         for subline in sublines:
-            full_line.append(full_tokenizer.convert_tokens_to_ids('[MASK]'))  # 文章开头添加MASK表示文章开始
-            full_line.extend(subline)
-            full_line.append(full_tokenizer.convert_tokens_to_ids('[CLS]'))  # 文章之间添加CLS表示文章结束
+            if padding:
+                tmp = [full_tokenizer.convert_tokens_to_ids('[MASK]')]
+                tmp.extend(subline)
+                if len(tmp)<max_length-1:
+                    tmp.extend([padid for _ in range(max_length-1-len(tmp))])
+                else:
+                    tmp = tmp[:max_length-1]
+                tmp.append(full_tokenizer.convert_tokens_to_ids('[CLS]'))
+                full_line.extend(tmp)
+            else:
+                full_line.append(full_tokenizer.convert_tokens_to_ids('[MASK]'))  # 文章开头添加MASK表示文章开始
+                full_line.extend(subline)
+                full_line.append(full_tokenizer.convert_tokens_to_ids('[CLS]'))  # 文章之间添加CLS表示文章结束
         with open(tokenized_data_path + 'tokenized_train_{}.txt'.format(i), 'w') as f:
             for id in full_line:
                 f.write(str(id) + ' ')
@@ -61,6 +72,7 @@ def main():
     parser.add_argument('--max_grad_norm', default=1.0, type=float, required=False)
     parser.add_argument('--num_pieces', default=100, type=int, required=False, help='将训练语料分成多少份')
     parser.add_argument('--min_length', default=128, type=int, required=False, help='最短收录文章长度')
+    parser.add_argument('--max_length', default=256, type=int, required=False, help='最短收录文章长度')
     parser.add_argument('--output_dir', default='model/', type=str, required=False, help='模型输出路径')
     parser.add_argument('--pretrained_model', default='', type=str, required=False, help='模型训练起点路径')
     parser.add_argument('--writer_dir', default='tensorboard_summary/', type=str, required=False, help='Tensorboard路径')
@@ -70,6 +82,7 @@ def main():
     parser.add_argument('--vocab_bpe', default="tokenizations/vocab.bpe", type=str, help="vocab.bpe")
     parser.add_argument('--max_steps_perEpoch_perPiece', default=1000000, type=int, required=False)
     parser.add_argument('--steps_savemodel', default=10000, type=int, required=False, help='保存模型步数')
+    parser.add_argument('--padding', action='store_true', help='输入是否定长')
     args = parser.parse_args()
     print('args:\n' + args.__repr__())
 
@@ -78,7 +91,7 @@ def main():
     else:
         from tokenizations import tokenization_bert
 
-    os.environ["CUDA_VISIBLE_DEVICES"] = args.device  # 此处设置程序使用哪些显卡
+    #os.environ["CUDA_VISIBLE_DEVICES"] = args.device  # 此处设置程序使用哪些显卡
 
     model_config = transformers.modeling_gpt2.GPT2Config.from_json_file(args.model_config)
     print('config:\n' + model_config.to_json_string())
@@ -108,6 +121,8 @@ def main():
     num_pieces = args.num_pieces
     min_length = args.min_length
     output_dir = args.output_dir
+    padding = args.padding
+    max_length = args.max_length
     #tb_writer = SummaryWriter(log_dir=args.writer_dir)
     assert log_step % gradient_accumulation == 0
     if not os.path.exists(output_dir):
@@ -116,7 +131,7 @@ def main():
     if raw:
         print('building files')
         build_files(data_path=raw_data_path, tokenized_data_path=tokenized_data_path, num_pieces=num_pieces,
-                    full_tokenizer=full_tokenizer, min_length=min_length)
+                    full_tokenizer=full_tokenizer, min_length=min_length,padding=padding,max_length=max_length)
         print('files built')
     trainfiles = os.listdir(args.tokenized_data_path)
     num_pieces = len(trainfiles)
