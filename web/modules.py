@@ -8,15 +8,18 @@ punc_en = punc_en+'｡'
 map_e2z = {punc_en[i]:punc_zh[i] for i in range(len(punc_en))}
 stopwords = stopwords+list(punc_zh)+list(punc_en)
 stopwords = list(set(stopwords))
-blackwords = ['他','她','自杀','去死','⊙']
-def remove_stopwords(s0):
+blackwords = ['他','她','自杀','去死']
+removewords = ['⊙']
+def remove_stopwords(s0,stopwords0=stopwords):
     sn = s0
-    for t in stopwords:
+    for t in stopwords0:
         sn = sn.replace(t,'')
     return sn
-def postprocess(S,prefix,transfer = True,sentEndcontent=True,removeDupulicate=True,removeSpecial=True,removeHighFreqWords=False,HighFreqWords=[],min_contenlen=8,r=1.5):
+def postprocess(S,prefix,removeWords = True, transfer = True,sentEndcontent=True,removeDupulicate=True,removeSpecial=True,removeHighFreqWords=False,HighFreqWords=[],min_contenlen=8,r=1.5):
     R = []
     for s0 in S:
+        if removeWords:
+            s0 = remove_stopwords(s0,removeWords)
         if transfer:
             s0 = prefix+Transfer(s0[len(prefix):])
         if sentEndcontent:
