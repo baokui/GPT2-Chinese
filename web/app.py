@@ -24,7 +24,7 @@ for path_config in path_configs:
     tokenizer.append(t0)
     config.append(c0)
     device.append(d0)
-maxNext = 5
+maxNext = 3
 path_next = 'model/nnlm/D_next.json'
 path_simi = 'model/nnlm/D_simi.json'
 D_simi = json.load(open(path_simi,'r',encoding='utf-8'))

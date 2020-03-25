@@ -329,7 +329,7 @@ def generating_sentence(prefix,model,config,tokenizer):
         if len(S) == nsamples:
             break
     return S
-def nnlm_modelpredict(D_simi,D_next,inputStr='怎么了',maxNext=5,maxChoice=10,num=5):
+def nnlm_modelpredict(D_simi,D_next,inputStr='怎么了',maxNext=3,maxChoice=10,num=5):
     output = []
     for ii in range(num+5):
         if len(output)==num:
