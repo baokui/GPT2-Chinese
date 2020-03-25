@@ -269,8 +269,8 @@ def generating_head(prefix,model,config,tokenizer,segment=False,nsamples=10):
         for j in range(len(prefix)):
             inputStr = inputStr + getHead(p[len(inputStr):]) + prefix[j]
             p = generating(inputStr,model,config,tokenizer,segment=False,nsamples=1,modelType='poem')[0]
-            print('input:%s'%inputStr)
-            print('output:%s'%p)
+            #print('input:%s'%inputStr)
+            #print('output:%s'%p)
         S.append(p)
     return S
 def main(path_config,mode,path_source,path_target,modelType):
