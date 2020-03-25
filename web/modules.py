@@ -18,11 +18,11 @@ def postprocess(S,prefix,transfer = True,sentEndcontent=True,removeDupulicate=Tr
     R = []
     for s0 in S:
         if transfer:
-            s0 = Transfer(s0)
+            s0 = prefix+Transfer(s0[len(prefix):])
         if sentEndcontent:
             s0 = sent_endcontent(s0)
         if removeDupulicate:
-            s0 = prefix+remove_duplicate(s0[prefix:],removeHighFreqWords,HighFreqWords)
+            s0 = prefix+remove_duplicate(s0[len(prefix):],removeHighFreqWords,HighFreqWords)
         if removeSpecial:
             s0 = remove_special(s0)
         if len(s0)>min_contenlen and len(s0)-len(prefix)> r*len(prefix):
