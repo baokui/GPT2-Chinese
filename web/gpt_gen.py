@@ -432,7 +432,7 @@ def generating_poem(app,prefix,model,config,tokenizer,device,quick=False,num=5):
                             break
                 poem = poemFilter(tmptext[1:])
                 if poem:
-                    S.append(poem)
+                    S.append(tmptext[1:])
         if len(S) == nsamples:
             break
     return S
