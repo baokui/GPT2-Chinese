@@ -182,7 +182,7 @@ def getModel(path_config):
     model.eval()
     return model,tokenizer,config,device
 
-def generating(app,prefix,model,config,tokenizer,device,quick=False,num=5):
+def generating(app,prefix,model,config,tokenizer,device,quick=False,num=5,continue_writing=False):
     print("start:",prefix)
     punc = '.,?!;\t 。，？！；'
     global a
@@ -233,19 +233,20 @@ def generating(app,prefix,model,config,tokenizer,device,quick=False,num=5):
                     elif item == '[PAD]':
                         text[i] = ''
                     elif item == '[CLS]':
-                        text[i] = '\n\n'
-                    elif item == '[SEP]':
                         text[i] = '\n'
+                    elif item == '[SEP]':
+                        text[i] = ''
                 text = ''.join(text).replace('##', '').strip()
                 # print(text)
                 texts = text.split('\n')
                 tmptext = texts[0]
-                if len(tmptext)<config["min_length"]:
-                    for ii in range(1,len(texts)):
-                        #tmptext += ' '
-                        tmptext += texts[ii]
-                        if len(tmptext)>=config["min_length"]:
-                            break
+                if continue_writing:
+                    if len(tmptext) < config["min_length"]:
+                        for ii in range(1, len(texts)):
+                            # tmptext += ' '
+                            tmptext += texts[ii]
+                            if len(tmptext) >= config["min_length"]:
+                                break
                 tmptext = tmptext.split('，')
                 tmp = []
                 for ii in range(len(tmptext)-1):
