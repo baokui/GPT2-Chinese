@@ -85,9 +85,13 @@ def remove_duplicate(s0,removeHighFreqWords=False,HighFreqWords=[]):
                 a = s0[i0:i1]
                 if a not in L:
                     if removeHighFreqWords:
-                        if flag_hfw and a in HighFreqWords:
-                            flag_hfw = False
-                            L0.append(a+s0[i1])
+                        if a in HighFreqWords:
+                            if flag_hfw:
+                                L0.append(a+s0[i1])
+                                L.append(a)
+                                flag_hfw = False
+                        else:
+                            L0.append(a + s0[i1])
                             L.append(a)
                     else:
                         L0.append(a + s0[i1])

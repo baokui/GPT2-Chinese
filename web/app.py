@@ -18,7 +18,7 @@ path_HFW = '../data/words_highFreq.txt'
 path_configs = ['config/config_godText_large1.json','config/config_poem.json','config/config_dabaigou.json']
 num0 = [6,3,4]
 tags = ['(文)','(诗)','(大白狗)','(句联想)']
-rmHFW = [False,False,False,False]
+rmHFW = [False,False,True,False]
 HFW = [[],[],[],[]]
 with open(path_HFW,'r') as f:
     HFW[2] = f.read().strip().split('\n')
