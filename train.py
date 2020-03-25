@@ -199,6 +199,7 @@ def main():
                 samples.append(tokens[len(tokens)-n_ctx:])
             random.shuffle(samples)
             nb_steps = min(args.max_steps_perEpoch_perPiece,len(samples) // batch_size)
+            loss_=0
             for step in range(nb_steps):  # drop last
                 #  prepare data
                 batch = samples[step * batch_size: (step + 1) * batch_size]
@@ -244,13 +245,15 @@ def main():
                         num_pieces,
                         epoch + 1,
                         running_loss * gradient_accumulation / (log_step / gradient_accumulation)))
+                    loss_ = running_loss * gradient_accumulation / (log_step / gradient_accumulation)
                     running_loss = 0
                 if overall_step%args.steps_savemodel==0:
                     print('saving model for epoch {}'.format(epoch + 1))
-                    if not os.path.exists(output_dir + 'model_epoch{}_step{}'.format(epoch + 1, overall_step)):
-                        os.mkdir(output_dir + 'model_epoch{}_step{}'.format(epoch + 1, overall_step))
+                    output_dir_ = output_dir + 'model_epoch{}_step{}_loss-{}'.format(epoch + 1, overall_step,'%0.3f'%loss_)
+                    if not os.path.exists(output_dir_):
+                        os.mkdir(output_dir_)
                     model_to_save = model.module if hasattr(model, 'module') else model
-                    model_to_save.save_pretrained(output_dir + 'model_epoch{}_step{}'.format(epoch + 1, overall_step))
+                    model_to_save.save_pretrained(output_dir_)
                 overall_step += 1
             piece_num += 1
         if not os.path.exists(output_dir + 'model_epoch{}'.format(epoch + 1)):
