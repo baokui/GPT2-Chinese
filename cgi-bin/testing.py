@@ -273,6 +273,7 @@ def generating_head(prefix,model,config,tokenizer,segment=False,nsamples=10):
     while True:
         raw_text = prefix[0]+prefix[0]
         for kk in range(len(prefix)):
+            print('input:%s' % raw_text)
             context_tokens = tokenizer.convert_tokens_to_ids(tokenizer.tokenize(raw_text))
             out = generate(
                 n_ctx=n_ctx,
@@ -306,6 +307,7 @@ def generating_head(prefix,model,config,tokenizer,segment=False,nsamples=10):
                 if tmptext[jj] in sep:
                     break
             raw_text = tmptext[:jj]
+            print('output:%s'%raw_text)
         S.append(tmptext[1:])
         if len(S) == nsamples:
             break
