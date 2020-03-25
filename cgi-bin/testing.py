@@ -185,7 +185,9 @@ def getModel(path_config):
     model.to(device)
     model.eval()
     return model,tokenizer,config
-def generating(prefix,model,config,tokenizer,segment=False,nsamples=10):
+def generating(prefix,model,config,tokenizer,segment=False,nsamples=10,modelType='other'):
+    if modelType=='poem':
+        prefix = prefix[0]+prefix
     n_ctx = model.config.n_ctx
     fast_pattern = True
     length = min(config['length'],n_ctx-len(prefix))
@@ -246,11 +248,13 @@ def generating(prefix,model,config,tokenizer,segment=False,nsamples=10):
                         tmptext += texts[ii]
                         if len(tmptext)>=config["min_length"]:
                             break
+                if modelType=='poem':
+                    tmptext = tmptext[1:]
                 S.append(tmptext)
         if len(S) == nsamples:
             break
     return S
-def main(path_config,mode,path_source,path_target):
+def main(path_config,mode,path_source,path_target,modelType):
     model, tokenizer, config = getModel(path_config=path_config)
     if mode=='seg':
         segment=True
@@ -261,7 +265,7 @@ def main(path_config,mode,path_source,path_target):
     S = []
     for i in range(len(lines)):
         inputStr = lines[i].strip().lower()
-        result = generating(inputStr, model, config, tokenizer, segment)
+        result = generating(inputStr, model, config, tokenizer, segment,modelType)
         d = {}
         d['inputStr'] = inputStr
         d['generatingStr'] = result
@@ -275,4 +279,7 @@ def main(path_config,mode,path_source,path_target):
         json.dump(S, f, ensure_ascii=False, indent=4)
 if __name__=='__main__':
     path_config,mode,path_source,path_target = sys.argv[1:5]
-    main(path_config,mode,path_source,path_target)
+    modelType = sys.argv[-1]
+    if modelType!='poem':
+        modelType = 'other'
+    main(path_config,mode,path_source,path_target,modelType)
