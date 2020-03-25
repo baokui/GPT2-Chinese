@@ -369,8 +369,9 @@ def nnlm_modelpredict(D_simi,D_next,inputStr='怎么了',maxNext=5,maxChoice=10,
     return output
 
 def generating_poem(app,prefix,model,config,tokenizer,device,quick=False,num=5):
+    if len(prefix)>5:
+        return []
     print("start:", prefix)
-    punc = '.,?!;\t 。，？！；'
     global a
     a = app
     n_ctx = model.config.n_ctx
