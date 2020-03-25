@@ -264,7 +264,7 @@ def generating_head(prefix,model,config,tokenizer,segment=False,nsamples=10):
                 break
         return Str[:ii+1]
     for i in range(nsamples):
-        p = prefix[0]
+        p = ''
         inputStr = ''
         for j in range(len(prefix)):
             inputStr = inputStr + getHead(p[len(inputStr):]) + prefix[j]
