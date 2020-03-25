@@ -53,9 +53,11 @@ def test2():
         app.logger.info('time: {}'.format(now))
         result = []
         for ii in range(len(path_configs)):
-            r0 = gpt_gen.generating(app,data, model[ii], config[ii], tokenizer[ii],device[ii],quick,num0[ii])
             if ii==1:
+                r0 = gpt_gen.generating_poem(app,data, model[ii], config[ii], tokenizer[ii],device[ii],quick,num0[ii])
                 r0 = [rr + '(诗)' for rr in r0]
+            else:
+                r0 = gpt_gen.generating_poem(app,data, model[ii], config[ii], tokenizer[ii],device[ii],quick,num0[ii])
             if ii==2:
                 r0 = [rr+'(*)' for rr in r0]
             result.extend(r0)
