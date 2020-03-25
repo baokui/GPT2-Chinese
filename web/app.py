@@ -14,9 +14,14 @@ if len(sys.argv)>1:
    port = int(sys.argv[1])
 if len(sys.argv)>2:
    style = int(sys.argv[2])
+path_HFW = '../data/words_highFreq.txt'
 path_configs = ['config/config_godText_large1.json','config/config_poem.json','config/config_dabaigou.json']
 num0 = [6,3,3]
 tags = ['(文)','(诗)','(大白狗)','(句联想)']
+rmHFW = [False,False,True,False]
+HFW = [[],[],[],[]]
+with open(path_HFW,'r') as f:
+    HFW[2] = f.read().strip().split('\n')
 model,tokenizer,config,device = [], [], [], []
 for path_config in path_configs:
     m0,t0,c0,d0 = gpt_gen.getModel(path_config=path_config)
@@ -57,7 +62,7 @@ def test2():
             if ii==1:
                 r0 = gpt_gen.generating_poem(app,data, model[ii], config[ii], tokenizer[ii],device[ii],quick,num0[ii])
             else:
-                r0 = gpt_gen.generating(app,data, model[ii], config[ii], tokenizer[ii],device[ii],quick,num0[ii])
+                r0 = gpt_gen.generating(app,data, model[ii], config[ii], tokenizer[ii],device[ii],quick,num0[ii],removeHighFreqWords=rmHFW[ii],HighFreqWords=HFW[ii])
             r0 = [rr + tags[ii] for rr in r0]
             result.extend(r0)
         result_nnlm = gpt_gen.nnlm_modelpredict(D_simi,D_next,inputStr=data,maxNext=maxNext,maxChoice=10,num=num)

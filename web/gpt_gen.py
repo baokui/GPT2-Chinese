@@ -182,8 +182,8 @@ def getModel(path_config):
     model.eval()
     return model,tokenizer,config,device
 
-def generating(app,prefix,model,config,tokenizer,device,quick=False,num=5,continue_writing=False):
-    print("start:",prefix)
+def generating(app,prefix,model,config,tokenizer,device,quick=False,num=5,continue_writing=False,removeHighFreqWords=False,HighFreqWords=[]):
+    #print("start:",prefix)
     punc = '.,?!;\t 。，？！；'
     global a
     a = app
@@ -204,7 +204,7 @@ def generating(app,prefix,model,config,tokenizer,device,quick=False,num=5,contin
     if length == -1:
         length = model.config.n_ctx
     S = []
-    print('generating-begin for %s'%prefix)
+    #print('generating-begin for %s'%prefix)
     while True:
         raw_text = prefix
         context_tokens = tokenizer.convert_tokens_to_ids(tokenizer.tokenize(raw_text))
@@ -266,7 +266,7 @@ def generating(app,prefix,model,config,tokenizer,device,quick=False,num=5,contin
         printTime()
         print("input:%s"%raw_text)
         print("output:\n%s"%'\n'.join(S))
-    S = postprocess(S,raw_text)
+    S = postprocess(S,raw_text,removeHighFreqWords=removeHighFreqWords,HighFreqWords=HighFreqWords)
     return S
 def generating_sentence(prefix,model,config,tokenizer):
     print("start:",prefix,config)
@@ -365,7 +365,7 @@ def nnlm_modelpredict(D_simi,D_next,inputStr='怎么了',maxNext=3,maxChoice=10,
             output.append(S)
         if len(output)>=num:
             break
-    output = postprocess(output, inputStr[0],sentEndcontent=False)
+    output = postprocess(output, inputStr[0],sentEndcontent=False,removeHighFreqWords=False,HighFreqWords=[])
     return output
 
 def generating_poem(app,prefix,model,config,tokenizer,device,quick=False,num=5):
