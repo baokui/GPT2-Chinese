@@ -306,7 +306,7 @@ def generating_head(prefix,model,config,tokenizer,segment=False,nsamples=10):
             for jj in range(len(raw_text),len(tmptext)):
                 if tmptext[jj] in sep:
                     break
-            raw_text = tmptext[:jj]
+            raw_text = tmptext[:jj+1]
             print('output:%s'%raw_text)
         S.append(tmptext[1:])
         if len(S) == nsamples:
