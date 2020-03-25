@@ -369,7 +369,7 @@ def nnlm_modelpredict(D_simi,D_next,inputStr='怎么了',maxNext=3,maxChoice=10,
     return output
 
 def generating_poem(app,prefix,model,config,tokenizer,device,quick=False,num=5):
-    if len(prefix)>5:
+    if len(prefix)>7:
         return []
     #print("start:", prefix)
     global a
