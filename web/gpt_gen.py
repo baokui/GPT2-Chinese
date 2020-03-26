@@ -392,7 +392,7 @@ def nnlm_modelpredict(D_simi,D_next,inputStr='怎么了',maxNext=3,maxChoice=10,
             output.append(S)
         if len(output)>=num:
             break
-    output = postprocess(output, inputStr[0],sentEndcontent=False,removeHighFreqWords=False,HighFreqWords=[])
+    output = postprocess(output, inputStr,sentEndcontent=False,removeHighFreqWords=False,HighFreqWords=[])
     return output
 def untokenization(out,tokenizer,config):
     text = tokenizer.convert_ids_to_tokens(out)
