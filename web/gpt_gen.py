@@ -128,6 +128,33 @@ def sample_sequence(model, context, length, n_ctx, tokenizer, temperature=1.0, t
             next_token = torch.multinomial(F.softmax(filtered_logits, dim=-1), num_samples=1)
             generated = torch.cat((generated, next_token.unsqueeze(0)), dim=1)
     return generated.tolist()[0]
+def sample_sequence_batch(model, context_tokens, length, n_ctx, tokenizer, nsamples,temperature=1.0, top_k=30, top_p=0.0, repitition_penalty=1.0,
+                    device='cpu'):
+    n = nsamples
+    context = [[context_tokens]*n]
+    context = torch.tensor(context, dtype=torch.long, device=device)
+    context = context.squeeze(0)
+    generated = context
+    with torch.no_grad():
+        for _ in trange(length):
+            inputs = {'input_ids': generated[:,-(n_ctx - 1):].unsqueeze(0)}
+            outputs = model(
+                **inputs)  # Note: we could also use 'past' with GPT-2/Transfo-XL/XLNet (cached hidden-states)
+            next_token_logits = outputs[0][0,:, -1, :]
+            for ii in range(n):
+                for id in set(generated[ii]):
+                    next_token_logits[ii][id] /= repitition_penalty
+            next_token_logits = next_token_logits / temperature
+            Next = []
+            for ii in range(n):
+                next_token_logits[ii][tokenizer.convert_tokens_to_ids('[UNK]')] = -float('Inf')
+                filtered_logits = top_k_top_p_filtering(next_token_logits[ii], top_k=top_k, top_p=top_p)
+                next_token = torch.multinomial(F.softmax(filtered_logits, dim=-1), num_samples=1)
+                Next.append(next_token.item())
+            next_token = torch.tensor(Next)
+            next_token = torch.reshape(next_token, (n, 1))
+            generated = torch.cat((generated, next_token), dim=1)
+    return generated.tolist()
 def fast_sample_sequence(model, context, length, temperature=1.0, top_k=30, top_p=0.0, device='cpu'):
     inputs = torch.LongTensor(context).view(1, -1).to(device)
     if len(context) > 1:
@@ -367,8 +394,34 @@ def nnlm_modelpredict(D_simi,D_next,inputStr='怎么了',maxNext=3,maxChoice=10,
             break
     output = postprocess(output, inputStr[0],sentEndcontent=False,removeHighFreqWords=False,HighFreqWords=[])
     return output
-
-def generating_poem(app,prefix,model,config,tokenizer,device,quick=False,num=5):
+def untokenization(out,tokenizer,config):
+    text = tokenizer.convert_ids_to_tokens(out)
+    for i, item in enumerate(text[:-1]):  # 确保英文前后有空格
+        if is_word(item) and is_word(text[i + 1]):
+            text[i] = item + ' '
+    for i, item in enumerate(text):
+        if item == '[MASK]':
+            text[i] = ''
+        elif item == '[PAD]':
+            text[i] = ''
+        elif item == '[UNK]':
+            text[i] = ' '
+        elif item == '[CLS]':
+            text[i] = '\n\n'
+        elif item == '[SEP]':
+            text[i] = '\n'
+    text = ''.join(text).replace('##', '').strip()
+    # print(text)
+    texts = text.split('\n')
+    tmptext = texts[0]
+    if len(tmptext) < config["min_length"]:
+        for ii in range(1, len(texts)):
+            tmptext += '\t'
+            tmptext += texts[ii]
+            if len(tmptext) >= config["min_length"]:
+                break
+    return tmptext
+def generating_poem(app,prefix,model,config,tokenizer,device,quick=False,num=5,batchGenerating=False):
     if len(prefix)>7:
         return []
     #print("start:", prefix)
@@ -388,50 +441,33 @@ def generating_poem(app,prefix,model,config,tokenizer,device,quick=False,num=5):
     repetition_penalty = config['repetition_penalty']
     if length == -1:
         length = model.config.n_ctx
-    S = []
+
     #print('generating-begin for %s'%prefix)
     raw_text = prefix[0]+prefix
     context_tokens = tokenizer.convert_tokens_to_ids(tokenizer.tokenize(raw_text))
-    generated = 0
-    for _ in range(nsamples*2):
-        out = generate(
-            n_ctx=n_ctx,
-            model=model,
-            context=context_tokens,
-            length=length,
-            is_fast_pattern=fast_pattern, tokenizer=tokenizer,
-            temperature=temperature, top_k=topk, top_p=topp, repitition_penalty=repetition_penalty, device=device
-        )
-        for i in range(batch_size):
-            generated += 1
-            text = tokenizer.convert_ids_to_tokens(out)
-            for i, item in enumerate(text[:-1]):  # 确保英文前后有空格
-                if is_word(item) and is_word(text[i + 1]):
-                    text[i] = item + ' '
-            for i, item in enumerate(text):
-                if item == '[MASK]':
-                    text[i] = ''
-                elif item == '[PAD]':
-                    text[i] = ''
-                elif item == '[UNK]':
-                    text[i] = ' '
-                elif item == '[CLS]':
-                    text[i] = '\n\n'
-                elif item == '[SEP]':
-                    text[i] = '\n'
-            text = ''.join(text).replace('##', '').strip()
-            # print(text)
-            texts = text.split('\n')
-            tmptext = texts[0]
-            if len(tmptext)<config["min_length"]:
-                for ii in range(1,len(texts)):
-                    tmptext += '\t'
-                    tmptext += texts[ii]
-                    if len(tmptext)>=config["min_length"]:
-                        break
+    if batchGenerating:
+        outs = sample_sequence_batch(model, context_tokens, length, n_ctx, tokenizer, nsamples, temperature=temperature, top_k=topk,
+                              top_p=topp, repitition_penalty=repetition_penalty,
+                              device=device)
+        S = []
+        for out in outs:
+            tmptext = untokenization(out, tokenizer, config)
             poem = poemFilter(tmptext[1:])
             if poem:
-                S.append(tmptext[1:])
-            if len(S) == nsamples:
-                break
+                S.append(tmptext[1:]+'(b)')
+    else:
+        S = []
+        for _ in range(nsamples):
+            out = generate(
+                n_ctx=n_ctx,
+                model=model,
+                context=context_tokens,
+                length=length,
+                is_fast_pattern=fast_pattern, tokenizer=tokenizer,
+                temperature=temperature, top_k=topk, top_p=topp, repitition_penalty=repetition_penalty, device=device
+            )
+            tmptext = untokenization(out, tokenizer, config)
+            poem = poemFilter(tmptext[1:])
+            if poem:
+                S.append(tmptext[1:]+'(s)')
     return S

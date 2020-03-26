@@ -16,7 +16,7 @@ if len(sys.argv)>2:
    style = int(sys.argv[2])
 path_HFW = '../data/words_highFreq.txt'
 path_configs = ['config/config_godText_large1.json','config/config_poem.json','config/config_dabaigou.json']
-num0 = [6,3,4]
+num0 = [3,5,4]
 tags = ['(文)','(诗)','(大白狗)','(句联想)']
 rmHFW = [False,False,True,False]
 HFW = [[],[],[],[]]
@@ -60,7 +60,15 @@ def test2():
         result = []
         for ii in range(len(path_configs)):
             if ii==1:
-                r0 = gpt_gen.generating_poem(app,data, model[ii], config[ii], tokenizer[ii],device[ii],quick,num0[ii])
+                nowtime = datetime.now()
+                app.logger.info('time: {}'.format(nowtime))
+                r00 = gpt_gen.generating_poem(app,data, model[ii], config[ii], tokenizer[ii],device[ii],quick,num0[ii])
+                nowtime1 = datetime.now()
+                app.logger.info('use time simple: {}'.format(nowtime1-nowtime))
+                r01 = gpt_gen.generating_poem(app,data, model[ii], config[ii], tokenizer[ii],device[ii],quick,num0[ii],batchGenerating=True)
+                nowtime2 = datetime.now()
+                app.logger.info('use time batch: {}'.format(nowtime2 - nowtime1))
+                r0 = r00+r01
             else:
                 r0 = gpt_gen.generating(app,data, model[ii], config[ii], tokenizer[ii],device[ii],quick,num0[ii],removeHighFreqWords=rmHFW[ii],HighFreqWords=HFW[ii])
             r0 = [rr + tags[ii] for rr in r0]
