@@ -5,6 +5,7 @@ import numpy as np
 import gpt_gen
 import sys
 from datetime import datetime
+import time
 import logging
 app = Flask(__name__)
 app.logger.setLevel(logging.INFO)
@@ -16,7 +17,7 @@ if len(sys.argv)>1:
 batchGenerating=True
 path_HFW = '../data/words_highFreq.txt'
 path_configs = ['config/config_godText_large1.json','config/config_poem.json','config/config_dabaigou.json']
-num0 = [3,10,4]
+num0 = [10,10,10]
 tags = ['(文)','(诗)','(大白狗)','(句联想)']
 rmHFW = [False,False,True,False]
 maxNext = 3
@@ -63,7 +64,15 @@ def test2():
             if ii==1:
                 r0 = gpt_gen.generating_poem(app,data, model[ii], config[ii], tokenizer[ii],device[ii],quick,num0[ii],batchGenerating=batchGenerating)
             else:
-                r0 = gpt_gen.generating(app,data, model[ii], config[ii], tokenizer[ii],device[ii],quick,num0[ii],removeHighFreqWords=rmHFW[ii],HighFreqWords=HFW[ii],batchGenerating=batchGenerating)
+                t0 = time.time()
+                r00 = gpt_gen.generating(app,data, model[ii], config[ii], tokenizer[ii],device[ii],quick,num0[ii],removeHighFreqWords=rmHFW[ii],HighFreqWords=HFW[ii],batchGenerating=batchGenerating)
+                t1 = time.time()
+                r01 = gpt_gen.generating(app, data, model[ii], config[ii], tokenizer[ii], device[ii], quick, num0[ii],
+                                        removeHighFreqWords=rmHFW[ii], HighFreqWords=HFW[ii],
+                                        batchGenerating=False)
+                t2 = time.time()
+                app.logger.info('time used: {}:{}'.format(t1-t0,t2-t1))
+                r0 = r00+r01
             r0 = [rr + tags[ii] for rr in r0]
             result.extend(r0)
         result_nnlm = gpt_gen.nnlm_modelpredict(D_simi,D_next,inputStr=data,maxNext=maxNext,maxChoice=10,num=num)

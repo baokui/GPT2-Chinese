@@ -452,7 +452,7 @@ def generating_poem(app,prefix,model,config,tokenizer,device,quick=False,num=5,b
             tmptext = untokenization_poem(out, tokenizer, config)
             poem = poemFilter1(tmptext[1:])
             if poem:
-                S.append(poem + '(b)')
+                S.append(poem)
     else:
         S = []
         for _ in range(nsamples):
@@ -467,5 +467,5 @@ def generating_poem(app,prefix,model,config,tokenizer,device,quick=False,num=5,b
             tmptext = untokenization_poem(out, tokenizer, config)
             poem = poemFilter1(tmptext[1:])
             if poem:
-                S.append(poem+'(s)')
+                S.append(poem)
     return S
