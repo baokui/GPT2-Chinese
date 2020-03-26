@@ -12,13 +12,17 @@ port = 5000
 style = 0#0大白狗, 1散文
 if len(sys.argv)>1:
    port = int(sys.argv[1])
-if len(sys.argv)>2:
-   style = int(sys.argv[2])
+
+batchGenerating=True
 path_HFW = '../data/words_highFreq.txt'
 path_configs = ['config/config_godText_large1.json','config/config_poem.json','config/config_dabaigou.json']
 num0 = [3,10,4]
 tags = ['(文)','(诗)','(大白狗)','(句联想)']
 rmHFW = [False,False,True,False]
+maxNext = 3
+path_next = 'model/nnlm/D_next.json'
+path_simi = 'model/nnlm/D_simi.json'
+
 HFW = [[],[],[],[]]
 with open(path_HFW,'r') as f:
     HFW[2] = f.read().strip().split('\n')
@@ -29,9 +33,6 @@ for path_config in path_configs:
     tokenizer.append(t0)
     config.append(c0)
     device.append(d0)
-maxNext = 3
-path_next = 'model/nnlm/D_next.json'
-path_simi = 'model/nnlm/D_simi.json'
 D_simi = json.load(open(path_simi,'r',encoding='utf-8'))
 D_next = json.load(open(path_next,'r',encoding='utf-8'))
 D_simi = {k:json.loads(D_simi[k]) for k in D_simi}
@@ -60,17 +61,9 @@ def test2():
         result = []
         for ii in range(len(path_configs)):
             if ii==1:
-                nowtime = datetime.now()
-                app.logger.info('time: {}'.format(nowtime))
-                r00 = gpt_gen.generating_poem(app,data, model[ii], config[ii], tokenizer[ii],device[ii],quick,num0[ii])
-                nowtime1 = datetime.now()
-                app.logger.info('use time simple: {}'.format(nowtime1-nowtime))
-                r01 = gpt_gen.generating_poem(app,data, model[ii], config[ii], tokenizer[ii],device[ii],quick,num0[ii],batchGenerating=True)
-                nowtime2 = datetime.now()
-                app.logger.info('use time batch: {}'.format(nowtime2 - nowtime1))
-                r0 = r00+r01
+                r0 = gpt_gen.generating_poem(app,data, model[ii], config[ii], tokenizer[ii],device[ii],quick,num0[ii],batchGenerating=batchGenerating)
             else:
-                r0 = gpt_gen.generating(app,data, model[ii], config[ii], tokenizer[ii],device[ii],quick,num0[ii],removeHighFreqWords=rmHFW[ii],HighFreqWords=HFW[ii])
+                r0 = gpt_gen.generating(app,data, model[ii], config[ii], tokenizer[ii],device[ii],quick,num0[ii],removeHighFreqWords=rmHFW[ii],HighFreqWords=HFW[ii],batchGenerating=batchGenerating)
             r0 = [rr + tags[ii] for rr in r0]
             result.extend(r0)
         result_nnlm = gpt_gen.nnlm_modelpredict(D_simi,D_next,inputStr=data,maxNext=maxNext,maxChoice=10,num=num)

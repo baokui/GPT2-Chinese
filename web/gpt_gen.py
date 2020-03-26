@@ -208,8 +208,43 @@ def getModel(path_config):
     model.to(device)
     model.eval()
     return model,tokenizer,config,device
-
-def generating(app,prefix,model,config,tokenizer,device,quick=False,num=5,continue_writing=False,removeHighFreqWords=False,HighFreqWords=[]):
+def untokenization(out,config,tokenizer,punc,continue_writing):
+    text = tokenizer.convert_ids_to_tokens(out)
+    for i, item in enumerate(text[:-1]):  # 确保英文前后有空格
+        if is_word(item) and is_word(text[i + 1]):
+            text[i] = item + ' '
+    for i, item in enumerate(text):
+        if item == '[MASK]':
+            text[i] = ''
+        elif item == '[PAD]':
+            text[i] = ''
+        elif item == '[CLS]':
+            text[i] = '\n'
+        elif item == '[SEP]':
+            text[i] = ''
+    text = ''.join(text).replace('##', '').strip()
+    # print(text)
+    texts = text.split('\n')
+    tmptext = texts[0]
+    if continue_writing:
+        if len(tmptext) < config["min_length"]:
+            for ii in range(1, len(texts)):
+                # tmptext += ' '
+                tmptext += texts[ii]
+                if len(tmptext) >= config["min_length"]:
+                    break
+    tmptext = tmptext.split('，')
+    tmp = []
+    for ii in range(len(tmptext) - 1):
+        tt = tmptext[ii]
+        if tt[-1] in punc:
+            tmp.append(tt)
+        else:
+            tmp.append(tt + '，')
+    tmp.append(tmptext[-1])
+    tmptext = ''.join(tmp)
+    return tmptext
+def generating(app,prefix,model,config,tokenizer,device,quick=False,num=5,continue_writing=False,removeHighFreqWords=False,HighFreqWords=[],batchGenerating=False):
     #print("start:",prefix)
     punc = '.,?!;\t 。，？！；'
     global a
@@ -230,14 +265,21 @@ def generating(app,prefix,model,config,tokenizer,device,quick=False,num=5,contin
 
     if length == -1:
         length = model.config.n_ctx
-    S = []
-    #print('generating-begin for %s'%prefix)
-    while True:
-        raw_text = prefix
-        context_tokens = tokenizer.convert_tokens_to_ids(tokenizer.tokenize(raw_text))
-        generated = 0
-        for _ in range(nsamples // batch_size):
-            now = datetime.now()
+
+    raw_text = prefix
+    context_tokens = tokenizer.convert_tokens_to_ids(tokenizer.tokenize(raw_text))
+    if batchGenerating:
+        S = []
+        outs = sample_sequence_batch(model, context_tokens, length, n_ctx, tokenizer, nsamples, temperature=temperature,
+                                     top_k=topk,
+                                     top_p=topp, repitition_penalty=repetition_penalty,
+                                     device=device)
+        for out in outs:
+            tmptext = untokenization(out, config, tokenizer, punc, continue_writing)
+            S.append(tmptext)
+    else:
+        S = []
+        for _ in range(nsamples):
             out = generate(
                 n_ctx=n_ctx,
                 model=model,
@@ -246,53 +288,9 @@ def generating(app,prefix,model,config,tokenizer,device,quick=False,num=5,contin
                 is_fast_pattern=fast_pattern, tokenizer=tokenizer,is_quick=quick_pattern,
                 temperature=temperature, top_k=topk, top_p=topp, repitition_penalty=repetition_penalty, device=device
             )
-            then = datetime.now()
-            #app.logger.info('time for : {}'.format(then - now))
-            for i in range(batch_size):
-                generated += 1
-                text = tokenizer.convert_ids_to_tokens(out)
-                for i, item in enumerate(text[:-1]):  # 确保英文前后有空格
-                    if is_word(item) and is_word(text[i + 1]):
-                        text[i] = item + ' '
-                for i, item in enumerate(text):
-                    if item == '[MASK]':
-                        text[i] = ''
-                    elif item == '[PAD]':
-                        text[i] = ''
-                    elif item == '[CLS]':
-                        text[i] = '\n'
-                    elif item == '[SEP]':
-                        text[i] = ''
-                text = ''.join(text).replace('##', '').strip()
-                # print(text)
-                texts = text.split('\n')
-                tmptext = texts[0]
-                if continue_writing:
-                    if len(tmptext) < config["min_length"]:
-                        for ii in range(1, len(texts)):
-                            # tmptext += ' '
-                            tmptext += texts[ii]
-                            if len(tmptext) >= config["min_length"]:
-                                break
-                tmptext = tmptext.split('，')
-                tmp = []
-                for ii in range(len(tmptext)-1):
-                    tt = tmptext[ii]
-                    if tt[-1] in punc:
-                        tmp.append(tt)
-                    else:
-                        tmp.append(tt+'，')
-                tmp.append(tmptext[-1])
-                tmptext = ''.join(tmp)
-                S.append(tmptext)
-            if quick_pattern:
-                    break
-        if len(S) == nsamples or quick_pattern:
-            break
-    if print_log:
-        printTime()
-        print("input:%s"%raw_text)
-        print("output:\n%s"%'\n'.join(S))
+            tmptext = untokenization(out,config,tokenizer,punc,continue_writing)
+            S.append(tmptext)
+
     S = postprocess(S,raw_text,removeHighFreqWords=removeHighFreqWords,HighFreqWords=HighFreqWords)
     return S
 def generating_sentence(prefix,model,config,tokenizer):
@@ -394,7 +392,7 @@ def nnlm_modelpredict(D_simi,D_next,inputStr='怎么了',maxNext=3,maxChoice=10,
             break
     output = postprocess(output, inputStr,sentEndcontent=False,removeHighFreqWords=False,HighFreqWords=[])
     return output
-def untokenization(out,tokenizer,config):
+def untokenization_poem(out,tokenizer,config):
     text = tokenizer.convert_ids_to_tokens(out)
     for i, item in enumerate(text[:-1]):  # 确保英文前后有空格
         if is_word(item) and is_word(text[i + 1]):
@@ -451,7 +449,7 @@ def generating_poem(app,prefix,model,config,tokenizer,device,quick=False,num=5,b
                               device=device)
         S = []
         for out in outs:
-            tmptext = untokenization(out, tokenizer, config)
+            tmptext = untokenization_poem(out, tokenizer, config)
             poem = poemFilter1(tmptext[1:])
             if poem:
                 S.append(poem + '(b)')
@@ -466,7 +464,7 @@ def generating_poem(app,prefix,model,config,tokenizer,device,quick=False,num=5,b
                 is_fast_pattern=fast_pattern, tokenizer=tokenizer,
                 temperature=temperature, top_k=topk, top_p=topp, repitition_penalty=repetition_penalty, device=device
             )
-            tmptext = untokenization(out, tokenizer, config)
+            tmptext = untokenization_poem(out, tokenizer, config)
             poem = poemFilter1(tmptext[1:])
             if poem:
                 S.append(poem+'(s)')
