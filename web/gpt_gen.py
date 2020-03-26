@@ -13,7 +13,7 @@ from transformers import GPT2LMHeadModel
 import json
 import random
 from time import strftime, localtime
-from modules import remove_stopwords,postprocess,poemFilter
+from modules import remove_stopwords,postprocess,poemFilter1
 print_log = False
 # 打印当前时间
 def printTime():
