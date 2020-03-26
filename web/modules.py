@@ -130,7 +130,7 @@ def remove_highFreqWords(s0,path_highFreqWords):
     R = ''.join(L0)
 def poemFilter(poem):
     flag = True
-    syms = '。？'
+    syms = '。？；'
     sents = []
     i0 = 0
     i1 = 0
@@ -159,4 +159,23 @@ def poemFilter(poem):
     if not flag:
         flag = False
     return flag
-
+def poemFilter1(poem):
+    syms = '。？；'
+    sents = []
+    i0 = 0
+    i1 = 0
+    while i1<len(poem):
+        if poem[i1] in syms:
+            sents.append(poem[i0:i1+1])
+            i0 = i1+1
+            i1 = i1+1
+        else:
+            i1 = i1+1
+    R = []
+    for i in range(len(sents)):
+        if len(sents[i])==len(sents[0]):
+            R.append(sents[i])
+    if len(R)>1:
+        return ''.join(R)
+    else:
+        return ''
