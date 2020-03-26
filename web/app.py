@@ -65,7 +65,7 @@ def test2():
                 r00 = gpt_gen.generating_poem(app,data, model[ii], config[ii], tokenizer[ii],device[ii],quick,num0[ii])
                 nowtime1 = datetime.now()
                 app.logger.info('use time simple: {}'.format(nowtime1-nowtime))
-                r01 = gpt_gen.generating_poem(app,data, model[ii], config[ii], tokenizer[ii],device[ii],quick,num0[ii],batchGenerating=True)
+                r01 = gpt_gen.generating_poem(app,data, model[ii], config[ii], tokenizer[ii],'cpu',quick,num0[ii],batchGenerating=True)
                 nowtime2 = datetime.now()
                 app.logger.info('use time batch: {}'.format(nowtime2 - nowtime1))
                 r0 = r00+r01
