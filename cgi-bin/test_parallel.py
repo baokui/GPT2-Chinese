@@ -1,4 +1,16 @@
 from testing import *
+def getModel(path_config):
+    with open(path_config,'r') as f:
+        config = json.load(f)
+    from tokenizations import tokenization_bert
+    tokenizer_path = config['tokenizer_path']
+    model_path = config['model_path']
+    device = 'cuda'
+    tokenizer = tokenization_bert.BertTokenizer(vocab_file=tokenizer_path)
+    model = GPT2LMHeadModel.from_pretrained(model_path)
+    model.to(device)
+    model.eval()
+    return model,tokenizer,config
 path_source='data/input_poem.txt'
 path_config='config/config_poem.json'
 model, tokenizer, config = getModel(path_config=path_config)
@@ -7,7 +19,6 @@ with open(path_source, 'r') as f:
 i = 0
 inputStr = lines[i].strip().lower()
 segment,modelType=False,'poem'
-result = generating(inputStr, model, config, tokenizer, segment,modelType=modelType)
 prefix = inputStr
 prefix = prefix[0]+prefix
 n_ctx = model.config.n_ctx
@@ -20,41 +31,6 @@ topk = config['topk']
 topp = config['topp']
 repetition_penalty = config['repetition_penalty']
 device = 'cuda'
-
-raw_text = prefix
-context_tokens = tokenizer.convert_tokens_to_ids(tokenizer.tokenize(raw_text))
-n = 2
-context = [[context_tokens] for i in range(n)]
-#context = context_tokens
-inputs = torch.LongTensor(context).view(1, -1).to(device)
-inputs = torch.reshape(inputs,(2,5))
-_, past = model(inputs[:, :-1], None)[:2]
-prev = inputs[:, -1].view(1, -1)
-prev = torch.reshape(prev,(2,1))
-output = model(prev, past=past)
-output, past = output[:2]
-generate = [[] for i in range(n)]
-prev_ = []
-for i in range(n):
-    output1 = output[i].squeeze(0) / temperature
-    filtered_logits = top_k_top_p_filtering(output1, top_k=top_k, top_p=top_p)
-    next_token = torch.multinomial(torch.softmax(filtered_logits, dim=-1), num_samples=1)
-    generate[i].append(next_token.item())
-    prev_.append(next_token.item())
-prev = torch.tensor(prev_)
-prev = torch.reshape(prev,(n,1))
-print(generate)
-print(prev)
-
-context = context_tokens
-inputs = torch.LongTensor(context).view(1, -1).to(device)
-_, past = model(inputs[:, :-1], None)[:2]
-prev = inputs[:, -1].view(1, -1)
-output = model(prev, past=past)
-output, past = output[:2]
-output = output[-1].squeeze(0) / temperature
-filtered_logits = top_k_top_p_filtering(output, top_k=top_k, top_p=top_p)
-next_token = torch.multinomial(torch.softmax(filtered_logits, dim=-1), num_samples=1)
 
 S = generating(prefix,model,config,tokenizer,segment=False,nsamples=10,modelType='poem')
 S = generating1(prefix,model,config,tokenizer,segment=False,nsamples=10,modelType='poem')
@@ -107,9 +83,9 @@ def sample_sequence(model, context_tokens, length, n_ctx, tokenizer, nsamples,te
                 next_token_logits[ii][tokenizer.convert_tokens_to_ids('[UNK]')] = -float('Inf')
                 filtered_logits = top_k_top_p_filtering(next_token_logits[ii], top_k=top_k, top_p=top_p)
                 next_token = torch.multinomial(F.softmax(filtered_logits, dim=-1), num_samples=1)
-                Next.append(next_token.item())
-            next_token = torch.tensor(Next)
-            next_token = torch.reshape(next_token, (n, 1))
+                Next.append(torch.reshape(next_token,(1,1)))
+            #next_token = torch.tensor(Next)
+            next_token = torch.cat(Next,dim=0)
             generated = torch.cat((generated, next_token), dim=1)
     return generated.tolist()
 def generating(prefix,model,config,tokenizer,segment=False,nsamples=10,modelType='other'):
@@ -182,7 +158,7 @@ def generating1(prefix,model,config,tokenizer,segment=False,nsamples=10,modelTyp
     topk = config['topk']
     topp = config['topp']
     repetition_penalty = config['repetition_penalty']
-    device = 'cpu'
+    device = 'cuda'
     if length == -1:
         length = model.config.n_ctx
     #print('generating-begin for %s'%prefix)
