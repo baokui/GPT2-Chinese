@@ -29,14 +29,13 @@ def main(path_data,mode,path_config,path_target):
     D = []
     for data in s:
         result = []
-        if ii==1:
-            r0 = gpt_gen.generating_poem('a',data, model, config, tokenizer,device,quick,num0[ii],batchGenerating=batchGenerating)
-        else:
-            r0 = gpt_gen.generating('a',data, model, config, tokenizer,device,quick,num0[ii],removeHighFreqWords=rmHFW[ii],HighFreqWords=HFW[ii],batchGenerating=batchGenerating)
-        r0 = [rr + tags[ii] for rr in r0]
-        result.extend(r0)
-        print('input:%s'%data)
-        print('output:\n%s'%'\n'.join(result))
+        for _ in range(3):
+            if ii==1:
+                r0 = gpt_gen.generating_poem('a',data, model, config, tokenizer,device,quick,num0[ii],batchGenerating=batchGenerating)
+            else:
+                r0 = gpt_gen.generating('a',data, model, config, tokenizer,device,quick,num0[ii],removeHighFreqWords=rmHFW[ii],HighFreqWords=HFW[ii],batchGenerating=batchGenerating)
+            r0 = [rr + tags[ii] for rr in r0]
+            result.extend(r0)
         d = {'input':data,'outputs':result,'num':len(result)}
         D.append(d)
         with open(path_target,'w') as f:
