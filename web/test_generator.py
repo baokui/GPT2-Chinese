@@ -5,7 +5,8 @@ import sys
 from datetime import datetime
 import time
 import logging
-
+import os
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 batchGenerating=True
 path_HFW = '../data/words_highFreq.txt'
 path_configs = ['config/config_godText_large1.json','config/config_poem.json','config/config_dabaigou.json']
