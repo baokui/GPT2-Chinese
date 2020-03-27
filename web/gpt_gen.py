@@ -260,12 +260,9 @@ def generating(app,prefix,model,config,tokenizer,device,quick=False,num=5,contin
     topk = config['topk']
     topp = config['topp']
     quick_pattern = quick
-
     repetition_penalty = config['repetition_penalty']
-
     if length == -1:
         length = model.config.n_ctx
-
     raw_text = prefix
     context_tokens = tokenizer.convert_tokens_to_ids(tokenizer.tokenize(raw_text))
     if batchGenerating:
@@ -290,7 +287,6 @@ def generating(app,prefix,model,config,tokenizer,device,quick=False,num=5,contin
             )
             tmptext = untokenization(out,config,tokenizer,punc,continue_writing)
             S.append(tmptext)
-
     S = postprocess(S,raw_text,removeHighFreqWords=removeHighFreqWords,HighFreqWords=HighFreqWords)
     return S
 def generating_sentence(prefix,model,config,tokenizer):
