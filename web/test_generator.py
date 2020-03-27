@@ -39,7 +39,7 @@ def main(path_data,mode,path_config,path_target):
         d = {'input':data,'outputs':result,'num':len(result)}
         D.append(d)
         with open(path_target,'w') as f:
-            json.dump(d,f,ensure_ascii=False,indent=4)
+            json.dump(D,f,ensure_ascii=False,indent=4)
 if __name__=='__main__':
     mode,path_config,data,path_target = sys.argv[1:5]
     main(data,mode,path_config,path_target)
