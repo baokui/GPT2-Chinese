@@ -28,7 +28,7 @@ def postprocess(S,prefix,removeEndPunc=True,removeWords = True, transfer = True,
         if removeDupulicate:
             s0 = remove_duplicate(s0,removeHighFreqWords,HighFreqWords)
         if removeSpecial:
-            s0 = remove_special(s0)
+            s0 = remove_special(s0,prefix)
         if removeEndPunc:
             s0 = remove_endPunc(s0)
         if len(s0)>min_contenlen and len(s0)-len(prefix)> r*len(prefix):
@@ -67,10 +67,10 @@ def strB2Q(ustring):
             inside_code += 65248
         rstring += chr(inside_code)
     return rstring
-def remove_special(s0):
+def remove_special(s0,prefix):
     spe = blackwords
     for s in spe:
-        if s in s0:
+        if s in s0[len(prefix):]:
             return ''
     return s0
 def sent_endcontent(tmptext):
