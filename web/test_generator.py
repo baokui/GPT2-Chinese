@@ -71,9 +71,9 @@ HFW = [[],[],[],[]]
 with open(path_HFW,'r') as f:
     HFW[2] = f.read().strip().split('\n')
 
-def main(data,mode):
+def main(data,mode,path_config):
     ii = int(mode)
-    model, tokenizer, config, device = gpt_gen.getModel(path_config=path_configs[ii])
+    model, tokenizer, config, device = gpt_gen.getModel(path_config=path_config)
     result = []
     if ii==1:
         r0 = gpt_gen.generating_poem('a',data, model, config, tokenizer,device,quick,num0[ii],batchGenerating=batchGenerating)
@@ -85,5 +85,5 @@ def main(data,mode):
     print('output:\n%s'%'\n'.join(result))
     return result
 if __name__=='__main__':
-    mode,data = sys.argv[1:3]
-    main(data,mode)
+    mode,path_config,data = sys.argv[1:4]
+    main(data,mode,path_config)
