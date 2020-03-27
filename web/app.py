@@ -16,7 +16,7 @@ if len(sys.argv)>1:
 
 batchGenerating=True
 path_HFW = '../data/words_highFreq.txt'
-path_configs = ['config/config_godText_large1.json','config/config_poem.json','config/config_dabaigou.json']
+path_configs = ['demo_config/config_godText_large1.json','demo_config/config_poem.json','demo_config/config_dabaigou.json']
 num0 = [8,4,4]
 tags = ['(文)','(诗)','(大白狗)','(句联想)']
 rmHFW = [False,False,True,False]
