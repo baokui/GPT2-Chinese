@@ -36,7 +36,7 @@ def main(path_data,mode,path_config,path_target):
         result.extend(r0)
         print('input:%s'%data)
         print('output:\n%s'%'\n'.join(result))
-        d = {'input':data,'outputs':result}
+        d = {'input':data,'outputs':result,'num':len(result)}
         D.append(d)
         with open(path_target,'w') as f:
             json.dump(d,f,ensure_ascii=False,indent=4)
