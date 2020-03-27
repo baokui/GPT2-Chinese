@@ -9,7 +9,7 @@ import logging
 batchGenerating=True
 path_HFW = '../data/words_highFreq.txt'
 path_configs = ['config/config_godText_large1.json','config/config_poem.json','config/config_dabaigou.json']
-num0 = [30,4,4]
+num0 = [20,4,4]
 tags = ['(文)','(诗)','(大白狗)','(句联想)']
 rmHFW = [False,False,True,False]
 maxNext = 3
