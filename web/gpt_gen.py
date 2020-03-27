@@ -218,6 +218,8 @@ def untokenization(out,config,tokenizer,punc,continue_writing):
             text[i] = ''
         elif item == '[PAD]':
             text[i] = ''
+        elif item == '[UNK]':
+            text[i] = ''
         elif item == '[CLS]':
             text[i] = '\n'
         elif item == '[SEP]':
