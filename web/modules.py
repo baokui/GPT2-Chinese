@@ -26,7 +26,7 @@ def postprocess(S,prefix,removeEndPunc=True,removeWords = True, transfer = True,
         if sentEndcontent:
             s0 = sent_endcontent(s0)
         if removeDupulicate:
-            s0 = prefix+remove_duplicate(s0[len(prefix):],removeHighFreqWords,HighFreqWords)
+            s0 = remove_duplicate(s0,removeHighFreqWords,HighFreqWords)
         if removeSpecial:
             s0 = remove_special(s0)
         if removeEndPunc:
@@ -88,7 +88,13 @@ def remove_duplicate(s0,removeHighFreqWords=False,HighFreqWords=[]):
     L0 = []
     L = []
     i0 = 0
-    i1 = 0
+    for i0 in range(len(s0)):
+        if s0[i0] in stopwords:
+            break
+    L0.append(s0[:i0+1])
+    L.append(s0[:i0])
+    i0 = i0+1
+    i1 = i0
     flag_hfw = True
     while i1<len(s0):
         if s0[i1] in stopwords:
@@ -109,6 +115,22 @@ def remove_duplicate(s0,removeHighFreqWords=False,HighFreqWords=[]):
                         L.append(a)
             i0 = i1+1
             i1 = i1+1
+        elif i1==len(s0)-1:
+            a = s0[i0:]
+            if a not in L:
+                if removeHighFreqWords:
+                    if a in HighFreqWords:
+                        if flag_hfw:
+                            L0.append(a)
+                            L.append(a)
+                            flag_hfw = False
+                    else:
+                        L0.append(a)
+                        L.append(a)
+                else:
+                    L0.append(a)
+                    L.append(a)
+            break
         else:
             i1 = i1+1
     R = ''.join(L0)

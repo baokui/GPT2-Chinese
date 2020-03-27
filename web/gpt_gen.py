@@ -373,6 +373,7 @@ def nnlm_modelpredict(D_simi,D_next,inputStr='怎么了',maxNext=3,maxChoice=10,
                 if t!=lastsent:
                     S.append(t)
                     lastsent = t
+                    s0 = t
             elif s0 in D_simi:
                 p = [float(tt) for tt in D_simi[s0]['probs']]
                 w = D_simi[s0]['words']
@@ -383,6 +384,7 @@ def nnlm_modelpredict(D_simi,D_next,inputStr='怎么了',maxNext=3,maxChoice=10,
                 if t!=lastsent:
                     S.append(t)
                     lastsent = t
+                    s0 = t
             else:
                 break
         S = '，'.join(S)
