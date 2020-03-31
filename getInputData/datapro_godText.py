@@ -50,13 +50,14 @@ def build_files(full_tokenizer,path_source,path_target,padding,n_ctx=64,min_leng
         if nb_lines%100000==0:
             print('processing file %s with %d lines'%(path_source,nb_lines))
     i0 = 0
-    i1 = (i0+1)*nb_piece*n_ctx
+    num = int(len(full_line)/(nb_piece*n_ctx))
+    i1 = (i0+1)*num*n_ctx
     while i0<len(full_line):
         with open(os.path.join(path_target,'godTokenizer_'+str(i0)+'.txt'), 'w') as f:
             s = [str(full_line[i]) for i in range(i0,i1)]
             f.write(' '.join(s))
         i0 += 1
-        i1 = (i0 + 1) * nb_piece * n_ctx
+        i1 = (i0+1)*num*n_ctx
     print('finish')
 def changenames():
     path = './data/sogouInput_tokenized/'
