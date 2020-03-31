@@ -73,7 +73,7 @@ def changenames():
             print(i,oldpath,newpath)
 
 def main(path_source,path_target,padding):
-    tokenizer_path = '../model/gpt2_prose/vocab.txt'
+    tokenizer_path = '../data/vocab/vocab_god_userdata.txt'
     #tokenized_data_path = '../data/userdata_tokenized_new/'
     full_tokenizer = tokenization_bert.BertTokenizer(vocab_file=tokenizer_path)
     build_files(full_tokenizer,path_source,path_target,padding)
