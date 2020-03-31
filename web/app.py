@@ -7,26 +7,23 @@ import sys
 from datetime import datetime
 import time
 import logging
+from Config import config_predict
 app = Flask(__name__)
 app.logger.setLevel(logging.INFO)
 port = 5000
 style = 0#0大白狗, 1散文
 if len(sys.argv)>1:
    port = int(sys.argv[1])
+ConfigPredict = config_predict()
+batchGenerating=ConfigPredict.batchGenerating
+path_configs = ConfigPredict.path_configs
+num0 = ConfigPredict.predict_nums
+tags = ConfigPredict.tags
+rmHFW = ConfigPredict.rmHFW
+maxNext = ConfigPredict.maxNext_JLX
+path_next = ConfigPredict.path_JLX_next
+path_simi = ConfigPredict.path_JLX_simi
 
-batchGenerating=True
-path_HFW = '../data/words_highFreq.txt'
-path_configs = ['demo_config/config_godText_large1.json','demo_config/config_poem.json','demo_config/config_dabaigou.json']
-num0 = [8,4,4]
-tags = ['(文)','(诗)','(大白狗)','(句联想)']
-rmHFW = [False,False,True,False]
-maxNext = 3
-path_next = 'model/nnlm/D_next.json'
-path_simi = 'model/nnlm/D_simi.json'
-
-HFW = [[],[],[],[]]
-with open(path_HFW,'r') as f:
-    HFW[2] = f.read().strip().split('\n')
 model,tokenizer,config,device = [], [], [], []
 for path_config in path_configs:
     m0,t0,c0,d0 = gpt_gen.getModel(path_config=path_config)
@@ -64,7 +61,7 @@ def test2():
             if ii==1:
                 r0 = gpt_gen.generating_poem(app,data, model[ii], config[ii], tokenizer[ii],device[ii],quick,num0[ii],batchGenerating=batchGenerating)
             else:
-                r0 = gpt_gen.generating(app,data, model[ii], config[ii], tokenizer[ii],device[ii],quick,num0[ii],removeHighFreqWords=rmHFW[ii],HighFreqWords=HFW[ii],batchGenerating=batchGenerating)
+                r0 = gpt_gen.generating(app,data, model[ii], config[ii], tokenizer[ii],device[ii],ConfigPredict,quick=quick,num=num0[ii],removeHighFreqWords=rmHFW[ii],batchGenerating=batchGenerating)
             r0 = [rr + tags[ii] for rr in r0]
             result.extend(r0)
         result_nnlm = gpt_gen.nnlm_modelpredict(D_simi,D_next,inputStr=data,maxNext=maxNext,maxChoice=10,num=num)

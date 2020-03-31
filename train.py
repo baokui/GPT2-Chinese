@@ -175,6 +175,7 @@ def main():
     print('starting training')
     overall_step = 0
     running_loss = 0
+    loss_ = 10
     for epoch in range(epochs):
         print('epoch {}'.format(epoch + 1))
         now = datetime.now()
@@ -199,7 +200,6 @@ def main():
                 samples.append(tokens[len(tokens)-n_ctx:])
             random.shuffle(samples)
             nb_steps = min(args.max_steps_perEpoch_perPiece,len(samples) // batch_size)
-            loss_=0
             for step in range(nb_steps):  # drop last
                 #  prepare data
                 batch = samples[step * batch_size: (step + 1) * batch_size]

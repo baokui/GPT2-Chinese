@@ -13,7 +13,7 @@ from transformers import GPT2LMHeadModel
 import json
 import random
 from time import strftime, localtime
-from modules import remove_stopwords,postprocess,poemFilter1
+from modules import postprocess,poemFilter1
 print_log = False
 # 打印当前时间
 def printTime():
@@ -246,7 +246,7 @@ def untokenization(out,config,tokenizer,punc,continue_writing):
     tmp.append(tmptext[-1])
     tmptext = ''.join(tmp)
     return tmptext
-def generating(app,prefix,model,config,tokenizer,device,quick=False,num=5,continue_writing=False,removeHighFreqWords=False,HighFreqWords=[],batchGenerating=False):
+def generating(app,prefix,model,config,tokenizer,device,config_predict,quick=False,num=5,continue_writing=False,removeHighFreqWords=False,batchGenerating=False):
     #print("start:",prefix)
     punc = '.,?!;\t 。，？！；'
     global a
@@ -257,7 +257,6 @@ def generating(app,prefix,model,config,tokenizer,device,quick=False,num=5,contin
         fast_pattern = True
     length = config['length']
     nsamples = num
-    batch_size = config['batch_size']
     temperature = config['temperature']
     topk = config['topk']
     topp = config['topp']
@@ -289,7 +288,7 @@ def generating(app,prefix,model,config,tokenizer,device,quick=False,num=5,contin
             )
             tmptext = untokenization(out,config,tokenizer,punc,continue_writing)
             S.append(tmptext)
-    S = postprocess(S,raw_text,removeHighFreqWords=removeHighFreqWords,HighFreqWords=HighFreqWords)
+    S = postprocess(S,raw_text,config_predict,removeHighFreqWords=removeHighFreqWords)
     return S
 def generating_sentence(prefix,model,config,tokenizer):
     print("start:",prefix,config)
@@ -352,7 +351,7 @@ def generating_sentence(prefix,model,config,tokenizer):
         if len(S) == nsamples:
             break
     return S
-def nnlm_modelpredict(D_simi,D_next,inputStr='怎么了',maxNext=3,maxChoice=10,num=5):
+def nnlm_modelpredict(D_simi,D_next,config_predict,inputStr='怎么了',maxNext=3,maxChoice=10,num=5):
     output = []
     for ii in range(num+5):
         if len(output)==num:
@@ -361,7 +360,6 @@ def nnlm_modelpredict(D_simi,D_next,inputStr='怎么了',maxNext=3,maxChoice=10,
         S = []
         s0 = s
         S.append(s0)
-        s0 = remove_stopwords(s0)
         lastsent = s0
         for i in range(maxNext):
             if s0 in D_next:
@@ -390,7 +388,7 @@ def nnlm_modelpredict(D_simi,D_next,inputStr='怎么了',maxNext=3,maxChoice=10,
             output.append(S)
         if len(output)>=num:
             break
-    output = postprocess(output, inputStr,sentEndcontent=False,removeHighFreqWords=False,HighFreqWords=[])
+    output = postprocess(output, inputStr,config_predict,sentEndcontent=False,removeHighFreqWords=False)
     return output
 def untokenization_poem(out,tokenizer,config):
     text = tokenizer.convert_ids_to_tokens(out)
