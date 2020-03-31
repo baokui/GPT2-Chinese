@@ -3,7 +3,27 @@ import os
 import shutil
 from tokenizations import tokenization_bert
 from collections import Counter
-def build_files(data_path, dataname, tokenized_data_path, full_tokenizer, idx, min_length=10):
+def token_pad(line,full_tokenizer,subline,n_ctx):
+    punc = '.;!?。；！？'
+    tmp = [full_tokenizer.convert_tokens_to_ids('[MASK]')]
+    tmp = tmp + subline
+    if len(tmp) > n_ctx - 1:
+        tmp = tmp[:n_ctx - 1]
+        idx_b = n_ctx-1
+    else:
+        tmp = tmp + (n_ctx - 1 - len(tmp)) * [full_tokenizer.convert_tokens_to_ids('[PAD]')]
+        idx_b = len(line)
+    line = line[idx_b:]
+    idx0 = 0
+    for p in punc:
+        if p in line:
+            idx0 = line.index(p)+1
+            break
+    line = line[idx0:]
+    tmp = tmp + [full_tokenizer.convert_tokens_to_ids('[CLS]')]
+    return tmp,line
+def build_files(data_path, dataname, tokenized_data_path, full_tokenizer, idx, n_ctx=64,min_length=10,padding=False):
+
     if not os.path.exists(tokenized_data_path):
         os.mkdir(tokenized_data_path)
     full_line = []
@@ -21,13 +41,17 @@ def build_files(data_path, dataname, tokenized_data_path, full_tokenizer, idx, m
             if len(line)<min_length:
                 continue
             subline = full_tokenizer.convert_tokens_to_ids(list(line))
-            #print(full_tokenizer.convert_tokens_to_ids('[MASK]'))
-            #print(subline)
-            #print(full_tokenizer.convert_tokens_to_ids('[CLS]'))
-            tmp = [full_tokenizer.convert_tokens_to_ids('[MASK]')]
-            tmp = tmp + subline
-            tmp = tmp + [full_tokenizer.convert_tokens_to_ids('[CLS]')]
-            full_line.extend(tmp)
+            if padding:
+                tmp,line = token_pad(full_tokenizer,subline,n_ctx)
+                full_line.extend(tmp)
+                while len(line)>n_ctx:
+                    tmp, line = token_pad(full_tokenizer, subline, n_ctx)
+                    full_line.extend(tmp)
+            else:
+                tmp = [full_tokenizer.convert_tokens_to_ids('[MASK]')]
+                tmp = tmp + subline
+                tmp = tmp + [full_tokenizer.convert_tokens_to_ids('[CLS]')]
+                full_line.extend(tmp)
             if nb_lines%100000==0:
                 print('processing file %s with %d lines'%(file,nb_lines))
         with open(os.path.join(tokenized_data_path,dataname), 'w') as f:
@@ -46,11 +70,11 @@ def changenames():
         if i%100==0:
             print(i,oldpath,newpath)
 
-def main(data_path,idx,dataname):
+def main(data_path,idx,dataname,tokenized_data_path,padding):
     tokenizer_path = '../model/gpt2_prose/vocab.txt'
-    tokenized_data_path = '../data/userdata_tokenized_new/'
+    #tokenized_data_path = '../data/userdata_tokenized_new/'
     full_tokenizer = tokenization_bert.BertTokenizer(vocab_file=tokenizer_path)
-    build_files(data_path, dataname, tokenized_data_path, full_tokenizer,idx)
+    build_files(data_path, dataname, tokenized_data_path, full_tokenizer,idx,padding=padding)
     #shutil.rmtree(data_path)
 def main_seg(data_path,dataname):
     tokenizer_path = '../model/model_dabaigou_seg/vocab.txt'
@@ -91,9 +115,10 @@ def remove_unk(idx = 0,unk='100'):
 if __name__=='__main__':
     mode = sys.argv[1]
     if mode=='char':
-        data_path,idx,dataname = sys.argv[2:5]
+        data_path,idx,dataname,tokenized_data_path,padding = sys.argv[2:7]
         idx = int(idx)
-        main(data_path,idx,dataname)
+        padding = padding=='1'
+        main(data_path,idx,dataname,tokenized_data_path,padding)
     if mode=='word':
         data_path, dataname = sys.argv[2:4]
         main_seg(data_path, dataname)
