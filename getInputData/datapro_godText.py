@@ -55,7 +55,7 @@ def build_files(full_tokenizer,path_source,path_target,padding,n_ctx=64,min_leng
     k = 0
     while i0<len(full_line):
         with open(os.path.join(path_target,'godTokenizer_'+str(k)+'.txt'), 'w') as f:
-            s = [str(full_line[i]) for i in range(i0,i1)]
+            s = [str(full_line[i]) for i in range(i0,min(i1,len(full_line)))]
             f.write(' '.join(s))
         i0 = i1
         i1 = i0 + num*n_ctx
