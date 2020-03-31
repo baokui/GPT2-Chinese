@@ -47,7 +47,7 @@ def main(path_data,mode,path_config,path_target,topk):
 if __name__=='__main__':
     mode,path_config,data,path_target = sys.argv[1:5]
     if len(sys.argv)>5:
-        topk = sys.argv[5]
+        topk = int(sys.argv[5])
     else:
         topk = 8
     main(data,mode,path_config,path_target,topk)
