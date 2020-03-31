@@ -242,12 +242,14 @@ def generating(prefix,model,config,tokenizer,segment=False,nsamples=10,modelType
                 # print(text)
                 texts = text.split('\n')
                 tmptext = texts[0]
+                '''
                 if len(tmptext)<config["min_length"]:
                     for ii in range(1,len(texts)):
                         tmptext += '\t'
                         tmptext += texts[ii]
                         if len(tmptext)>=config["min_length"]:
                             break
+                '''
                 if modelType=='poem':
                     tmptext = tmptext[1:]
                 S.append(tmptext)
