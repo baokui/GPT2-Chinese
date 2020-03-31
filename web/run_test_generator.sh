@@ -1,4 +1,4 @@
-path_source=../cgi-bin/data/input3.txt
+path_source=result/input3.txt
 mode=0
 #CUDA_VISIBLE_DEVICES=7
 
