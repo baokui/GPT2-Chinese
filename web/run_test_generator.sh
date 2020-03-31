@@ -8,4 +8,4 @@ nohup python test_generator.py $mode $path_config $path_source result/$path_targ
 
 path_config=config/config_godText_large1_17.json
 path_target=model_epoch17
-nohup python test_generator.py $mode $path_config $path_source result/$path_target.json >> log/test-gen-$path_target.log 2>&1 &
+#nohup python test_generator.py $mode $path_config $path_source result/$path_target.json >> log/test-gen-$path_target.log 2>&1 &
