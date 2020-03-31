@@ -45,7 +45,7 @@ def build_files(data_path, dataname, tokenized_data_path, full_tokenizer, idx, n
                 tmp,line = token_pad(full_tokenizer,subline,n_ctx)
                 full_line.extend(tmp)
                 while len(line)>n_ctx:
-                    tmp, line = token_pad(full_tokenizer, subline, n_ctx)
+                    tmp, line = token_pad(line,full_tokenizer,subline,n_ctx)
                     full_line.extend(tmp)
             else:
                 tmp = [full_tokenizer.convert_tokens_to_ids('[MASK]')]
