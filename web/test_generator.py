@@ -21,12 +21,14 @@ HFW = [[],[],[],[]]
 with open(path_HFW,'r') as f:
     HFW[2] = f.read().strip().split('\n')
 
-def main(path_data,mode,path_config,path_target):
+def main(path_data,mode,path_config,path_target,topk):
     ii = int(mode)
     model, tokenizer, config, device = gpt_gen.getModel(path_config=path_config)
+    config['topk'] = topk
     with open(path_data,'r') as f:
         s = f.read().strip().split('\n')
     D = []
+    t0 = time.time()
     for data in s:
         result = []
         for _ in range(3):
@@ -40,6 +42,12 @@ def main(path_data,mode,path_config,path_target):
         D.append(d)
         with open(path_target,'w') as f:
             json.dump(D,f,ensure_ascii=False,indent=4)
+    t1 = time.time()
+    print('predict time is {} for parameter topk={}'.format(t1-t0,topk))
 if __name__=='__main__':
     mode,path_config,data,path_target = sys.argv[1:5]
-    main(data,mode,path_config,path_target)
+    if len(sys.argv)>5:
+        topk = sys.argv[5]
+    else:
+        topk = 8
+    main(data,mode,path_config,path_target,topk)
