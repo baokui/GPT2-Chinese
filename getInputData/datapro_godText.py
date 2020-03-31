@@ -56,7 +56,7 @@ def build_files(full_tokenizer,path_source,path_target,padding,n_ctx=64,min_leng
         with open(os.path.join(path_target,'godTokenizer_'+str(i0)+'.txt'), 'w') as f:
             s = [str(full_line[i]) for i in range(i0,i1)]
             f.write(' '.join(s))
-        i0 += i1
+        i0 = i1
         i1 = (i0+1)*num*n_ctx
     print('finish')
 def changenames():
