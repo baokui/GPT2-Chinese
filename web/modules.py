@@ -35,6 +35,8 @@ def removewords(s0,removed_words):
         sn = sn.replace(t,'')
     return sn
 def remove_endPunc(tmptext,stopwords,punc_end):
+    if len(tmptext)==0:
+        return tmptext
     if tmptext[-1] in stopwords and tmptext[-1] not in punc_end:
         tmptext = tmptext[:-1]
     return tmptext
