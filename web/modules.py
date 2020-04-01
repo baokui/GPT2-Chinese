@@ -1,4 +1,4 @@
-def postprocess(S,prefix,config_postprocess,max_nb_sents=4,removeEndPunc=True,removeWords = True, removeSingleWord=True,transfer = True,sentEndcontent=True,removeDupulicate=True,dropSpecial=True,removeHighFreqWords=False):
+def postprocess(S,prefix,config_postprocess,maxNbSents=True,removeEndPunc=True,removeWords = True, removeSingleWord=True,transfer = True,sentEndcontent=True,removeDupulicate=True,dropSpecial=True,removeHighFreqWords=False):
     stopwords = config_postprocess.stopwords
     map_e2z = config_postprocess.map_e2z
     blackwords = config_postprocess.blackwords
@@ -8,6 +8,7 @@ def postprocess(S,prefix,config_postprocess,max_nb_sents=4,removeEndPunc=True,re
     HighFreqWords = config_postprocess.HighFreqWords
     min_contenlen = config_postprocess.min_contenlen
     r = config_postprocess.rate_gen2inp
+    max_nb_sents=config_postprocess.max_nb_sents
     R = []
     for s0 in S:
         if removeWords:
@@ -17,7 +18,7 @@ def postprocess(S,prefix,config_postprocess,max_nb_sents=4,removeEndPunc=True,re
         if sentEndcontent:
             s0 = sent_endcontent(s0,punc_end)
         if removeDupulicate:
-            s0 = remove_duplicate(s0,prefix,stopwords,max_nb_sents)
+            s0 = remove_duplicate(s0,prefix,stopwords)
         if removeSingleWord:
             s0 = remove_sents(s0,prefix,stopwords,blacksents=singlewords)
         if removeHighFreqWords:
@@ -26,6 +27,8 @@ def postprocess(S,prefix,config_postprocess,max_nb_sents=4,removeEndPunc=True,re
             s0 = drop_blackwords(s0,prefix,blackwords = blackwords)
         if removeEndPunc:
             s0 = remove_endPunc(s0,stopwords,punc_end)
+        if maxNbSents:
+            s0 = sentCutting(s0,prefix,stopwords,max_nb_sents)
         if len(s0)>min_contenlen and len(s0)-len(prefix)> r*len(prefix):
             R.append(s0)
     return R
@@ -98,7 +101,7 @@ def sent_split(s0,splitsym):
         L.append(s0[i0:i1])
         L0.append(s0[i0:i1 + 1])
     return L,L0
-def remove_duplicate(s0,prefix,stopwords,max_nb_sents):
+def remove_duplicate(s0,prefix,stopwords):
     L, L0 = sent_split(s0[len(prefix):],stopwords)
     S = []
     S0 = []
@@ -106,8 +109,11 @@ def remove_duplicate(s0,prefix,stopwords,max_nb_sents):
         if L[i] not in S:
             S.append(L[i])
             S0.append(L0[i])
-    S0 = S0[:max_nb_sents]
     R = prefix+''.join(S0)
+    return R
+def sentCutting(s0,prefix,stopwords,max_nb_sents):
+    L, L0 = sent_split(s0[len(prefix):], stopwords)
+    R = prefix + ''.join(L0[:max_nb_sents])
     return R
 def remove_sents(s0,prefix,stopwords,blacksents):
     L, L0 = sent_split(s0[len(prefix):],stopwords)
