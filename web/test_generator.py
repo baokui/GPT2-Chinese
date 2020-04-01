@@ -8,20 +8,11 @@ import logging
 import os
 from Config import config_predict
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
-ConfigPredict = config_predict()
-batchGenerating=ConfigPredict.batchGenerating
-path_configs = ConfigPredict.model_configs
-num0 = ConfigPredict.predict_nums
-tags = ConfigPredict.tags
-rmHFW = ConfigPredict.rmHFW
-maxNext = ConfigPredict.maxNext_JLX
-path_next = ConfigPredict.path_JLX_next
-path_simi = ConfigPredict.path_JLX_simi
 quick = False
 app = None
 def main(path_data,mode,path_config,path_target,topk,temp):
     ii = int(mode)
-    model, tokenizer, config, device = gpt_gen.getModel(path_config=path_configs[ii])
+    model, tokenizer, config, device = gpt_gen.getModel(path_config=path_config)
     config['topk'] = topk
     config['temperature'] = temp
     with open(path_data,'r') as f:
@@ -54,4 +45,13 @@ if __name__=='__main__':
     else:
         topk = 8
         temp = 1.0
+    ConfigPredict = config_predict(path_config)
+    batchGenerating = ConfigPredict.batchGenerating
+    path_configs = ConfigPredict.model_configs
+    num0 = ConfigPredict.predict_nums
+    tags = ConfigPredict.tags
+    rmHFW = ConfigPredict.rmHFW
+    maxNext = ConfigPredict.maxNext_JLX
+    path_next = ConfigPredict.path_JLX_next
+    path_simi = ConfigPredict.path_JLX_simi
     main(data,mode,path_config,path_target,topk,temp)
