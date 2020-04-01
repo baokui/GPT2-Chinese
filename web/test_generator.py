@@ -30,7 +30,7 @@ def main(path_data,mode,path_config,path_target,topk,temp):
     t0 = time.time()
     for data in s:
         result = []
-        for _ in range(3):
+        for _ in range(1):
             if ii == 1:
                 r0 = gpt_gen.generating_poem(app, data, model, config, tokenizer, device, quick,
                                              num0[ii], batchGenerating=batchGenerating)
