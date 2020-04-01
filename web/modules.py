@@ -169,3 +169,9 @@ def poemFilter1(poem):
         return ''.join(R)
     else:
         return ''
+def dropDuplicateContent(S0):
+    S = []
+    for s in S0:
+        if s not in S:
+            S.append(s)
+    return S

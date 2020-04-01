@@ -13,7 +13,7 @@ from transformers import GPT2LMHeadModel
 import json
 import random
 from time import strftime, localtime
-from modules import postprocess,poemFilter1
+from modules import postprocess,poemFilter1,dropDuplicateContent
 print_log = False
 # 打印当前时间
 def printTime():
@@ -289,6 +289,7 @@ def generating(app,prefix,model,config,tokenizer,device,config_predict,quick=Fal
             tmptext = untokenization(out,config,tokenizer,punc,continue_writing)
             S.append(tmptext)
     S = postprocess(S,raw_text,config_predict,removeHighFreqWords=removeHighFreqWords)
+    S = dropDuplicateContent(S)
     return S
 def generating_sentence(prefix,model,config,tokenizer):
     print("start:",prefix,config)
@@ -389,6 +390,7 @@ def nnlm_modelpredict(D_simi,D_next,config_predict,inputStr='怎么了',maxNext=
         if len(output)>=num:
             break
     output = postprocess(output, inputStr,config_predict,sentEndcontent=False,removeHighFreqWords=False)
+    output = dropDuplicateContent(output)
     return output
 def untokenization_poem(out,tokenizer,config):
     text = tokenizer.convert_ids_to_tokens(out)
@@ -466,4 +468,5 @@ def generating_poem(app,prefix,model,config,tokenizer,device,quick=False,num=5,b
             poem = poemFilter1(tmptext[1:])
             if poem:
                 S.append(poem)
+    S = dropDuplicateContent(S)
     return S
