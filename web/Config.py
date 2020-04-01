@@ -18,7 +18,7 @@ class config_predict(object):
         self.batchGenerating = True
         self.model_configs = ['demo_config/config_godText_large1.json', 'demo_config/config_poem.json',
                         'demo_config/config_dabaigou.json']
-        self.predict_nums = [8, 4, 4]
+        self.predict_nums = [8, 4, 8]
         self.tags = ['(文)', '(诗)', '(大白狗)', '(句联想)']
         self.rmHFW = [False, False, True, False]
         self.maxNext_JLX = 3
