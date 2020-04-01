@@ -16,7 +16,7 @@ if len(sys.argv)>1:
    port = int(sys.argv[1])
 ConfigPredict = config_predict()
 batchGenerating=ConfigPredict.batchGenerating
-path_configs = ConfigPredict.path_configs
+path_configs = ConfigPredict.model_configs
 num0 = ConfigPredict.predict_nums
 tags = ConfigPredict.tags
 rmHFW = ConfigPredict.rmHFW
