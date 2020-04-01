@@ -1,5 +1,5 @@
 path_source=result/input3.txt
-mode=0
+mode=2
 
 path_config=demo_config/config_godText_large1.json
 path_target=final
