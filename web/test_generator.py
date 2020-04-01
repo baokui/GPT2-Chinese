@@ -21,7 +21,7 @@ quick = False
 app = None
 def main(path_data,mode,path_config,path_target,topk,temp):
     ii = int(mode)
-    model, tokenizer, config, device = gpt_gen.getModel(path_config=path_config)
+    model, tokenizer, config, device = gpt_gen.getModel(path_config=path_configs[ii])
     config['topk'] = topk
     config['temperature'] = temp
     with open(path_data,'r') as f:
