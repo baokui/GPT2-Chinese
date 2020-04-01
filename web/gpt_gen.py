@@ -237,7 +237,7 @@ def generating(app,prefix,model,config,tokenizer,device,config_predict,quick=Fal
     a = app
     n_ctx = model.config.n_ctx
     fast_pattern = False
-    if config['fast_pattern']=="True":
+    if 'fast_pattern' in config and config['fast_pattern']=="True":
         fast_pattern = True
     length = config['length']
     nsamples = num
