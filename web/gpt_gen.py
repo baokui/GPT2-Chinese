@@ -13,7 +13,7 @@ from transformers import GPT2LMHeadModel
 import json
 import random
 from time import strftime, localtime
-from modules import postprocess,poemFilter1,dropDuplicateContent
+from modules import postprocess,poemFilter1,dropDuplicateContent,_is_chinese_char,sentTriming
 print_log = False
 # 打印当前时间
 def printTime():
@@ -23,28 +23,7 @@ def is_word(word):
         if item not in 'qwertyuiopasdfghjklzxcvbnm':
             return False
     return True
-def _is_chinese_char(char):
-    """Checks whether CP is the codepoint of a CJK character."""
-    # This defines a "chinese character" as anything in the CJK Unicode block:
-    #   https://en.wikipedia.org/wiki/CJK_Unified_Ideographs_(Unicode_block)
-    #
-    # Note that the CJK Unicode block is NOT all Japanese and Korean characters,
-    # despite its name. The modern Korean Hangul alphabet is a different block,
-    # as is Japanese Hiragana and Katakana. Those alphabets are used to write
-    # space-separated words, so they are not treated specially and handled
-    # like the all of the other languages.
-    cp = ord(char)
-    if ((cp >= 0x4E00 and cp <= 0x9FFF) or  #
-            (cp >= 0x3400 and cp <= 0x4DBF) or  #
-            (cp >= 0x20000 and cp <= 0x2A6DF) or  #
-            (cp >= 0x2A700 and cp <= 0x2B73F) or  #
-            (cp >= 0x2B740 and cp <= 0x2B81F) or  #
-            (cp >= 0x2B820 and cp <= 0x2CEAF) or
-            (cp >= 0xF900 and cp <= 0xFAFF) or  #
-            (cp >= 0x2F800 and cp <= 0x2FA1F)):  #
-        return True
 
-    return False
 def top_k_top_p_filtering(logits, top_k=0, top_p=0.0, filter_value=-float('Inf')):
     """ Filter a distribution of logits using top-k and/or nucleus (top-p) filtering
         Args:
@@ -248,6 +227,11 @@ def untokenization(out,config,tokenizer,punc,continue_writing):
     return tmptext
 def generating(app,prefix,model,config,tokenizer,device,config_predict,quick=False,num=5,continue_writing=False,removeHighFreqWords=False,batchGenerating=False):
     #print("start:",prefix)
+    if config_predict.prefixTrim:
+        prefix0 = prefix
+        prefix = sentTriming(prefix0)
+        if len(prefix)==0:
+            prefix = prefix0
     punc = '.,?!;\t 。，？！；'
     global a
     a = app
@@ -288,6 +272,8 @@ def generating(app,prefix,model,config,tokenizer,device,config_predict,quick=Fal
             )
             tmptext = untokenization(out,config,tokenizer,punc,continue_writing)
             S.append(tmptext)
+    if config_predict.prefixTrim:
+        S = [prefix0+s[len(prefix):] for s in S]
     S = postprocess(S,raw_text,config_predict,removeHighFreqWords=removeHighFreqWords)
     S = dropDuplicateContent(S)
     return S

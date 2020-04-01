@@ -24,6 +24,7 @@ class config_predict(object):
         self.maxNext_JLX = 3
         self.path_JLX_next = 'model/nnlm/D_next.json'
         self.path_JLX_simi = 'model/nnlm/D_simi.json'
+        self.prefixTrim = True
     def addStopwords(self):
         punc_zh = "！？｡＂＃＄％＆＇（）＊＋，－／：；＜＝＞＠［＼］＾＿｀｛｜｝～｟｠｢｣､、〃》「」『』【】〔〕〖〗〘〙〚〛〜〝〞〟〰〾〿–—‘’‛“”„‟‧﹏.…"
         punc_en = unicodedata.normalize('NFKC', punc_zh[:-1]) + unicodedata.normalize('NFKC', punc_zh[-1])[-1]
