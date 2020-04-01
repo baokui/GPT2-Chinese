@@ -1,4 +1,4 @@
-def postprocess(S,prefix,config_postprocess,removeEndPunc=True,removeWords = True, removeSingleWord=True,transfer = True,sentEndcontent=True,removeDupulicate=True,dropSpecial=True,removeHighFreqWords=False):
+def postprocess(S,prefix,config_postprocess,max_nb_sents=4,removeEndPunc=True,removeWords = True, removeSingleWord=True,transfer = True,sentEndcontent=True,removeDupulicate=True,dropSpecial=True,removeHighFreqWords=False):
     stopwords = config_postprocess.stopwords
     map_e2z = config_postprocess.map_e2z
     blackwords = config_postprocess.blackwords
@@ -17,7 +17,7 @@ def postprocess(S,prefix,config_postprocess,removeEndPunc=True,removeWords = Tru
         if sentEndcontent:
             s0 = sent_endcontent(s0,punc_end)
         if removeDupulicate:
-            s0 = remove_duplicate(s0,prefix,stopwords)
+            s0 = remove_duplicate(s0,prefix,stopwords,max_nb_sents)
         if removeSingleWord:
             s0 = remove_sents(s0,prefix,stopwords,blacksents=singlewords)
         if removeHighFreqWords:
@@ -98,7 +98,7 @@ def sent_split(s0,splitsym):
         L.append(s0[i0:i1])
         L0.append(s0[i0:i1 + 1])
     return L,L0
-def remove_duplicate(s0,prefix,stopwords):
+def remove_duplicate(s0,prefix,stopwords,max_nb_sents):
     L, L0 = sent_split(s0[len(prefix):],stopwords)
     S = []
     S0 = []
@@ -106,6 +106,7 @@ def remove_duplicate(s0,prefix,stopwords):
         if L[i] not in S:
             S.append(L[i])
             S0.append(L0[i])
+    S0 = S0[:max_nb_sents]
     R = prefix+''.join(S0)
     return R
 def remove_sents(s0,prefix,stopwords,blacksents):

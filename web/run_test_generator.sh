@@ -1,7 +1,7 @@
 path_source=result/input4.txt
 mode=2
 
-path_config=demo_config/config_godText_large1.json
+path_config=demo_config/config_dabaigou.json
 path_target=final
 topk=5
 temp=0.5
