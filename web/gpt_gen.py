@@ -227,8 +227,8 @@ def untokenization(out,config,tokenizer,punc,continue_writing):
     return tmptext
 def generating(app,prefix,model,config,tokenizer,device,config_predict,quick=False,num=5,continue_writing=False,removeHighFreqWords=False,batchGenerating=False):
     #print("start:",prefix)
+    prefix0 = prefix
     if config_predict.prefixTrim:
-        prefix0 = prefix
         prefix = sentTriming(prefix0)
         if len(prefix)==0:
             prefix = prefix0
@@ -274,7 +274,7 @@ def generating(app,prefix,model,config,tokenizer,device,config_predict,quick=Fal
             S.append(tmptext)
     if config_predict.prefixTrim:
         S = [prefix0+s[len(prefix):] for s in S]
-    S = postprocess(S,raw_text,config_predict,removeHighFreqWords=removeHighFreqWords)
+    S = postprocess(S,prefix0,config_predict,removeHighFreqWords=removeHighFreqWords)
     S = dropDuplicateContent(S)
     return S
 def generating_sentence(prefix,model,config,tokenizer):
