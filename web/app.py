@@ -64,7 +64,7 @@ def test2():
                 r0 = gpt_gen.generating(app,data, model[ii], config[ii], tokenizer[ii],device[ii],ConfigPredict,quick=quick,num=num0[ii],removeHighFreqWords=rmHFW[ii],batchGenerating=batchGenerating)
             r0 = [rr + tags[ii] for rr in r0]
             result.extend(r0)
-        result_nnlm = gpt_gen.nnlm_modelpredict(D_simi,D_next,inputStr=data,maxNext=maxNext,maxChoice=10,num=num)
+        result_nnlm = gpt_gen.nnlm_modelpredict(D_simi,D_next,ConfigPredict,inputStr=data,maxNext=maxNext,maxChoice=10,num=num)
         result += [tmp+tags[-1] for tmp in result_nnlm]
         then = datetime.now()
         app.logger.info('time: {}'.format(then))
