@@ -84,15 +84,17 @@ def sent_endcontent(tmptext,punc_end):
     if ii != len(tmptext) - 1:
         tmptext = tmptext[:len(tmptext) - ii]
     return tmptext
-def sent_split(s0,splitsym):
+def sent_split(s0,prefix,splitsym):
+    flag = prefix[-1] not in splitsym
     L0 = []
     L = []
     i0 = 0
     i1 = 0
     while i1<len(s0):
         if s0[i1] in splitsym:
-            L.append(s0[i0:i1])
-            L0.append(s0[i0:i1+1])
+            if len(s0[i0:i1])>0 or (flag and i0==0):
+                L.append(s0[i0:i1])
+                L0.append(s0[i0:i1+1])
             i0 = i1+1
             i1 = i1+1
         else:
@@ -102,7 +104,7 @@ def sent_split(s0,splitsym):
         L0.append(s0[i0:i1 + 1])
     return L,L0
 def remove_duplicate(s0,prefix,stopwords):
-    L, L0 = sent_split(s0[len(prefix):],stopwords)
+    L, L0 = sent_split(s0[len(prefix):],prefix,stopwords)
     S = []
     S0 = []
     for i in range(len(L)):
@@ -112,11 +114,11 @@ def remove_duplicate(s0,prefix,stopwords):
     R = prefix+''.join(S0)
     return R
 def sentCutting(s0,prefix,stopwords,max_nb_sents):
-    L, L0 = sent_split(s0[len(prefix):], stopwords)
+    L, L0 = sent_split(s0[len(prefix):], prefix,stopwords)
     R = prefix + ''.join(L0[:max_nb_sents])
     return R
 def remove_sents(s0,prefix,stopwords,blacksents):
-    L, L0 = sent_split(s0[len(prefix):],stopwords)
+    L, L0 = sent_split(s0[len(prefix):],prefix,stopwords)
     S = []
     S0 = []
     for i in range(len(L)):
