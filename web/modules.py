@@ -115,7 +115,12 @@ def remove_duplicate(s0,prefix,stopwords):
     return R
 def sentCutting(s0,prefix,stopwords,max_nb_sents):
     L, L0 = sent_split(s0[len(prefix):], prefix,stopwords)
-    R = prefix + ''.join(L0[:max_nb_sents])
+    L0 = L0[:max_nb_sents]
+    L = L[:max_nb_sents]
+    if len(L)==max_nb_sents:
+        if len(L[-1])<4:
+            L0 = L0[:-1]
+    R = prefix + ''.join(L0)
     return R
 def remove_sents(s0,prefix,stopwords,blacksents):
     L, L0 = sent_split(s0[len(prefix):],prefix,stopwords)
