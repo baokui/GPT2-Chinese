@@ -1,4 +1,4 @@
-def postprocess(S,prefix,config_postprocess,maxNbSents=True,removeEndPunc=True,removeWords = True, removeSingleWord=True,transfer = True,sentEndcontent=True,removeDupulicate=True,dropSpecial=True,removeHighFreqWords=False):
+def postprocess(S,prefix,config_postprocess,dropPerson=True,maxNbSents=True,removeEndPunc=True,removeWords = True, removeSingleWord=True,transfer = True,sentEndcontent=True,removeDupulicate=True,dropSpecial=True,removeHighFreqWords=False):
     stopwords = config_postprocess.stopwords
     map_e2z = config_postprocess.map_e2z
     blackwords = config_postprocess.blackwords
@@ -25,12 +25,21 @@ def postprocess(S,prefix,config_postprocess,maxNbSents=True,removeEndPunc=True,r
             s0 = remove_sents(s0, prefix,stopwords, blacksents=HighFreqWords)
         if dropSpecial:
             s0 = drop_blackwords(s0,prefix,blackwords = blackwords)
+        if dropPerson:
+            s0 = drop_person(s0,prefix)
         if removeEndPunc:
             s0 = remove_endPunc(s0,stopwords,punc_end)
         if maxNbSents:
             s0 = sentCutting(s0,prefix,stopwords,max_nb_sents)
-        if len(s0)>min_contenlen and len(s0)-len(prefix)> r*len(prefix):
-            R.append(s0)
+        if len(s0)>min_contenlen:
+            if len(prefix)>10 and len(s0) - len(prefix)>5:
+                R.append(s0)
+                continue
+            if len(prefix)>7 and len(s0) - len(prefix) > 0.8*len(prefix):
+                R.append(s0)
+                continue
+            if len(prefix)<=7 and len(s0) - len(prefix) > r*len(prefix):
+                R.append(s0)
     return R
 def removewords(s0,removed_words):
     sn = s0
@@ -74,6 +83,11 @@ def strB2Q(ustring):
 def drop_blackwords(s0,prefix,blackwords):
     for s in blackwords:
         if s in s0[len(prefix):]:
+            return ''
+    return s0
+def drop_person(s0,prefix):
+    if '他' not in prefix and '她' not in prefix:
+        if '他' in s0 or '她' in s0:
             return ''
     return s0
 def sent_endcontent(tmptext,punc_end):
