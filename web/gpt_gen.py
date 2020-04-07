@@ -123,8 +123,8 @@ def sample_sequence_batch(model, context_tokens, length, n_ctx, tokenizer, nsamp
                 **inputs)  # Note: we could also use 'past' with GPT-2/Transfo-XL/XLNet (cached hidden-states)
             t1 = time.time()
             print('model predict time:%0.4f'%(t1-t0))
-            '''
             next_token_logits = outputs[0][0, :, -1, :]
+            '''
             for ii in range(n):
                 for id in set(generated[ii]):
                     next_token_logits[ii][id] /= repitition_penalty
