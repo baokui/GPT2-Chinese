@@ -124,10 +124,14 @@ def sample_sequence_batch(model, context_tokens, length, n_ctx, tokenizer, nsamp
             t1 = time.time()
             print('model predict time:%0.4f'%(t1-t0))
             next_token_logits = outputs[0][0, :, -1, :]
+            '''
             for ii in range(n):
                 for id in set(generated[ii]):
                     next_token_logits[ii][id] /= repitition_penalty
+            #for id in set(generated[ii]):
+                #next_token_logits[:,id] /= repitition_penalty
             next_token_logits = next_token_logits / temperature
+            '''
             t2 = time.time()
             print('model temperature time:%0.4f' % (t2 - t1))
             Next = []
