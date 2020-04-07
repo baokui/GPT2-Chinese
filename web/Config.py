@@ -22,7 +22,7 @@ class config_predict(object):
                             'demo_config/config_dabaigou.json']
         else:
             self.model_configs = [model_config]
-        self.predict_nums = [12, 4, 12]
+        self.predict_nums = [8, 4, 8]
         self.tags = ['(文)', '(诗)', '(大白狗)', '(句联想)']
         self.rmHFW = [False, False, True, False]
         self.maxNext_JLX = 3
