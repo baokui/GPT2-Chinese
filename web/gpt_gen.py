@@ -123,15 +123,49 @@ def sample_sequence_batch(model, context_tokens, length, n_ctx, tokenizer, nsamp
                 **inputs)  # Note: we could also use 'past' with GPT-2/Transfo-XL/XLNet (cached hidden-states)
             t1 = time.time()
             print('model predict time:%0.4f'%(t1-t0))
-            next_token_logits = outputs[0][0, :, -1, :]
             '''
+            next_token_logits = outputs[0][0, :, -1, :]
+            for ii in range(n):
+                for id in set(generated[ii]):
+                    next_token_logits[ii][id] /= repitition_penalty
+            '''
+            next_token_logits = next_token_logits / temperature
+            t2 = time.time()
+            print('model temperature time:%0.4f' % (t2 - t1))
+            Next = []
+            for ii in range(n):
+                next_token_logits[ii][tokenizer.convert_tokens_to_ids('[UNK]')] = -float('Inf')
+                filtered_logits = top_k_top_p_filtering(next_token_logits[ii], top_k=top_k, top_p=top_p)
+                next_token = torch.multinomial(F.softmax(filtered_logits, dim=-1), num_samples=1)
+                Next.append(torch.reshape(next_token, (1, 1)))
+            t3 = time.time()
+            print('model top-k time:%0.4f' % (t3 - t2))
+            # next_token = torch.tensor(Next)
+            next_token = torch.cat(Next, dim=0)
+            generated = torch.cat((generated, next_token), dim=1)
+    return generated.tolist()
+def sample_sequence_batch_opti(model, context_tokens, length, n_ctx, tokenizer, nsamples,temperature=1.0, top_k=30, top_p=0.0, repitition_penalty=1.0,
+                    device='cpu'):
+    n = nsamples
+    context = [[context_tokens]*n]
+    context = torch.tensor(context, dtype=torch.long, device=device)
+    context = context.squeeze(0)
+    generated = context
+    with torch.no_grad():
+        for _ in trange(length):
+            t0 = time.time()
+            inputs = {'input_ids': generated[:, -(n_ctx - 1):].unsqueeze(0)}
+            outputs = model(
+                **inputs)  # Note: we could also use 'past' with GPT-2/Transfo-XL/XLNet (cached hidden-states)
+            t1 = time.time()
+            print('model predict time:%0.4f'%(t1-t0))
+            next_token_logits = outputs[0][0, :, -1, :]
             for ii in range(n):
                 for id in set(generated[ii]):
                     next_token_logits[ii][id] /= repitition_penalty
             #for id in set(generated[ii]):
                 #next_token_logits[:,id] /= repitition_penalty
             next_token_logits = next_token_logits / temperature
-            '''
             t2 = time.time()
             print('model temperature time:%0.4f' % (t2 - t1))
             Next = []
