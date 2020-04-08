@@ -24,10 +24,9 @@ rmHFW = ConfigPredict.rmHFW
 maxNext = ConfigPredict.maxNext_JLX
 path_next = ConfigPredict.path_JLX_next
 path_simi = ConfigPredict.path_JLX_simi
-
 model,tokenizer,config,device = [], [], [], []
-for path_config in path_configs:
-    m0,t0,c0,d0 = gpt_gen.getModel(path_config=path_config)
+for ii in range(len(path_configs)):
+    m0,t0,c0,d0 = gpt_gen.getModel(path_config=path_configs[ii],gpu=ConfigPredict.gpus[ii])
     model.append(m0)
     tokenizer.append(t0)
     config.append(c0)
@@ -59,10 +58,11 @@ def test2():
         app.logger.info('time: {}'.format(now))
         result = []
         for ii in range(len(path_configs)):
+            gpu = ConfigPredict.gpus[ii]
             if ii==1:
-                r0 = gpt_gen.generating_poem(app,data, model[ii], config[ii], tokenizer[ii],device[ii],quick,num0[ii],batchGenerating=batchGenerating)
+                r0 = gpt_gen.generating_poem(app,data, model[ii], config[ii], tokenizer[ii],device[ii],quick,num0[ii],batchGenerating=batchGenerating,gpu=gpu)
             else:
-                r0 = gpt_gen.generating(app,data, model[ii], config[ii], tokenizer[ii],device[ii],ConfigPredict,quick=quick,num=num0[ii],removeHighFreqWords=rmHFW[ii],batchGenerating=batchGenerating)
+                r0 = gpt_gen.generating(app,data, model[ii], config[ii], tokenizer[ii],device[ii],ConfigPredict,quick=quick,num=num0[ii],removeHighFreqWords=rmHFW[ii],batchGenerating=batchGenerating,gpu=gpu)
             r0 = [rr + tags[ii] for rr in r0]
             result.extend(r0)
         result_nnlm = gpt_gen.nnlm_modelpredict(D_simi,D_next,ConfigPredict,inputStr=data,maxNext=maxNext,maxChoice=10,num=num)

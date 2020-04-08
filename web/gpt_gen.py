@@ -277,8 +277,9 @@ def generate(n_ctx, model, context, length, tokenizer,is_quick=False, temperatur
         return sample_sequence(model, context, length, n_ctx, tokenizer=tokenizer, temperature=temperature, top_k=top_k,
                                top_p=top_p,
                                repitition_penalty=repitition_penalty, device=device)
-def getModel(path_config):
+def getModel(path_config,gpu='0'):
     print("load model......")
+    os.environ["CUDA_VISIBLE_DEVICES"] = gpu
     with open(path_config,'r') as f:
         config = json.load(f)
     from tokenizations import tokenization_bert
@@ -329,8 +330,9 @@ def untokenization(out,config,tokenizer,punc,continue_writing):
     tmp.append(tmptext[-1])
     tmptext = ''.join(tmp)
     return tmptext
-def generating(app,prefix,model,config,tokenizer,device,config_predict,quick=False,num=5,continue_writing=False,removeHighFreqWords=False,batchGenerating=False):
+def generating(app,prefix,model,config,tokenizer,device,config_predict,quick=False,num=5,continue_writing=False,removeHighFreqWords=False,batchGenerating=False,gpu='0'):
     #print("start:",prefix)
+    os.environ["CUDA_VISIBLE_DEVICES"] = gpu
     prefix0 = prefix
     if config_predict.prefixTrim:
         prefix = sentTriming(prefix0)
@@ -516,7 +518,8 @@ def untokenization_poem(out,tokenizer,config):
             if len(tmptext) >= config["min_length"]:
                 break
     return tmptext
-def generating_poem(app,prefix,model,config,tokenizer,device,quick=False,num=5,batchGenerating=False):
+def generating_poem(app,prefix,model,config,tokenizer,device,quick=False,num=5,batchGenerating=False,gpu='0'):
+    os.environ["CUDA_VISIBLE_DEVICES"] = gpu
     if len(prefix)>7:
         return []
     #print("start:", prefix)

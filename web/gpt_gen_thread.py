@@ -8,7 +8,7 @@ exitFlag = 0
 class GPT2_generator_thread (threading.Thread):
     def __init__(self, threadID, name,
                  app,model,prefix,config,tokenizer,device,ConfigPredict,
-                 quick,nsamples,removeHighFreqWords,batchGenerating,isPoem,tags=''):
+                 quick,nsamples,removeHighFreqWords,batchGenerating,isPoem,tags='',gpu='0'):
         threading.Thread.__init__(self)
         self.threadID = threadID
         self.name = name
@@ -26,6 +26,7 @@ class GPT2_generator_thread (threading.Thread):
         self.batchGenerating = batchGenerating
         self.isPoem = isPoem
         self.tags = tags
+        self.gpu = gpu
     def run(self):
         #print ("开始线程：" + self.name)
         #self.print_time(self.name, self.counter, 5)
@@ -41,12 +42,12 @@ class GPT2_generator_thread (threading.Thread):
     def generating_th(self,app, model, prefix, config, tokenizer, device, ConfigPredict,
                    quick, num, removeHighFreqWords, batchGenerating):
         S = generating(app, prefix, model, config, tokenizer, device, ConfigPredict,
-                   quick, num, continue_writing = False,removeHighFreqWords=removeHighFreqWords, batchGenerating=batchGenerating)
+                   quick, num, continue_writing = False,removeHighFreqWords=removeHighFreqWords, batchGenerating=batchGenerating,gpu=self.gpu)
         return S
     def generating_poem_th(self,app, model, prefix, config, tokenizer, device, ConfigPredict,
                    quick, num, removeHighFreqWords, batchGenerating):
         S = generating_poem(app, prefix, model, config, tokenizer, device,
-                   quick, num, batchGenerating)
+                   quick, num, batchGenerating,gpu=self.gpu)
         return S
 def generating_thread(app,prefix, models, configs, tokenizers,devices,ConfigPredict,quick,nums,removeHighFreqWordss,batchGenerating,tags):
     nb_thread = len(models)
@@ -56,16 +57,20 @@ def generating_thread(app,prefix, models, configs, tokenizers,devices,ConfigPred
             isPoem = True
         else:
             isPoem = False
+        gpu = ConfigPredict.gpus[t]
         thread1 = GPT2_generator_thread(t, "thread-"+str(t), app,models[t],prefix,configs[t],tokenizers[t],
                                         devices[t],ConfigPredict,quick,nums[t],
-                                        removeHighFreqWordss[t],batchGenerating,isPoem,tags[t])
+                                        removeHighFreqWordss[t],batchGenerating,isPoem,tags[t],gpu=gpu)
         Thread.append(thread1)
-    # 开启新线程
+    print('# 开启新线程')
     for th in Thread:
         th.start()
+    print('并行运行')
     for th in Thread:
         th.join()
+    print('运行结束')
     S = []
     for th in Thread:
         S.extend(th.results)
+    print(S)
     return S
