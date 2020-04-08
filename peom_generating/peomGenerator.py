@@ -30,7 +30,7 @@ def main(path_source,path_config,idx0,idx1,gpu,nsamples):
     S = data[idx0:idx1]
     R = {}
     for i in range(len(S)):
-        if i%100==0:
+        if i%2==0:
             n = sum([len(R[tt]) for tt in R])
             print("proceed {} poem (total {}), get {} files and generate {} poems".format(i,len(S),len(D_prefix),n))
         sents = peomSplit(S[i])
