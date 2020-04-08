@@ -209,7 +209,7 @@ def sample_sequence_batch_opti(model, context_tokens, length, n_ctx, tokenizer, 
                 next_token = torch.multinomial(F.softmax(filtered_logits, dim=-1), num_samples=1)
                 for ii in range(len(set_generated)):
                     if next_token[ii] not in set_generated[ii]:
-                        set_generated[ii].append(next_token)
+                        set_generated[ii].append(next_token[ii])
                         A0.append(ii)
                         A1.append(next_token[ii])
                 generated = torch.cat((generated, next_token), dim=1)
