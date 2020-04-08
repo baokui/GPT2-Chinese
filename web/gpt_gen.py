@@ -34,7 +34,7 @@ def top_k_top_p_filtering(logits, top_k=0, top_p=0.0, filter_value=-float('Inf')
                 Nucleus filtering is described in Holtzman et al. (http://arxiv.org/abs/1904.09751)
         From: https://gist.github.com/thomwolf/1a5a29f6962089e871b94cbd09daf317
     """
-    assert logits.dim() == 1  # batch size 1 for now - could be updated for more but the code would be less clear
+    #assert logits.dim() == 1  # batch size 1 for now - could be updated for more but the code would be less clear
     top_k = min(top_k, logits.size(-1))  # Safety check
     if top_k > 0:
         # Remove all tokens with a probability less than the last token of the top-k
@@ -207,6 +207,11 @@ def sample_sequence_batch_opti(model, context_tokens, length, n_ctx, tokenizer, 
                 next_token_logits[:, idx_unk] = -float('Inf')
                 filtered_logits = top_k_top_p_filtering(next_token_logits, top_k=top_k, top_p=0)
                 next_token = torch.multinomial(F.softmax(filtered_logits, dim=-1), num_samples=1)
+                for ii in range(len(set_generated)):
+                    if next_token[ii] not in set_generated[ii]:
+                        set_generated[ii].append(next_token)
+                        A0.append(ii)
+                        A1.append(next_token[ii])
                 generated = torch.cat((generated, next_token), dim=1)
             #print(T0,T1,T2)
             #print(TT0,TT1,TT2,TT3,TT4)
