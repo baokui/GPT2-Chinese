@@ -191,7 +191,7 @@ def getModel(path_config,gpu='0',fp16=False):
     model.to(device)
     model.eval()
     if fp16:
-        optimizer = transformers.AdamW(model.parameters(), lr=lr, correct_bias=True)
+        optimizer = transformers.AdamW(model.parameters(), lr=0.1, correct_bias=True)
         from apex import amp
         fp16_opt_level = 'O1'
         model, optimizer = amp.initialize(model, optimizer, opt_level=fp16_opt_level)
