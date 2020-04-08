@@ -279,6 +279,7 @@ def generate(n_ctx, model, context, length, tokenizer,is_quick=False, temperatur
                                repitition_penalty=repitition_penalty, device=device)
 def getModel(path_config,gpu='0'):
     print("load model......")
+    torch.cuda.set_device(int(gpu))
     #os.environ["CUDA_VISIBLE_DEVICES"] = gpu
     with open(path_config,'r') as f:
         config = json.load(f)
