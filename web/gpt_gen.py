@@ -158,7 +158,7 @@ def sample_sequence_batch_opti(model, context_tokens, length, n_ctx, tokenizer, 
                 A0.append(kk)
                 A1.append(set_generated[kk][jj])
         with torch.no_grad():
-            for _ in trange(length):
+            for _ in range(length):
                 t0 = time.time()
                 inputs = {'input_ids': generated[:, -(n_ctx - 1):].unsqueeze(0)}
                 outputs = model(

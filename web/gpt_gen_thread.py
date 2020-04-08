@@ -30,15 +30,14 @@ class GPT2_generator_thread (threading.Thread):
         #print ("开始线程：" + self.name)
         #self.print_time(self.name, self.counter, 5)
         if not self.isPoem:
-            self.results = self.generating_th(self.app, self.prefix, self.model, self.config, self.tokenizer, self.device, self.ConfigPredict,quick=self.quick, num=self.nsamples, removeHighFreqWords=self.removeHighFreqWords,batchGenerating=self.batchGenerating)
+            self.results = self.generating_th(self.app, self.model, self.prefix, self.config, self.tokenizer, self.device, self.ConfigPredict,quick=self.quick, num=self.nsamples, removeHighFreqWords=self.removeHighFreqWords,batchGenerating=self.batchGenerating)
         else:
-            self.results = self.generating_poem_th(self.app, self.prefix, self.model, self.config, self.tokenizer,
+            self.results = self.generating_poem_th(self.app, self.model, self.prefix, self.config, self.tokenizer,
                                               self.device, self.ConfigPredict, quick=self.quick, num=self.nsamples,
                                               removeHighFreqWords=self.removeHighFreqWords,
                                               batchGenerating=self.batchGenerating)
         self.results = [rr+self.tags for rr in self.results]
         #print ("退出线程：" + self.name)
-
     def generating_th(self,app, model, prefix, config, tokenizer, device, ConfigPredict,
                    quick, num, removeHighFreqWords, batchGenerating):
         S = generating(app, prefix, model, config, tokenizer, device, ConfigPredict,
