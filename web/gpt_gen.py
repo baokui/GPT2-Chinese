@@ -279,7 +279,7 @@ def generate(n_ctx, model, context, length, tokenizer,is_quick=False, temperatur
                                repitition_penalty=repitition_penalty, device=device)
 def getModel(path_config,gpu='0'):
     print("load model......")
-    os.environ["CUDA_VISIBLE_DEVICES"] = gpu
+    #os.environ["CUDA_VISIBLE_DEVICES"] = gpu
     with open(path_config,'r') as f:
         config = json.load(f)
     from tokenizations import tokenization_bert
@@ -332,7 +332,8 @@ def untokenization(out,config,tokenizer,punc,continue_writing):
     return tmptext
 def generating(app,prefix,model,config,tokenizer,device,config_predict,quick=False,num=5,continue_writing=False,removeHighFreqWords=False,batchGenerating=False,gpu='0'):
     #print("start:",prefix)
-    os.environ["CUDA_VISIBLE_DEVICES"] = gpu
+    #os.environ["CUDA_VISIBLE_DEVICES"] = gpu
+    torch.cuda.set_device(int(gpu))
     prefix0 = prefix
     if config_predict.prefixTrim:
         prefix = sentTriming(prefix0)
