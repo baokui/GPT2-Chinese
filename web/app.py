@@ -75,7 +75,7 @@ def test2():
 
         now = datetime.now()
         app.logger.info('time: {}'.format(now))
-        result1 = gpt_gen_thread.generating_thread(app,data, model, config, tokenizer,device,ConfigPredict,quick,num0,
+        result1 = gpt_gen_thread.generating_thead(app,data, model, config, tokenizer,device,ConfigPredict,quick,num0,
                                                    removeHighFreqWordss=rmHFW,batchGenerating=batchGenerating,tags=tags)
         then = datetime.now()
         app.logger.info('time: {}'.format(then))
