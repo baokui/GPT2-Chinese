@@ -28,7 +28,6 @@ class GPT2_generator_thread (threading.Thread):
         self.isPoem = isPoem
         self.tags = tags
         self.gpu = gpu
-        #torch.cuda.set_device(int(gpu))
     def run(self):
         #print ("开始线程：" + self.name)
         #self.print_time(self.name, self.counter, 5)
@@ -43,11 +42,13 @@ class GPT2_generator_thread (threading.Thread):
         #print ("退出线程：" + self.name)
     def generating_th(self,app, model, prefix, config, tokenizer, device, ConfigPredict,
                    quick, num, removeHighFreqWords, batchGenerating):
+        torch.cuda.set_device(int(self.gpu))
         S = generating(app, prefix, model, config, tokenizer, device, ConfigPredict,
                    quick, num, continue_writing = False,removeHighFreqWords=removeHighFreqWords, batchGenerating=batchGenerating,gpu=self.gpu)
         return S
     def generating_poem_th(self,app, model, prefix, config, tokenizer, device, ConfigPredict,
                    quick, num, removeHighFreqWords, batchGenerating):
+        torch.cuda.set_device(int(self.gpu))
         S = generating_poem(app, prefix, model, config, tokenizer, device,
                    quick, num, batchGenerating,gpu=self.gpu)
         return S
@@ -60,7 +61,7 @@ def generating_thread(app,prefix, models, configs, tokenizers,devices,ConfigPred
         else:
             isPoem = False
         gpu = ConfigPredict.gpus[t]
-        #torch.cuda.set_device(int(gpu))
+        torch.cuda.set_device(int(gpu))
         thread1 = GPT2_generator_thread(t, "thread-"+str(t), app,models[t],prefix,configs[t],tokenizers[t],
                                         devices[t],ConfigPredict,quick,nums[t],
                                         removeHighFreqWordss[t],batchGenerating,isPoem,tags[t],gpu=gpu)

@@ -1,6 +1,7 @@
 # -*- encoding: utf-8 -*-
 from flask import Flask, request, Response
 import json
+import torch
 import numpy as np
 import gpt_gen
 import gpt_gen_thread
@@ -59,6 +60,7 @@ def test2():
         result = []
         for ii in range(len(path_configs)):
             gpu = ConfigPredict.gpus[ii]
+            torch.cuda.set_device(int(gpu))
             if ii==1:
                 r0 = gpt_gen.generating_poem(app,data, model[ii], config[ii], tokenizer[ii],device[ii],quick,num0[ii],batchGenerating=batchGenerating,gpu=gpu)
             else:
