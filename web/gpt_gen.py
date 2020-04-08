@@ -352,7 +352,7 @@ def generating(app,prefix,model,config,tokenizer,device,config_predict,quick=Fal
     if batchGenerating:
         S = []
         t0 = time.time()
-        outs = sample_sequence_batch_opti(model, context_tokens, length, n_ctx, tokenizer, nsamples, temperature=temperature,
+        outs = sample_sequence_batch(model, context_tokens, length, n_ctx, tokenizer, nsamples, temperature=temperature,
                                      top_k=topk,
                                      top_p=topp, repitition_penalty=repetition_penalty,
                                      device=device)
