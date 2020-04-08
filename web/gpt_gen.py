@@ -121,25 +121,17 @@ def sample_sequence_batch(model, context_tokens, length, n_ctx, tokenizer, nsamp
             inputs = {'input_ids': generated[:, -(n_ctx - 1):].unsqueeze(0)}
             outputs = model(
                 **inputs)  # Note: we could also use 'past' with GPT-2/Transfo-XL/XLNet (cached hidden-states)
-            t1 = time.time()
-            print('model predict time:%0.4f'%(t1-t0))
             next_token_logits = outputs[0][0, :, -1, :]
-            '''
             for ii in range(n):
                 for id in set(generated[ii]):
                     next_token_logits[ii][id] /= repitition_penalty
-            '''
             next_token_logits = next_token_logits / temperature
-            t2 = time.time()
-            print('model temperature time:%0.4f' % (t2 - t1))
             Next = []
             for ii in range(n):
                 next_token_logits[ii][tokenizer.convert_tokens_to_ids('[UNK]')] = -float('Inf')
                 filtered_logits = top_k_top_p_filtering(next_token_logits[ii], top_k=top_k, top_p=top_p)
                 next_token = torch.multinomial(F.softmax(filtered_logits, dim=-1), num_samples=1)
                 Next.append(torch.reshape(next_token, (1, 1)))
-            t3 = time.time()
-            print('model top-k time:%0.4f' % (t3 - t2))
             # next_token = torch.tensor(Next)
             next_token = torch.cat(Next, dim=0)
             generated = torch.cat((generated, next_token), dim=1)
@@ -151,35 +143,96 @@ def sample_sequence_batch_opti(model, context_tokens, length, n_ctx, tokenizer, 
     context = torch.tensor(context, dtype=torch.long, device=device)
     context = context.squeeze(0)
     generated = context
-    with torch.no_grad():
-        for _ in trange(length):
-            t0 = time.time()
-            inputs = {'input_ids': generated[:, -(n_ctx - 1):].unsqueeze(0)}
-            outputs = model(
-                **inputs)  # Note: we could also use 'past' with GPT-2/Transfo-XL/XLNet (cached hidden-states)
-            t1 = time.time()
-            print('model predict time:%0.4f'%(t1-t0))
-            next_token_logits = outputs[0][0, :, -1, :]
-            for ii in range(n):
-                for id in set(generated[ii]):
-                    next_token_logits[ii][id] /= repitition_penalty
-            #for id in set(generated[ii]):
-                #next_token_logits[:,id] /= repitition_penalty
-            next_token_logits = next_token_logits / temperature
-            t2 = time.time()
-            print('model temperature time:%0.4f' % (t2 - t1))
-            Next = []
-            for ii in range(n):
-                next_token_logits[ii][tokenizer.convert_tokens_to_ids('[UNK]')] = -float('Inf')
-                filtered_logits = top_k_top_p_filtering(next_token_logits[ii], top_k=top_k, top_p=top_p)
-                next_token = torch.multinomial(F.softmax(filtered_logits, dim=-1), num_samples=1)
-                Next.append(torch.reshape(next_token, (1, 1)))
-            t3 = time.time()
-            print('model top-k time:%0.4f' % (t3 - t2))
-            # next_token = torch.tensor(Next)
-            next_token = torch.cat(Next, dim=0)
-            generated = torch.cat((generated, next_token), dim=1)
-    return generated.tolist()
+    if repitition_penalty!=1.0:
+        set_generated = [list(context[0]) for _ in range(n)]
+        T0 = 0
+        T1 = 0
+        T2 = 0
+        TT0,TT1,TT2,TT3,TT4=0,0,0,0,0
+        rev_repitition_penalty = 1.0/repitition_penalty
+        rev_temperature = 1.0/temperature
+        A = []
+        with torch.no_grad():
+            for _ in trange(length):
+                t0 = time.time()
+                inputs = {'input_ids': generated[:, -(n_ctx - 1):].unsqueeze(0)}
+                outputs = model(
+                    **inputs)  # Note: we could also use 'past' with GPT-2/Transfo-XL/XLNet (cached hidden-states)
+                t1 = time.time()
+                T0 = T0+t1-t0
+                next_token_logits = outputs[0][0, :, -1, :]
+                #for ii in range(n):
+                    #for id in set(generated[ii]):
+                        #A.append([ii,id])
+                        #next_token_logits[ii][id] *= rev_repitition_penalty
+                for jj in range(len(A)):
+                    next_token_logits[A[jj][0],A[jj][1]] *= rev_repitition_penalty
+                next_token_logits = next_token_logits * rev_temperature
+                t2 = time.time()
+                T1 = T1+t2-t1
+                Next = []
+                for ii in range(n):
+                    tt0 = time.time()
+                    next_token_logits[ii][tokenizer.convert_tokens_to_ids('[UNK]')] = -float('Inf')
+                    tt1 = time.time()
+                    filtered_logits = top_k_top_p_filtering(next_token_logits[ii], top_k=top_k, top_p=top_p)
+                    tt2 = time.time()
+                    next_token = torch.multinomial(F.softmax(filtered_logits, dim=-1), num_samples=1)
+                    tt3 = time.time()
+                    Next.append(torch.reshape(next_token, (1, 1)))
+                    tt4 = time.time()
+                    if next_token not in set_generated[ii]:
+                        set_generated[ii].append(next_token)
+                        A.append([ii,next_token])
+                    tt5 = time.time()
+                    TT0 = tt1-tt0+TT0
+                    TT1 = tt2-tt1+TT1
+                    TT2 = tt3-tt2+TT2
+                    TT3 = tt4-tt3+TT3
+                    TT4 = tt5-tt4+TT4
+                    #set_generated[ii].update(next_token)
+                t3 = time.time()
+                T2 = T2+t3-t2
+                # next_token = torch.tensor(Next)
+                next_token = torch.cat(Next, dim=0)
+                generated = torch.cat((generated, next_token), dim=1)
+            #print(T0,T1,T2)
+            #print(TT0,TT1,TT2,TT3,TT4)
+            return generated.tolist()
+    else:
+        T0 = 0
+        T1 = 0
+        T2 = 0
+        with torch.no_grad():
+            for _ in trange(length):
+                t0 = time.time()
+                inputs = {'input_ids': generated[:, -(n_ctx - 1):].unsqueeze(0)}
+                outputs = model(
+                    **inputs)  # Note: we could also use 'past' with GPT-2/Transfo-XL/XLNet (cached hidden-states)
+                t1 = time.time()
+                T0 = T0+t1-t0
+                next_token_logits = outputs[0][0, :, -1, :]
+                next_token_logits = next_token_logits / temperature
+                t2 = time.time()
+                T1 = T1+t2-t1
+                Next = []
+                for ii in range(n):
+                    tt0 = time.time()
+                    next_token_logits[ii][tokenizer.convert_tokens_to_ids('[UNK]')] = -float('Inf')
+                    tt1 = time.time()
+                    filtered_logits = top_k_top_p_filtering(next_token_logits[ii], top_k=top_k, top_p=top_p)
+                    tt2 = time.time()
+                    next_token = torch.multinomial(F.softmax(filtered_logits, dim=-1), num_samples=1)
+                    tt3 = time.time()
+                    Next.append(torch.reshape(next_token, (1, 1)))
+                    #set_generated[ii].update(next_token)
+                t3 = time.time()
+                T2 = T2+t3-t2
+                # next_token = torch.tensor(Next)
+                next_token = torch.cat(Next, dim=0)
+                generated = torch.cat((generated, next_token), dim=1)
+            #print(T0,T1,T2)
+            return generated.tolist()
 def fast_sample_sequence(model, context, length, temperature=1.0, top_k=30, top_p=0.0, device='cpu'):
     inputs = torch.LongTensor(context).view(1, -1).to(device)
     if len(context) > 1:
@@ -299,17 +352,17 @@ def generating(app,prefix,model,config,tokenizer,device,config_predict,quick=Fal
     if batchGenerating:
         S = []
         t0 = time.time()
-        outs = sample_sequence_batch(model, context_tokens, length, n_ctx, tokenizer, nsamples, temperature=temperature,
+        outs = sample_sequence_batch_opti(model, context_tokens, length, n_ctx, tokenizer, nsamples, temperature=temperature,
                                      top_k=topk,
                                      top_p=topp, repitition_penalty=repetition_penalty,
                                      device=device)
         t1 = time.time()
-        print('model predict all time:%0.4f' % (t1 - t0))
+        #print('model predict all time:%0.4f' % (t1 - t0))
         for out in outs:
             tmptext = untokenization(out, config, tokenizer, punc, continue_writing)
             S.append(tmptext)
         t2 = time.time()
-        print('model untokenization time:%0.4f' % (t2 - t1))
+        #print('model untokenization time:%0.4f' % (t2 - t1))
     else:
         S = []
         for _ in range(nsamples):
@@ -328,7 +381,7 @@ def generating(app,prefix,model,config,tokenizer,device,config_predict,quick=Fal
     S = postprocess(S,prefix0,config_predict,removeHighFreqWords=removeHighFreqWords)
     S = dropDuplicateContent(S)
     t3 = time.time()
-    print('text posprocess time:%0.4f' % (t3 - t2))
+    #print('text posprocess time:%0.4f' % (t3 - t2))
     return S
 def generating_sentence(prefix,model,config,tokenizer):
     print("start:",prefix,config)
