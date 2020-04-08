@@ -66,15 +66,14 @@ def generating_thread(app,prefix, models, configs, tokenizers,devices,ConfigPred
                                         devices[t],ConfigPredict,quick,nums[t],
                                         removeHighFreqWordss[t],batchGenerating,isPoem,tags[t],gpu=gpu)
         Thread.append(thread1)
-    print('# 开启新线程')
+    #print('# 开启新线程')
     for th in Thread:
         th.start()
-    print('并行运行')
+    #print('并行运行')
     for th in Thread:
         th.join()
-    print('运行结束')
+    #print('运行结束')
     S = []
     for th in Thread:
         S.extend(th.results)
-    print(S)
     return S

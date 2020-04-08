@@ -17,7 +17,7 @@ class config_predict(object):
         self.rate_gen2inp = 1.4
         self.batchGenerating = True
         self.max_nb_sents=4
-        self.gpus = ['1','2','3']
+        self.gpus = ['5','6','7']
         if model_config==None:
             self.model_configs = ['demo_config/config_godText_large1.json', 'demo_config/config_poem.json',
                             'demo_config/config_dabaigou.json']
