@@ -7,7 +7,7 @@ from gpt_gen import generating,generating_poem
 exitFlag = 0
 class GPT2_generator_thread (threading.Thread):
     def __init__(self, threadID, name,
-                 app,model,predix,config,tokenizer,device,ConfigPredict,
+                 app,model,prefix,config,tokenizer,device,ConfigPredict,
                  quick,nsamples,removeHighFreqWords,batchGenerating,isPoem,tags=''):
         threading.Thread.__init__(self)
         self.threadID = threadID
@@ -15,7 +15,7 @@ class GPT2_generator_thread (threading.Thread):
         self.results = []
         self.app = app
         self.model = model
-        self.predix = predix
+        self.prefix = prefix
         self.config = config
         self.tokenizer = tokenizer
         self.device = device
@@ -30,23 +30,23 @@ class GPT2_generator_thread (threading.Thread):
         #print ("开始线程：" + self.name)
         #self.print_time(self.name, self.counter, 5)
         if not self.isPoem:
-            self.results = self.generating_th(self.app, self.predix, self.model, self.config, self.tokenizer, self.device, self.ConfigPredict,quick=self.quick, num=self.nsamples, removeHighFreqWords=self.removeHighFreqWords,batchGenerating=self.batchGenerating)
+            self.results = self.generating_th(self.app, self.prefix, self.model, self.config, self.tokenizer, self.device, self.ConfigPredict,quick=self.quick, num=self.nsamples, removeHighFreqWords=self.removeHighFreqWords,batchGenerating=self.batchGenerating)
         else:
-            self.results = self.generating_poem_th(self.app, self.predix, self.model, self.config, self.tokenizer,
+            self.results = self.generating_poem_th(self.app, self.prefix, self.model, self.config, self.tokenizer,
                                               self.device, self.ConfigPredict, quick=self.quick, num=self.nsamples,
                                               removeHighFreqWords=self.removeHighFreqWords,
                                               batchGenerating=self.batchGenerating)
         self.results = [rr+self.tags for rr in self.results]
         #print ("退出线程：" + self.name)
 
-    def generating_th(self,app, model, predix, config, tokenizer, device, ConfigPredict,
+    def generating_th(self,app, model, prefix, config, tokenizer, device, ConfigPredict,
                    quick, num, removeHighFreqWords, batchGenerating):
-        S = generating(app, predix, model, config, tokenizer, device, ConfigPredict,
+        S = generating(app, prefix, model, config, tokenizer, device, ConfigPredict,
                    quick, num, continue_writing = False,removeHighFreqWords=removeHighFreqWords, batchGenerating=batchGenerating)
         return S
-    def generating_poem_th(self,app, model, predix, config, tokenizer, device, ConfigPredict,
+    def generating_poem_th(self,app, model, prefix, config, tokenizer, device, ConfigPredict,
                    quick, num, removeHighFreqWords, batchGenerating):
-        S = generating_poem(app, predix, model, config, tokenizer, device,
+        S = generating_poem(app, prefix, model, config, tokenizer, device,
                    quick, num, batchGenerating)
         return S
 def generating_thread(app,prefix, models, configs, tokenizers,devices,ConfigPredict,quick,nums,removeHighFreqWordss,batchGenerating,tags):
