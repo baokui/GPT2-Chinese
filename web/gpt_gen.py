@@ -521,7 +521,7 @@ def untokenization_poem(out,tokenizer,config):
                 break
     return tmptext
 def generating_poem(app,prefix,model,config,tokenizer,device,quick=False,num=5,batchGenerating=False,gpu='0'):
-    os.environ["CUDA_VISIBLE_DEVICES"] = gpu
+    torch.cuda.set_device(int(gpu))
     if len(prefix)>7:
         return []
     #print("start:", prefix)
