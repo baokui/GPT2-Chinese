@@ -127,7 +127,6 @@ def sample_sequence_batch(model, context_tokens, length, n_ctx, tokenizer, nsamp
                 for id in set(generated[ii]):
                     next_token_logits[ii][id] /= repitition_penalty
             next_token_logits = next_token_logits / temperature
-            '''
             Next = []
             for ii in range(n):
                 next_token_logits[ii][tokenizer.convert_tokens_to_ids('[UNK]')] = -float('Inf')
@@ -136,14 +135,11 @@ def sample_sequence_batch(model, context_tokens, length, n_ctx, tokenizer, nsamp
                 Next.append(torch.reshape(next_token, (1, 1)))
             # next_token = torch.tensor(Next)
             next_token = torch.cat(Next, dim=0)
-            '''
-            next_token_logits[:,idx_unk] = -float('Inf')
-            filtered_logits = top_k_top_p_filtering(next_token_logits, top_k=top_k, top_p=0)
-            next_token = torch.multinomial(F.softmax(filtered_logits, dim=-1), num_samples=1)
             generated = torch.cat((generated, next_token), dim=1)
     return generated.tolist()
 def sample_sequence_batch_opti(model, context_tokens, length, n_ctx, tokenizer, nsamples,temperature=1.0, top_k=30, top_p=0.0, repitition_penalty=1.0,
                     device='cpu'):
+    idx_unk = tokenizer.convert_tokens_to_ids('[UNK]')
     n = nsamples
     context = [[context_tokens]*n]
     context = torch.tensor(context, dtype=torch.long, device=device)
@@ -180,6 +176,7 @@ def sample_sequence_batch_opti(model, context_tokens, length, n_ctx, tokenizer, 
                 next_token_logits = next_token_logits * rev_temperature
                 t2 = time.time()
                 T1 = T1+t2-t1
+                '''
                 Next = []
                 for ii in range(n):
                     tt0 = time.time()
@@ -206,6 +203,10 @@ def sample_sequence_batch_opti(model, context_tokens, length, n_ctx, tokenizer, 
                 T2 = T2+t3-t2
                 # next_token = torch.tensor(Next)
                 next_token = torch.cat(Next, dim=0)
+                '''
+                next_token_logits[:, idx_unk] = -float('Inf')
+                filtered_logits = top_k_top_p_filtering(next_token_logits, top_k=top_k, top_p=0)
+                next_token = torch.multinomial(F.softmax(filtered_logits, dim=-1), num_samples=1)
                 generated = torch.cat((generated, next_token), dim=1)
             #print(T0,T1,T2)
             #print(TT0,TT1,TT2,TT3,TT4)
