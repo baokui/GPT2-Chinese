@@ -151,10 +151,12 @@ def sample_sequence_batch_opti(model, context_tokens, length, n_ctx, tokenizer, 
         TT0,TT1,TT2,TT3,TT4=0,0,0,0,0
         rev_repitition_penalty = 1.0/repitition_penalty
         rev_temperature = 1.0/temperature
-        A = []
+        A0 = []
+        A1 = []
         for kk in range(len(set_generated)):
             for jj in range(len(set_generated[kk])):
-                A.append([kk,set_generated[kk][jj]])
+                A0.append(kk)
+                A1.append(set_generated[kk][jj])
         with torch.no_grad():
             for _ in trange(length):
                 t0 = time.time()
@@ -168,8 +170,7 @@ def sample_sequence_batch_opti(model, context_tokens, length, n_ctx, tokenizer, 
                     #for id in set(generated[ii]):
                         #A.append([ii,id])
                         #next_token_logits[ii][id] *= rev_repitition_penalty
-                for jj in range(len(A)):
-                    next_token_logits[A[jj][0],A[jj][1]] *= rev_repitition_penalty
+                next_token_logits[A0,A1] *= rev_repitition_penalty
                 next_token_logits = next_token_logits * rev_temperature
                 t2 = time.time()
                 T1 = T1+t2-t1
@@ -186,7 +187,8 @@ def sample_sequence_batch_opti(model, context_tokens, length, n_ctx, tokenizer, 
                     tt4 = time.time()
                     if next_token not in set_generated[ii]:
                         set_generated[ii].append(next_token)
-                        A.append([ii,next_token])
+                        A0.append(ii)
+                        A1.append(next_token)
                     tt5 = time.time()
                     TT0 = tt1-tt0+TT0
                     TT1 = tt2-tt1+TT1
