@@ -49,7 +49,7 @@ class GPT2_generator_thread (threading.Thread):
         S = generating_poem(app, predix, model, config, tokenizer, device,
                    quick, num, batchGenerating)
         return S
-def generating_thead(app,prefix, models, configs, tokenizers,devices,ConfigPredict,quick,nums,removeHighFreqWordss,batchGenerating,tags):
+def generating_thread(app,prefix, models, configs, tokenizers,devices,ConfigPredict,quick,nums,removeHighFreqWordss,batchGenerating,tags):
     nb_thread = len(models)
     Thread = []
     for t in range(len(nb_thread)):
