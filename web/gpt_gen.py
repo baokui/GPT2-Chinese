@@ -152,6 +152,9 @@ def sample_sequence_batch_opti(model, context_tokens, length, n_ctx, tokenizer, 
         rev_repitition_penalty = 1.0/repitition_penalty
         rev_temperature = 1.0/temperature
         A = []
+        for kk in range(len(set_generated)):
+            for jj in range(len(set_generated[kk])):
+                A.append([kk,set_generated[kk][jj]])
         with torch.no_grad():
             for _ in trange(length):
                 t0 = time.time()
@@ -352,7 +355,7 @@ def generating(app,prefix,model,config,tokenizer,device,config_predict,quick=Fal
     if batchGenerating:
         S = []
         t0 = time.time()
-        outs = sample_sequence_batch(model, context_tokens, length, n_ctx, tokenizer, nsamples, temperature=temperature,
+        outs = sample_sequence_batch_opti(model, context_tokens, length, n_ctx, tokenizer, nsamples, temperature=temperature,
                                      top_k=topk,
                                      top_p=topp, repitition_penalty=repetition_penalty,
                                      device=device)
