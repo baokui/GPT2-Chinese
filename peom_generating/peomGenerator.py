@@ -43,7 +43,7 @@ def main(path_source,path_config,idx0,idx1,gpu,nsamples):
             else:
                 D_prefix[s[0]] = 1
                 R[s[0]] = r
-            if D_prefix[s[0]]%10==0:
+            if R[s[0]]%10==0:
                 with open(path_target+'/'+s[0]+'.json','w') as f:
                     json.dump(R[s[0]],f,ensure_ascii=False,indent=4)
     for s in D_prefix:
