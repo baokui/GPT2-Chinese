@@ -2,6 +2,7 @@ import torch
 import torch.nn.functional as F
 from tqdm import trange
 from transformers import GPT2LMHeadModel
+import transformers
 import json
 import jieba
 import sys
@@ -173,18 +174,27 @@ def generate(n_ctx, model, context, length, tokenizer, temperature=1, top_k=0, t
         return sample_sequence(model, context, length, n_ctx, tokenizer=tokenizer, temperature=temperature, top_k=top_k,
                                top_p=top_p,
                                repitition_penalty=repitition_penalty, device=device)
-def getModel(path_config):
+def getModel(path_config,gpu='0',fp16=False):
+    print("load model......")
+    torch.cuda.set_device(int(gpu))
+    #os.environ["CUDA_VISIBLE_DEVICES"] = gpu
     with open(path_config,'r') as f:
         config = json.load(f)
     from tokenizations import tokenization_bert
     tokenizer_path = config['tokenizer_path']
     model_path = config['model_path']
-    device = 'cpu'
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    print("use device:%s"%device)
     tokenizer = tokenization_bert.BertTokenizer(vocab_file=tokenizer_path)
     model = GPT2LMHeadModel.from_pretrained(model_path)
     model.to(device)
     model.eval()
-    return model,tokenizer,config
+    if fp16:
+        optimizer = transformers.AdamW(model.parameters(), lr=lr, correct_bias=True)
+        from apex import amp
+        fp16_opt_level = 'O1'
+        model, optimizer = amp.initialize(model, optimizer, opt_level=fp16_opt_level)
+    return model,tokenizer,config,device
 def generating(prefix,model,config,tokenizer,segment=False,nsamples=10,modelType='other'):
     if modelType=='poem':
         prefix = prefix[0]+prefix
