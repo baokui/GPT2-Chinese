@@ -1,4 +1,4 @@
-path_source=data/input.txt
+path_source=data/input3.txt
 name=dabaigou
 path_config=../web/demo_config/config_$name.json
 mode=noseg

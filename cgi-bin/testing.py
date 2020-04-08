@@ -6,6 +6,7 @@ import transformers
 import json
 import jieba
 import sys
+import time
 def tokenizer_seg(words,path_words='../model/model_dabaigou_seg/vocab.txt'):
     with open(path_words,'r') as f:
         v = f.read().strip().split('\n')
@@ -316,4 +317,7 @@ if __name__=='__main__':
     path_config,mode,path_source,path_target,fp16 = sys.argv[1:6]
     fp16 = bool(fp16=='1')
     modelType = sys.argv[-1]
+    t0 = time.time()
     main(path_config,mode,path_source,path_target,modelType,fp16)
+    t1 = time.time()
+    print('used time=%0.4f s'%(t1-t0))
