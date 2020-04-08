@@ -3,6 +3,7 @@ from flask import Flask, request, Response
 import json
 import numpy as np
 import gpt_gen
+import gpt_gen_thread
 import sys
 from datetime import datetime
 import time
@@ -71,6 +72,17 @@ def test2():
         #app.logger.info('time for : {}'.format(then - now))
         app.logger.info("input:{}".format(data))
         app.logger.info("output:\n{}".format('\n'.join(result)))
+
+        now = datetime.now()
+        app.logger.info('time: {}'.format(now))
+        result1 = gpt_gen_thread.generating_thread(app,data, model, config, tokenizer,device,ConfigPredict,quick,num0,
+                                                   removeHighFreqWordss=rmHFW,batchGenerating=batchGenerating,tags=tags)
+        then = datetime.now()
+        app.logger.info('time: {}'.format(then))
+        # app.logger.info('time for : {}'.format(then - now))
+        app.logger.info("input:{}".format(data))
+        app.logger.info("output:\n{}".format('\n'.join(result1)))
+
         response = {'message':'success','input':data,'result': result}
     except Exception as e:
         app.logger.error("error:",e)
