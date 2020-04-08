@@ -536,7 +536,7 @@ def generating_poem(app,prefix,model,config,tokenizer,device,quick=False,num=5,b
     raw_text = prefix[0]+prefix
     context_tokens = tokenizer.convert_tokens_to_ids(tokenizer.tokenize(raw_text))
     if batchGenerating:
-        outs = sample_sequence_batch(model, context_tokens, length, n_ctx, tokenizer, nsamples, temperature=temperature, top_k=topk,
+        outs = sample_sequence_batch_opti(model, context_tokens, length, n_ctx, tokenizer, nsamples, temperature=temperature, top_k=topk,
                               top_p=topp, repitition_penalty=repetition_penalty,
                               device=device)
         S = []
