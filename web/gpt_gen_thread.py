@@ -52,7 +52,7 @@ class GPT2_generator_thread (threading.Thread):
 def generating_thread(app,prefix, models, configs, tokenizers,devices,ConfigPredict,quick,nums,removeHighFreqWordss,batchGenerating,tags):
     nb_thread = len(models)
     Thread = []
-    for t in range(len(nb_thread)):
+    for t in range(nb_thread):
         if tags[t] == '(诗)':
             isPoem = True
         else:
