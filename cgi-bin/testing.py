@@ -195,7 +195,7 @@ def getModel(path_config,gpu='0',fp16=False):
         fp16_opt_level = 'O1'
         model, optimizer = amp.initialize(model, optimizer, opt_level=fp16_opt_level)
     return model,tokenizer,config,device
-def generating(prefix,model,config,tokenizer,segment=False,nsamples=10,modelType='other'):
+def generating(prefix,model,config,tokenizer,segment=False,nsamples=10,modelType='other', device = 'cpu'):
     if modelType=='poem':
         prefix = prefix[0]+prefix
     n_ctx = model.config.n_ctx
@@ -207,7 +207,6 @@ def generating(prefix,model,config,tokenizer,segment=False,nsamples=10,modelType
     topk = config['topk']
     topp = config['topp']
     repetition_penalty = config['repetition_penalty']
-    device = 'cpu'
     if length == -1:
         length = model.config.n_ctx
     S = []
@@ -287,8 +286,8 @@ def generating_head(prefix,model,config,tokenizer,segment=False,nsamples=10):
         print('output:%s'%p)
         S.append(p)
     return S
-def main(path_config,mode,path_source,path_target,modelType):
-    model, tokenizer, config = getModel(path_config=path_config)
+def main(path_config,mode,path_source,path_target,modelType,fp16):
+    model,tokenizer,config,device = getModel(path_config,gpu='0',fp16=fp16)
     if mode=='seg':
         segment=True
     else:
@@ -301,7 +300,7 @@ def main(path_config,mode,path_source,path_target,modelType):
         if modelType=='poem_head':
             result = generating_head(inputStr, model, config, tokenizer, segment)
         else:
-            result = generating(inputStr, model, config, tokenizer, segment,modelType=modelType)
+            result = generating(inputStr, model, config, tokenizer, segment,modelType=modelType,device = device)
         d = {}
         d['inputStr'] = inputStr
         d['generatingStr'] = result
@@ -314,6 +313,7 @@ def main(path_config,mode,path_source,path_target,modelType):
     with open(path_target, 'w') as f:
         json.dump(S, f, ensure_ascii=False, indent=4)
 if __name__=='__main__':
-    path_config,mode,path_source,path_target = sys.argv[1:5]
+    path_config,mode,path_source,path_target,fp16 = sys.argv[1:6]
+    fp16 = bool(fp16=='1')
     modelType = sys.argv[-1]
-    main(path_config,mode,path_source,path_target,modelType)
+    main(path_config,mode,path_source,path_target,modelType,fp16)
