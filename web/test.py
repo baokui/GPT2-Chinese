@@ -4,6 +4,7 @@ import gpt_gen
 import gpt_gen_thread
 import sys
 from Config import config_predict
+import json
 
 path_source = sys.argv[1]
 path_target = sys.argv[2]
@@ -32,7 +33,7 @@ D_simi = json.load(open(path_simi,'r',encoding='utf-8'))
 D_next = json.load(open(path_next,'r',encoding='utf-8'))
 D_simi = {k:json.loads(D_simi[k]) for k in D_simi}
 D_next = {k:json.loads(D_next[k]) for k in D_next}
-import json
+quick = False
 app = 0
 def main():
     with open(path_source,'r') as f:
