@@ -622,7 +622,7 @@ def nnlm_modelpredict(D_simi,D_next,config_predict,inputStr='怎么了',maxNext=
                     s0 = t
             else:
                 break
-        S = prefix+punc+'，'.join(S)
+        S = inputStr+punc+'，'.join(S)
         if S not in output:
             output.append(S)
         if len(output)>=num:

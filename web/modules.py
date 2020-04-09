@@ -258,7 +258,5 @@ def findMaxMatch(inputStr,D_simi,D_next,config_predict):
         s = inputStr[i:]
         if s in L:
             prefix = s
-        else:
-            break
         i -= 1
     return prefix,punc
