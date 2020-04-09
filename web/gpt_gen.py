@@ -250,6 +250,120 @@ def sample_sequence_batch_opti(model, context_tokens, length, n_ctx, tokenizer, 
                 generated = torch.cat((generated, next_token), dim=1)
             #print(T0,T1,T2)
             return generated.tolist()
+def sample_sequence_batch_max(model, context_tokens, length, n_ctx, tokenizer, nsamples,temperature=1.0, top_k=30, top_p=0.0, repitition_penalty=1.0,
+                    device='cpu'):
+    idx_unk = tokenizer.convert_tokens_to_ids('[UNK]')
+    n = nsamples
+    context = [[context_tokens]*n]
+    context = torch.tensor(context, dtype=torch.long, device=device)
+    context = context.squeeze(0)
+    generated = context
+    if repitition_penalty!=1.0:
+        set_generated = [list(context[0]) for _ in range(n)]
+        T0 = 0
+        T1 = 0
+        T2 = 0
+        TT0,TT1,TT2,TT3,TT4=0,0,0,0,0
+        rev_repitition_penalty = 1.0/repitition_penalty
+        rev_temperature = 1.0/temperature
+        A0 = []
+        A1 = []
+        for kk in range(len(set_generated)):
+            for jj in range(len(set_generated[kk])):
+                A0.append(kk)
+                A1.append(set_generated[kk][jj])
+        with torch.no_grad():
+            for _ in range(length):
+                t0 = time.time()
+                inputs = {'input_ids': generated[:, -(n_ctx - 1):].unsqueeze(0)}
+                outputs = model(
+                    **inputs)  # Note: we could also use 'past' with GPT-2/Transfo-XL/XLNet (cached hidden-states)
+                t1 = time.time()
+                T0 = T0+t1-t0
+                next_token_logits = outputs[0][0, :, -1, :]
+                #for ii in range(n):
+                    #for id in set(generated[ii]):
+                        #A.append([ii,id])
+                        #next_token_logits[ii][id] *= rev_repitition_penalty
+                next_token_logits[A0,A1] *= rev_repitition_penalty
+                next_token_logits = next_token_logits * rev_temperature
+                t2 = time.time()
+                T1 = T1+t2-t1
+                '''
+                Next = []
+                for ii in range(n):
+                    tt0 = time.time()
+                    next_token_logits[ii][tokenizer.convert_tokens_to_ids('[UNK]')] = -float('Inf')
+                    tt1 = time.time()
+                    filtered_logits = top_k_top_p_filtering(next_token_logits[ii], top_k=top_k, top_p=top_p)
+                    tt2 = time.time()
+                    next_token = torch.multinomial(F.softmax(filtered_logits, dim=-1), num_samples=1)
+                    tt3 = time.time()
+                    Next.append(torch.reshape(next_token, (1, 1)))
+                    tt4 = time.time()
+                    if next_token not in set_generated[ii]:
+                        set_generated[ii].append(next_token)
+                        A0.append(ii)
+                        A1.append(next_token)
+                    tt5 = time.time()
+                    TT0 = tt1-tt0+TT0
+                    TT1 = tt2-tt1+TT1
+                    TT2 = tt3-tt2+TT2
+                    TT3 = tt4-tt3+TT3
+                    TT4 = tt5-tt4+TT4
+                    #set_generated[ii].update(next_token)
+                t3 = time.time()
+                T2 = T2+t3-t2
+                # next_token = torch.tensor(Next)
+                next_token = torch.cat(Next, dim=0)
+                '''
+                next_token_logits[:, idx_unk] = -float('Inf')
+                #filtered_logits = top_k_top_p_filtering(next_token_logits, top_k=top_k, top_p=0)
+                #next_token = torch.multinomial(F.softmax(filtered_logits, dim=-1), num_samples=1)
+                next_token = torch.argmax(next_token_logits, dim=-1, keepdim=True)
+                for ii in range(len(set_generated)):
+                    if next_token[ii] not in set_generated[ii]:
+                        set_generated[ii].append(next_token[ii])
+                        A0.append(ii)
+                        A1.append(next_token[ii])
+                generated = torch.cat((generated, next_token), dim=1)
+            #print(T0,T1,T2)
+            #print(TT0,TT1,TT2,TT3,TT4)
+            return generated.tolist()
+    else:
+        T0 = 0
+        T1 = 0
+        T2 = 0
+        with torch.no_grad():
+            for _ in trange(length):
+                t0 = time.time()
+                inputs = {'input_ids': generated[:, -(n_ctx - 1):].unsqueeze(0)}
+                outputs = model(
+                    **inputs)  # Note: we could also use 'past' with GPT-2/Transfo-XL/XLNet (cached hidden-states)
+                t1 = time.time()
+                T0 = T0+t1-t0
+                next_token_logits = outputs[0][0, :, -1, :]
+                next_token_logits = next_token_logits / temperature
+                t2 = time.time()
+                T1 = T1+t2-t1
+                Next = []
+                for ii in range(n):
+                    tt0 = time.time()
+                    next_token_logits[ii][tokenizer.convert_tokens_to_ids('[UNK]')] = -float('Inf')
+                    tt1 = time.time()
+                    filtered_logits = top_k_top_p_filtering(next_token_logits[ii], top_k=top_k, top_p=top_p)
+                    tt2 = time.time()
+                    next_token = torch.multinomial(F.softmax(filtered_logits, dim=-1), num_samples=1)
+                    tt3 = time.time()
+                    Next.append(torch.reshape(next_token, (1, 1)))
+                    #set_generated[ii].update(next_token)
+                t3 = time.time()
+                T2 = T2+t3-t2
+                # next_token = torch.tensor(Next)
+                next_token = torch.cat(Next, dim=0)
+                generated = torch.cat((generated, next_token), dim=1)
+            #print(T0,T1,T2)
+            return generated.tolist()
 def fast_sample_sequence(model, context, length, temperature=1.0, top_k=30, top_p=0.0, device='cpu'):
     inputs = torch.LongTensor(context).view(1, -1).to(device)
     if len(context) > 1:
@@ -343,7 +457,7 @@ def untokenization(out,config,tokenizer,punc,continue_writing):
     tmp.append(tmptext[-1])
     tmptext = ''.join(tmp)
     return tmptext
-def generating(app,prefix,model,config,tokenizer,device,config_predict,quick=False,num=5,continue_writing=False,removeHighFreqWords=False,batchGenerating=False,gpu='0'):
+def generating(app,prefix,model,config,tokenizer,device,config_predict,quick=False,num=5,continue_writing=False,removeHighFreqWords=False,batchGenerating=False,gpu='0',onlyMax=False):
     #print("start:",prefix)
     #os.environ["CUDA_VISIBLE_DEVICES"] = gpu
     torch.cuda.set_device(int(gpu))
@@ -373,7 +487,14 @@ def generating(app,prefix,model,config,tokenizer,device,config_predict,quick=Fal
     if batchGenerating:
         S = []
         t0 = time.time()
-        outs = sample_sequence_batch_opti(model, context_tokens, length, n_ctx, tokenizer, nsamples, temperature=temperature,
+        if onlyMax:
+            outs = sample_sequence_batch_max(model, context_tokens, length, n_ctx, tokenizer, nsamples=2,
+                                              temperature=temperature,
+                                              top_k=topk,
+                                              top_p=topp, repitition_penalty=repetition_penalty,
+                                              device=device)
+        else:
+            outs = sample_sequence_batch_opti(model, context_tokens, length, n_ctx, tokenizer, nsamples, temperature=temperature,
                                      top_k=topk,
                                      top_p=topp, repitition_penalty=repetition_penalty,
                                      device=device)
@@ -532,7 +653,7 @@ def untokenization_poem(out,tokenizer,config):
             if len(tmptext) >= config["min_length"]:
                 break
     return tmptext
-def generating_poem(app,prefix,model,config,tokenizer,device,quick=False,num=5,batchGenerating=False,gpu='0'):
+def generating_poem(app,prefix,model,config,tokenizer,device,quick=False,num=5,batchGenerating=False,gpu='0',onlyMax=False):
     torch.cuda.set_device(int(gpu))
     if len(prefix)>7:
         return []
@@ -558,9 +679,15 @@ def generating_poem(app,prefix,model,config,tokenizer,device,quick=False,num=5,b
     raw_text = prefix[0]+prefix
     context_tokens = tokenizer.convert_tokens_to_ids(tokenizer.tokenize(raw_text))
     if batchGenerating:
-        outs = sample_sequence_batch_opti(model, context_tokens, length, n_ctx, tokenizer, nsamples, temperature=temperature, top_k=topk,
-                              top_p=topp, repitition_penalty=repetition_penalty,
-                              device=device)
+        if onlyMax:
+            outs = sample_sequence_batch_max(model, context_tokens, length, n_ctx, tokenizer, nsamples=2,
+                                              temperature=temperature, top_k=topk,
+                                              top_p=topp, repitition_penalty=repetition_penalty,
+                                              device=device)
+        else:
+            outs = sample_sequence_batch_opti(model, context_tokens, length, n_ctx, tokenizer, nsamples, temperature=temperature, top_k=topk,
+                                  top_p=topp, repitition_penalty=repetition_penalty,
+                                  device=device)
         S = []
         for out in outs:
             tmptext = untokenization_poem(out, tokenizer, config)

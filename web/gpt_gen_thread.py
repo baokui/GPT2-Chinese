@@ -10,7 +10,7 @@ class GPT2_generator_thread (threading.Thread):
     def __init__(self, threadID, name,
                  app,model,prefix,config,tokenizer,device,ConfigPredict,
                  quick,nsamples,removeHighFreqWords,batchGenerating,isPoem=False,tags='',gpu='0',
-                 nnlm=False,D_simi={},D_next={},maxNext=3,maxChoice=10):
+                 nnlm=False,D_simi={},D_next={},maxNext=3,maxChoice=10,onlyMax=False):
         threading.Thread.__init__(self)
         self.threadID = threadID
         self.name = name
@@ -34,6 +34,7 @@ class GPT2_generator_thread (threading.Thread):
         self.D_next = D_next
         self.maxNext = maxNext
         self.maxChoice = maxChoice
+        self.onlyMax = onlyMax
     def run(self):
         #print ("开始线程：" + self.name)
         #self.print_time(self.name, self.counter, 5)
@@ -53,18 +54,19 @@ class GPT2_generator_thread (threading.Thread):
                    quick, num, removeHighFreqWords, batchGenerating):
         torch.cuda.set_device(int(self.gpu))
         S = generating(app, prefix, model, config, tokenizer, device, ConfigPredict,
-                   quick, num, continue_writing = False,removeHighFreqWords=removeHighFreqWords, batchGenerating=batchGenerating,gpu=self.gpu)
+                   quick, num, continue_writing = False,removeHighFreqWords=removeHighFreqWords,
+                       batchGenerating=batchGenerating,gpu=self.gpu,onlyMax=self.onlyMax)
         return S
     def generating_poem_th(self,app, model, prefix, config, tokenizer, device, ConfigPredict,
                    quick, num, removeHighFreqWords, batchGenerating):
         torch.cuda.set_device(int(self.gpu))
         S = generating_poem(app, prefix, model, config, tokenizer, device,
-                   quick, num, batchGenerating,gpu=self.gpu)
+                   quick, num, batchGenerating,gpu=self.gpu,onlyMax=self.onlyMax)
         return S
     def generating_nnlm_th(self,D_simi,D_next,ConfigPredict,inputStr,maxNext,maxChoice,num):
         result_nnlm = nnlm_modelpredict(D_simi,D_next,ConfigPredict,inputStr=inputStr,maxNext=maxNext,maxChoice=maxChoice,num=num)
         return result_nnlm
-def generating_thread(app,prefix, models, configs, tokenizers,devices,ConfigPredict,quick,nums,removeHighFreqWordss,batchGenerating,tags,D_simi={},D_next={},maxNext=3,maxChoice=10):
+def generating_thread(app,prefix, models, configs, tokenizers,devices,ConfigPredict,quick,nums,removeHighFreqWordss,batchGenerating,tags,D_simi={},D_next={},maxNext=3,maxChoice=10,onlyMax=False):
     nb_thread = len(models)
     Thread = []
     for t in range(nb_thread):
@@ -76,7 +78,7 @@ def generating_thread(app,prefix, models, configs, tokenizers,devices,ConfigPred
         torch.cuda.set_device(int(gpu))
         thread1 = GPT2_generator_thread(t, "thread-"+str(t), app,models[t],prefix,configs[t],tokenizers[t],
                                         devices[t],ConfigPredict,quick,nums[t],
-                                        removeHighFreqWordss[t],batchGenerating,isPoem,tags[t],gpu=gpu)
+                                        removeHighFreqWordss[t],batchGenerating,isPoem,tags[t],gpu=gpu,onlyMax=onlyMax)
         Thread.append(thread1)
     t = nb_thread
     thread2 = GPT2_generator_thread(t, "thread-"+str(t), app,models[t-1],prefix,configs[t-1],tokenizers[t-1],

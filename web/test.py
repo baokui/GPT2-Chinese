@@ -10,7 +10,7 @@ path_source = sys.argv[1]
 path_target = sys.argv[2]
 gpus = sys.argv[3].split(',')
 repetition_penalty = float(sys.argv[4])
-
+onlyMax = sys.argv[5]=='1'
 ConfigPredict = config_predict()
 ConfigPredict.gpus = gpus
 batchGenerating=ConfigPredict.batchGenerating
@@ -42,7 +42,7 @@ def main():
     for data in s:
         result = gpt_gen_thread.generating_thread(app, data, model, config, tokenizer, device, ConfigPredict, quick, num0,
                                               removeHighFreqWordss=rmHFW, batchGenerating=batchGenerating, tags=tags,
-                                              D_simi=D_simi, D_next=D_next, maxNext=maxNext, maxChoice=10)
+                                              D_simi=D_simi, D_next=D_next, maxNext=maxNext, maxChoice=10,onlyMax=onlyMax)
         d = {'input':data,'output':result}
         R.append(d)
         if len(R)%5==0:
