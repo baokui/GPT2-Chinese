@@ -587,7 +587,9 @@ def generating_sentence(prefix,model,config,tokenizer):
             break
     return S
 def nnlm_modelpredict(D_simi,D_next,config_predict,inputStr='怎么了',maxNext=3,maxChoice=10,num=5):
-    prefix = findMaxMatch(inputStr,D_simi,D_next)
+    prefix,punc = findMaxMatch(inputStr,D_simi,D_next,config_predict)
+    if punc=='':
+        punc = '，'
     if len(prefix)==0:
         return []
     output = []
@@ -596,7 +598,7 @@ def nnlm_modelpredict(D_simi,D_next,config_predict,inputStr='怎么了',maxNext=
             break
         s0 = prefix
         S = []
-        S.append(inputStr)
+        #S.append(inputStr)
         lastsent = s0
         for i in range(maxNext):
             if s0 in D_next:
@@ -620,7 +622,7 @@ def nnlm_modelpredict(D_simi,D_next,config_predict,inputStr='怎么了',maxNext=
                     s0 = t
             else:
                 break
-        S = '，'.join(S)
+        S = prefix+punc+'，'.join(S)
         if S not in output:
             output.append(S)
         if len(output)>=num:
