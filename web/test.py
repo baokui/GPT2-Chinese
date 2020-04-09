@@ -34,7 +34,7 @@ D_simi = {k:json.loads(D_simi[k]) for k in D_simi}
 D_next = {k:json.loads(D_next[k]) for k in D_next}
 import json
 app = 0
-def main(path_source,path_target):
+def main():
     with open(path_source,'r') as f:
         s = f.read().strip().split('\n')
     R = []
@@ -48,3 +48,5 @@ def main(path_source,path_target):
             with open(path_target,'w') as f:
                 json.dump(R,f,ensure_ascii=False,indent=4)
             print('processing %d lines (total %d lines)'%(len(R),len(s)))
+if __name__=='__main__':
+    main()
