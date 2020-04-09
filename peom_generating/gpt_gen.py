@@ -14,7 +14,7 @@ import json
 import random
 from time import strftime, localtime
 import time
-from modules import postprocess,poemFilter1,dropDuplicateContent,_is_chinese_char,sentTriming
+from modules import postprocess,poemFilter1,dropDuplicateContent,_is_chinese_char,sentTriming,findMaxMatch
 print_log = False
 # 打印当前时间
 def printTime():
@@ -34,7 +34,7 @@ def top_k_top_p_filtering(logits, top_k=0, top_p=0.0, filter_value=-float('Inf')
                 Nucleus filtering is described in Holtzman et al. (http://arxiv.org/abs/1904.09751)
         From: https://gist.github.com/thomwolf/1a5a29f6962089e871b94cbd09daf317
     """
-    assert logits.dim() == 1  # batch size 1 for now - could be updated for more but the code would be less clear
+    #assert logits.dim() == 1  # batch size 1 for now - could be updated for more but the code would be less clear
     top_k = min(top_k, logits.size(-1))  # Safety check
     if top_k > 0:
         # Remove all tokens with a probability less than the last token of the top-k
@@ -110,6 +110,7 @@ def sample_sequence(model, context, length, n_ctx, tokenizer, temperature=1.0, t
     return generated.tolist()[0]
 def sample_sequence_batch(model, context_tokens, length, n_ctx, tokenizer, nsamples,temperature=1.0, top_k=30, top_p=0.0, repitition_penalty=1.0,
                     device='cpu'):
+    idx_unk = tokenizer.convert_tokens_to_ids('[UNK]')
     n = nsamples
     context = [[context_tokens]*n]
     context = torch.tensor(context, dtype=torch.long, device=device)
@@ -138,6 +139,93 @@ def sample_sequence_batch(model, context_tokens, length, n_ctx, tokenizer, nsamp
     return generated.tolist()
 def sample_sequence_batch_opti(model, context_tokens, length, n_ctx, tokenizer, nsamples,temperature=1.0, top_k=30, top_p=0.0, repitition_penalty=1.0,
                     device='cpu'):
+    idx_unk = tokenizer.convert_tokens_to_ids('[UNK]')
+    n = nsamples
+    context = [[context_tokens]*n]
+    context = torch.tensor(context, dtype=torch.long, device=device)
+    context = context.squeeze(0)
+    generated = context
+    if repitition_penalty!=1.0:
+        set_generated = [list(context[0].cpu().numpy()) for _ in range(n)]
+        T0 = 0
+        T1 = 0
+        T2 = 0
+        T3 = 0
+        rev_repitition_penalty = 1.0/repitition_penalty
+        rev_temperature = 1.0/temperature
+        A0 = []
+        A1 = []
+        for kk in range(len(set_generated)):
+            for jj in range(len(set_generated[kk])):
+                A0.append(kk)
+                A1.append(set_generated[kk][jj])
+        with torch.no_grad():
+            for _ in range(length):
+                t0 = time.time()
+                inputs = {'input_ids': generated[:, -(n_ctx - 1):].unsqueeze(0)}
+                outputs = model(
+                    **inputs)  # Note: we could also use 'past' with GPT-2/Transfo-XL/XLNet (cached hidden-states)
+                t1 = time.time()
+                next_token_logits = outputs[0][0, :, -1, :]
+                next_token_logits[A0,A1] *= rev_repitition_penalty
+                next_token_logits = next_token_logits * rev_temperature
+                t2 = time.time()
+                next_token_logits[:, idx_unk] = -float('Inf')
+                filtered_logits = top_k_top_p_filtering(next_token_logits, top_k=top_k, top_p=0)
+                next_token = torch.multinomial(F.softmax(filtered_logits, dim=-1), num_samples=1)
+                t3 = time.time()
+                NT_np = next_token.cpu().numpy()[:, 0]
+                for ii in range(n):
+                    #if next_token[ii] not in set_generated[ii]:
+                    #set_generated[ii].append(next_token[ii])
+                    A0.append(ii)
+                    A1.append(NT_np[ii])
+                t4 = time.time()
+                T0 = T0 + t1 - t0
+                T1 = T1 + t2 - t1
+                T2 = T2 + t3 - t2
+                T3 = T3 + t4 - t3
+                generated = torch.cat((generated, next_token), dim=1)
+            #print("predict:penalty:topk:update-%0.4f:%0.4f:%0.4f:%0.4f"%(T0,T1,T2,T3))
+            #print(TT0,TT1,TT2,TT3,TT4)
+            return generated.tolist()
+    else:
+        T0 = 0
+        T1 = 0
+        T2 = 0
+        with torch.no_grad():
+            for _ in trange(length):
+                t0 = time.time()
+                inputs = {'input_ids': generated[:, -(n_ctx - 1):].unsqueeze(0)}
+                outputs = model(
+                    **inputs)  # Note: we could also use 'past' with GPT-2/Transfo-XL/XLNet (cached hidden-states)
+                t1 = time.time()
+                T0 = T0+t1-t0
+                next_token_logits = outputs[0][0, :, -1, :]
+                next_token_logits = next_token_logits / temperature
+                t2 = time.time()
+                T1 = T1+t2-t1
+                Next = []
+                for ii in range(n):
+                    tt0 = time.time()
+                    next_token_logits[ii][tokenizer.convert_tokens_to_ids('[UNK]')] = -float('Inf')
+                    tt1 = time.time()
+                    filtered_logits = top_k_top_p_filtering(next_token_logits[ii], top_k=top_k, top_p=top_p)
+                    tt2 = time.time()
+                    next_token = torch.multinomial(F.softmax(filtered_logits, dim=-1), num_samples=1)
+                    tt3 = time.time()
+                    Next.append(torch.reshape(next_token, (1, 1)))
+                    #set_generated[ii].update(next_token)
+                t3 = time.time()
+                T2 = T2+t3-t2
+                # next_token = torch.tensor(Next)
+                next_token = torch.cat(Next, dim=0)
+                generated = torch.cat((generated, next_token), dim=1)
+            #print(T0,T1,T2)
+            return generated.tolist()
+def sample_sequence_batch_max(model, context_tokens, length, n_ctx, tokenizer, nsamples,temperature=1.0, top_k=30, top_p=0.0, repitition_penalty=1.0,
+                    device='cpu'):
+    idx_unk = tokenizer.convert_tokens_to_ids('[UNK]')
     n = nsamples
     context = [[context_tokens]*n]
     context = torch.tensor(context, dtype=torch.long, device=device)
@@ -174,6 +262,7 @@ def sample_sequence_batch_opti(model, context_tokens, length, n_ctx, tokenizer, 
                 next_token_logits = next_token_logits * rev_temperature
                 t2 = time.time()
                 T1 = T1+t2-t1
+                '''
                 Next = []
                 for ii in range(n):
                     tt0 = time.time()
@@ -200,6 +289,16 @@ def sample_sequence_batch_opti(model, context_tokens, length, n_ctx, tokenizer, 
                 T2 = T2+t3-t2
                 # next_token = torch.tensor(Next)
                 next_token = torch.cat(Next, dim=0)
+                '''
+                next_token_logits[:, idx_unk] = -float('Inf')
+                #filtered_logits = top_k_top_p_filtering(next_token_logits, top_k=top_k, top_p=0)
+                #next_token = torch.multinomial(F.softmax(filtered_logits, dim=-1), num_samples=1)
+                next_token = torch.argmax(next_token_logits, dim=-1, keepdim=True)
+                for ii in range(len(set_generated)):
+                    if next_token[ii] not in set_generated[ii]:
+                        set_generated[ii].append(next_token[ii])
+                        A0.append(ii)
+                        A1.append(next_token[ii])
                 generated = torch.cat((generated, next_token), dim=1)
             #print(T0,T1,T2)
             #print(TT0,TT1,TT2,TT3,TT4)
@@ -331,7 +430,7 @@ def untokenization(out,config,tokenizer,punc,continue_writing):
     tmp.append(tmptext[-1])
     tmptext = ''.join(tmp)
     return tmptext
-def generating(prefix,model,config,tokenizer,device,config_predict,quick=False,num=5,continue_writing=False,removeHighFreqWords=False,batchGenerating=False,gpu='0'):
+def generating(app,prefix,model,config,tokenizer,device,config_predict,quick=False,num=5,continue_writing=False,removeHighFreqWords=False,batchGenerating=False,gpu='0',onlyMax=False):
     #print("start:",prefix)
     #os.environ["CUDA_VISIBLE_DEVICES"] = gpu
     torch.cuda.set_device(int(gpu))
@@ -341,6 +440,8 @@ def generating(prefix,model,config,tokenizer,device,config_predict,quick=False,n
         if len(prefix)==0:
             prefix = prefix0
     punc = '.,?!;\t 。，？！；'
+    global a
+    a = app
     n_ctx = model.config.n_ctx
     fast_pattern = False
     if 'fast_pattern' in config and config['fast_pattern']=="True":
@@ -356,19 +457,24 @@ def generating(prefix,model,config,tokenizer,device,config_predict,quick=False,n
         length = model.config.n_ctx
     raw_text = prefix
     context_tokens = tokenizer.convert_tokens_to_ids(tokenizer.tokenize(raw_text))
+    t0 = time.time()
     if batchGenerating:
         S = []
-        t0 = time.time()
-        outs = sample_sequence_batch_opti(model, context_tokens, length, n_ctx, tokenizer, nsamples, temperature=temperature,
+        if onlyMax:
+            outs = sample_sequence_batch_max(model, context_tokens, length, n_ctx, tokenizer, nsamples=2,
+                                              temperature=temperature,
+                                              top_k=topk,
+                                              top_p=topp, repitition_penalty=repetition_penalty,
+                                              device=device)
+        else:
+            outs = sample_sequence_batch_opti(model, context_tokens, length, n_ctx, tokenizer, nsamples, temperature=temperature,
                                      top_k=topk,
                                      top_p=topp, repitition_penalty=repetition_penalty,
                                      device=device)
-        t1 = time.time()
         #print('model predict all time:%0.4f' % (t1 - t0))
         for out in outs:
             tmptext = untokenization(out, config, tokenizer, punc, continue_writing)
             S.append(tmptext)
-        t2 = time.time()
         #print('model untokenization time:%0.4f' % (t2 - t1))
     else:
         S = []
@@ -383,12 +489,13 @@ def generating(prefix,model,config,tokenizer,device,config_predict,quick=False,n
             )
             tmptext = untokenization(out,config,tokenizer,punc,continue_writing)
             S.append(tmptext)
+    t1 = time.time()
     if config_predict.prefixTrim:
         S = [prefix0+s[len(prefix):] for s in S]
     S = postprocess(S,prefix0,config_predict,removeHighFreqWords=removeHighFreqWords)
     S = dropDuplicateContent(S)
-    t3 = time.time()
-    #print('text posprocess time:%0.4f' % (t3 - t2))
+    t2 = time.time()
+    #print('text generating and posprocess time:%0.4f and %0.4f' % (t1 - t0,t2-t1))
     return S
 def generating_sentence(prefix,model,config,tokenizer):
     print("start:",prefix,config)
@@ -452,14 +559,18 @@ def generating_sentence(prefix,model,config,tokenizer):
             break
     return S
 def nnlm_modelpredict(D_simi,D_next,config_predict,inputStr='怎么了',maxNext=3,maxChoice=10,num=5):
+    prefix,punc = findMaxMatch(inputStr,D_simi,D_next,config_predict)
+    if punc=='':
+        punc = '，'
+    if len(prefix)==0:
+        return []
     output = []
     for ii in range(num+5):
         if len(output)==num:
             break
-        s = inputStr
+        s0 = prefix
         S = []
-        s0 = s
-        S.append(s0)
+        #S.append(inputStr)
         lastsent = s0
         for i in range(maxNext):
             if s0 in D_next:
@@ -483,7 +594,7 @@ def nnlm_modelpredict(D_simi,D_next,config_predict,inputStr='怎么了',maxNext=
                     s0 = t
             else:
                 break
-        S = '，'.join(S)
+        S = inputStr+punc+'，'.join(S)
         if S not in output:
             output.append(S)
         if len(output)>=num:
@@ -518,8 +629,13 @@ def untokenization_poem(out,tokenizer,config):
             if len(tmptext) >= config["min_length"]:
                 break
     return tmptext
-def generating_poem(prefix,model,config,tokenizer,device,quick=False,num=5,batchGenerating=False,gpu='0'):
+def generating_poem(app,prefix,model,config,tokenizer,device,quick=False,num=5,batchGenerating=False,gpu='0',onlyMax=False):
     torch.cuda.set_device(int(gpu))
+    if len(prefix)>7:
+        return []
+    #print("start:", prefix)
+    global a
+    a = app
     n_ctx = model.config.n_ctx
     fast_pattern = False
     if config['fast_pattern'] == "True":
@@ -539,9 +655,15 @@ def generating_poem(prefix,model,config,tokenizer,device,quick=False,num=5,batch
     raw_text = prefix[0]+prefix
     context_tokens = tokenizer.convert_tokens_to_ids(tokenizer.tokenize(raw_text))
     if batchGenerating:
-        outs = sample_sequence_batch_opti(model, context_tokens, length, n_ctx, tokenizer, nsamples, temperature=temperature, top_k=topk,
-                              top_p=topp, repitition_penalty=repetition_penalty,
-                              device=device)
+        if onlyMax:
+            outs = sample_sequence_batch_max(model, context_tokens, length, n_ctx, tokenizer, nsamples=2,
+                                              temperature=temperature, top_k=topk,
+                                              top_p=topp, repitition_penalty=repetition_penalty,
+                                              device=device)
+        else:
+            outs = sample_sequence_batch_opti(model, context_tokens, length, n_ctx, tokenizer, nsamples, temperature=temperature, top_k=topk,
+                                  top_p=topp, repitition_penalty=repetition_penalty,
+                                  device=device)
         S = []
         for out in outs:
             tmptext = untokenization_poem(out, tokenizer, config)
