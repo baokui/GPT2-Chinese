@@ -14,7 +14,7 @@ import json
 import random
 from time import strftime, localtime
 import time
-from modules import postprocess,poemFilter1,dropDuplicateContent,_is_chinese_char,sentTriming
+from modules import postprocess,poemFilter1,dropDuplicateContent,_is_chinese_char,sentTriming,findMaxMatch
 print_log = False
 # 打印当前时间
 def printTime():
@@ -587,14 +587,16 @@ def generating_sentence(prefix,model,config,tokenizer):
             break
     return S
 def nnlm_modelpredict(D_simi,D_next,config_predict,inputStr='怎么了',maxNext=3,maxChoice=10,num=5):
+    prefix = findMaxMatch(inputStr,D_simi,D_next)
+    if len(prefix)==0:
+        return []
     output = []
     for ii in range(num+5):
         if len(output)==num:
             break
-        s = inputStr
+        s0 = prefix
         S = []
-        s0 = s
-        S.append(s0)
+        S.append(inputStr)
         lastsent = s0
         for i in range(maxNext):
             if s0 in D_next:
