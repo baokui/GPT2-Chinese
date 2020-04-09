@@ -186,7 +186,7 @@ def sample_sequence_batch_opti(model, context_tokens, length, n_ctx, tokenizer, 
                 T2 = T2 + t3 - t2
                 T3 = T3 + t4 - t3
                 generated = torch.cat((generated, next_token), dim=1)
-            print("predict:penalty:topk:update-%0.4f:%0.4f:%0.4f:%0.4f"%(T0,T1,T2,T3))
+            #print("predict:penalty:topk:update-%0.4f:%0.4f:%0.4f:%0.4f"%(T0,T1,T2,T3))
             #print(TT0,TT1,TT2,TT3,TT4)
             return generated.tolist()
     else:
@@ -495,7 +495,7 @@ def generating(app,prefix,model,config,tokenizer,device,config_predict,quick=Fal
     S = postprocess(S,prefix0,config_predict,removeHighFreqWords=removeHighFreqWords)
     S = dropDuplicateContent(S)
     t2 = time.time()
-    print('text generating and posprocess time:%0.4f and %0.4f' % (t1 - t0,t2-t1))
+    #print('text generating and posprocess time:%0.4f and %0.4f' % (t1 - t0,t2-t1))
     return S
 def generating_sentence(prefix,model,config,tokenizer):
     print("start:",prefix,config)
