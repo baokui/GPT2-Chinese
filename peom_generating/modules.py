@@ -235,3 +235,28 @@ def sentTriming(s0='@Charon 你打的咋样'):
         if not _is_chinese_char(t):
             s = s.replace(t,'')
     return s
+def findMaxMatch(inputStr,D_simi,D_next,config_predict):
+    punc = ''
+    i = len(inputStr)-1
+    while i>0:
+        if inputStr[i] in config_predict.stopwords:
+            punc += inputStr[i]
+        else:
+            break
+        i -= 1
+    inputStr = inputStr[:i+1]
+    if inputStr in D_next:
+        return inputStr,punc
+    if inputStr in D_simi:
+        return inputStr,punc
+    if len(inputStr)<3:
+        return '',punc
+    L = [d for d in D_next]+[d for d in D_simi]
+    i = len(inputStr)-3
+    prefix = ''
+    while i>=0:
+        s = inputStr[i:]
+        if s in L:
+            prefix = s
+        i -= 1
+    return prefix,punc
