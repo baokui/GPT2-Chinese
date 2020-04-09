@@ -9,7 +9,7 @@ import json
 path_source = sys.argv[1]
 path_target = sys.argv[2]
 gpus = sys.argv[3].split(',')
-repetition_penalty = sys.argv[4]
+repetition_penalty = float(sys.argv[4])
 
 ConfigPredict = config_predict()
 ConfigPredict.gpus = gpus
