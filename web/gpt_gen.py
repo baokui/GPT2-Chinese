@@ -146,7 +146,7 @@ def sample_sequence_batch_opti(model, context_tokens, length, n_ctx, tokenizer, 
     context = context.squeeze(0)
     generated = context
     if repitition_penalty!=1.0:
-        set_generated = [list(context[0]) for _ in range(n)]
+        set_generated = [list(context[0].cpu().numpy()) for _ in range(n)]
         T0 = 0
         T1 = 0
         T2 = 0
@@ -174,11 +174,12 @@ def sample_sequence_batch_opti(model, context_tokens, length, n_ctx, tokenizer, 
                 filtered_logits = top_k_top_p_filtering(next_token_logits, top_k=top_k, top_p=0)
                 next_token = torch.multinomial(F.softmax(filtered_logits, dim=-1), num_samples=1)
                 t3 = time.time()
-                for ii in range(len(set_generated)):
-                    if next_token[ii] not in set_generated[ii]:
-                        set_generated[ii].append(next_token[ii])
-                        A0.append(ii)
-                        A1.append(next_token[ii])
+                NT_np = next_token.cpu().numpy()[:, 0]
+                for ii in range(n):
+                    #if next_token[ii] not in set_generated[ii]:
+                    #set_generated[ii].append(next_token[ii])
+                    A0.append(ii)
+                    A1.append(NT_np[ii])
                 t4 = time.time()
                 T0 = T0 + t1 - t0
                 T1 = T1 + t2 - t1
