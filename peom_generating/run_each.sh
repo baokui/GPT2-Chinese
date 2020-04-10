@@ -5,7 +5,7 @@ gpu=$3
 path_source=../data/poetry_small.json
 nsamples=15
 path_config=../web/demo_config/config_poem.json
-i0=idx0
+i0=$idx0
 while [ $i0 -le $idx1 ]
 do
 echo ###################process $i0-$(($i0+$batch))#########################
