@@ -485,6 +485,8 @@ def generating(app,prefix,model,config,tokenizer,device,config_predict,quick=Fal
     punc = '.,?!;\t 。，？！；'
     global a
     a = app
+    if config_predict.fast_pattern:
+        fast_pattern = True
     n_ctx = model.config.n_ctx
     length = config['length']
     nsamples = num
