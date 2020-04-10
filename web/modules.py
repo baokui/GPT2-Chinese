@@ -1,4 +1,4 @@
-def postprocess(S,prefix,config_postprocess,dropPerson=True,maxNbSents=True,removeEndPunc=True,removeWords = True, removeSingleWord=True,transfer = True,sentEndcontent=True,removeDupulicate=True,dropSpecial=True,removeHighFreqWords=False):
+def postprocess(S,prefix,config_postprocess,dropPerson=True,maxNbSents=True,removeEndPunc=True,removeWords = True, removeSingleWord=True,transfer = True,sentEndcontent=True,removeDupulicate=True,dropSpecial=True,removeHighFreqWords=False,removeIncompletePunc=True):
     stopwords = config_postprocess.stopwords
     map_e2z = config_postprocess.map_e2z
     blackwords = config_postprocess.blackwords
@@ -13,6 +13,9 @@ def postprocess(S,prefix,config_postprocess,dropPerson=True,maxNbSents=True,remo
     for s0 in S:
         if removeWords:
             s0 = removewords(s0,removed_words)
+        if removeIncompletePunc:
+            if not hasCompletePunc(s0[len(prefix):]):
+                continue
         if transfer:
             s0 = prefix+Transfer(s0[len(prefix):],map_e2z)
         if sentEndcontent:
@@ -46,6 +49,30 @@ def removewords(s0,removed_words):
     for t in removed_words:
         sn = sn.replace(t,'')
     return sn
+def hasCompletePunc(s):
+    L = ['(','<','{','[','‘','“','《']
+    R = [')','>','}',']','’','”','》']
+    D = {k:0 for k in L}
+    Flag = True
+    for i in range(len(s)):
+        if s[i] in L:
+            D[s[i]] += 1
+            continue
+        if s[i] in R:
+            idx = R.index(s[i])
+            if D[L[idx]]==0:
+                Flag = False
+                break
+            D[L[idx]]-=1
+    if Flag:
+        n0 = s.count('\'')
+        if n0%2==0:
+            n1 = s.count('"')
+            if n1%2!=0:
+                Flag=False
+        else:
+            Flag = False
+    return Flag
 def remove_endPunc(tmptext,stopwords,punc_end):
     if len(tmptext)==0:
         return tmptext
