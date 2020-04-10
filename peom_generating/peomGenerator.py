@@ -48,8 +48,9 @@ def main(path_source,path_config,idx0,idx1,gpu,nsamples):
                     f.write('\n'.join(R[s[0]])+'\n')
                 R[s[0]] = []
     for s in D_prefix:
-        with open(path_target + '/' + s + '.txt', 'a+') as f:
-            f.write('\n'.join(R[s]) + '\n')
+        if len(R[s])>0:
+            with open(path_target + '/' + s + '.txt', 'a+') as f:
+                f.write('\n'.join(R[s]) + '\n')
         R[s] = []
 if __name__=='__main__':
     path_source, path_config, idx0, idx1, gpu, nsamples = sys.argv[1:]
