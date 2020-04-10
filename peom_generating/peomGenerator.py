@@ -17,7 +17,7 @@ def peomSplit(s):
             i1 = i1+1
     return R
 def generating(prefix,model,config,tokenizer,device,num,gpu):
-    r = generating_poem(0,prefix,model,config,tokenizer,device,quick=False,num=num,batchGenerating=True,gpu=gpu)
+    r = generating_poem(0,prefix,model,config,tokenizer,device,quick=False,num=num,batchGenerating=True,gpu=gpu,fast_pattern=True)
     return r
 def fun(S,path_config,gpu,nsamples):
     model, tokenizer, config, device = getModel(path_config=path_config,gpu=gpu)

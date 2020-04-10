@@ -675,7 +675,7 @@ def untokenization_poem(out,tokenizer,config):
             if len(tmptext) >= config["min_length"]:
                 break
     return tmptext
-def generating_poem(app,prefix,model,config,tokenizer,device,quick=False,num=5,batchGenerating=False,gpu='0',onlyMax=False):
+def generating_poem(app,prefix,model,config,tokenizer,device,quick=False,num=5,batchGenerating=False,gpu='0',onlyMax=False,fast_pattern=False):
     torch.cuda.set_device(int(gpu))
     if len(prefix)>7:
         return []
@@ -683,9 +683,6 @@ def generating_poem(app,prefix,model,config,tokenizer,device,quick=False,num=5,b
     global a
     a = app
     n_ctx = model.config.n_ctx
-    fast_pattern = False
-    if config['fast_pattern'] == "True":
-        fast_pattern = True
     length = config['length']
     nsamples = num
     batch_size = config['batch_size']
@@ -696,7 +693,6 @@ def generating_poem(app,prefix,model,config,tokenizer,device,quick=False,num=5,b
     repetition_penalty = config['repetition_penalty']
     if length == -1:
         length = model.config.n_ctx
-
     #print('generating-begin for %s'%prefix)
     raw_text = prefix[0]+prefix
     context_tokens = tokenizer.convert_tokens_to_ids(tokenizer.tokenize(raw_text))
@@ -707,7 +703,12 @@ def generating_poem(app,prefix,model,config,tokenizer,device,quick=False,num=5,b
                                               top_p=topp, repitition_penalty=repetition_penalty,
                                               device=device)
         else:
-            outs = sample_sequence_batch_opti(model, context_tokens, length, n_ctx, tokenizer, nsamples, temperature=temperature, top_k=topk,
+            if fast_pattern:
+                outs = fast_sample_sequence_batch(model, context_tokens, length, nsamples=nsamples,
+                                                  temperature=temperature, top_k=topk,
+                                                  repitition_penalty=repetition_penalty, device=device)
+            else:
+                outs = sample_sequence_batch_opti(model, context_tokens, length, n_ctx, tokenizer, nsamples, temperature=temperature, top_k=topk,
                                   top_p=topp, repitition_penalty=repetition_penalty,
                                   device=device)
         S = []

@@ -359,6 +359,48 @@ def fast_sample_sequence(model, context, length, temperature=1.0, top_k=30, top_
             generate.append(next_token.item())
             prev = next_token.view(1, 1)
     return generate
+def fast_sample_sequence_batch(model, context, length, nsamples=10,temperature=1.0, top_k=30, repitition_penalty=1.0, device='cpu'):
+    #inputs = torch.LongTensor(context).view(1, -1).to(device)
+    rev_repitition_penalty = 1.0 / repitition_penalty
+    inputs = [context] * nsamples
+    inputs = torch.tensor(inputs, dtype=torch.long, device=device)
+    if len(context) > 1:
+        _, past = model(inputs[:, :-1], None)[:2]
+        #prev = inputs[:, -1].view(1, -1)
+        prev = inputs[:, -1].view(-1, 1)
+    else:
+        past = None
+        prev = inputs
+    generate = [[t for t in context] for _ in range(nsamples)]
+    A0 = []
+    A1 = []
+    for kk in range(len(generate)):
+        for jj in range(len(generate[kk])):
+            A0.append(kk)
+            A1.append(generate[kk][jj])
+    with torch.no_grad():
+        for i in range(length):
+            #now = datetime.now()
+            output = model(prev, past=past)
+            #then = datetime.now()
+            #a.logger.info('for : {}'.format(then - now))
+            output, past = output[:2]
+            #output = output[-1].squeeze(0) / temperature
+            output = output.squeeze(1)
+            output[A0, A1] *= rev_repitition_penalty
+            output /= temperature
+            filtered_logits = top_k_top_p_filtering(output, top_k=top_k, top_p=0)
+            next_token = torch.multinomial(torch.softmax(filtered_logits, dim=-1), num_samples=1)
+            #generate.append(next_token.item())
+            #prev = next_token.view(1, 1)
+            prev = next_token
+            NT_np = next_token.cpu().numpy()
+            for ii in range(nsamples):
+                generate[ii].append(NT_np[ii][0])
+                A0.append(ii)
+                A1.append(NT_np[ii])
+    return generate
+
 # 通过命令行参数--fast_pattern，指定模式
 def generate(n_ctx, model, context, length, tokenizer,is_quick=False, temperature=1, top_k=0, top_p=0.0, repitition_penalty=1.0,
              device='cpu',
@@ -423,14 +465,15 @@ def untokenization(out,config,tokenizer,punc,continue_writing):
     tmp = []
     for ii in range(len(tmptext) - 1):
         tt = tmptext[ii]
-        if tt[-1] in punc:
-            tmp.append(tt)
-        else:
-            tmp.append(tt + '，')
+        if len(tt)>0:
+            if tt[-1] in punc:
+                tmp.append(tt)
+            else:
+                tmp.append(tt + '，')
     tmp.append(tmptext[-1])
     tmptext = ''.join(tmp)
     return tmptext
-def generating(app,prefix,model,config,tokenizer,device,config_predict,quick=False,num=5,continue_writing=False,removeHighFreqWords=False,batchGenerating=False,gpu='0',onlyMax=False):
+def generating(app,prefix,model,config,tokenizer,device,config_predict,quick=False,num=5,continue_writing=False,removeHighFreqWords=False,batchGenerating=False,gpu='0',onlyMax=False,fast_pattern=False):
     #print("start:",prefix)
     #os.environ["CUDA_VISIBLE_DEVICES"] = gpu
     torch.cuda.set_device(int(gpu))
@@ -442,10 +485,9 @@ def generating(app,prefix,model,config,tokenizer,device,config_predict,quick=Fal
     punc = '.,?!;\t 。，？！；'
     global a
     a = app
-    n_ctx = model.config.n_ctx
-    fast_pattern = False
-    if 'fast_pattern' in config and config['fast_pattern']=="True":
+    if config_predict.fast_pattern:
         fast_pattern = True
+    n_ctx = model.config.n_ctx
     length = config['length']
     nsamples = num
     temperature = config['temperature']
@@ -467,10 +509,14 @@ def generating(app,prefix,model,config,tokenizer,device,config_predict,quick=Fal
                                               top_p=topp, repitition_penalty=repetition_penalty,
                                               device=device)
         else:
-            outs = sample_sequence_batch_opti(model, context_tokens, length, n_ctx, tokenizer, nsamples, temperature=temperature,
-                                     top_k=topk,
-                                     top_p=topp, repitition_penalty=repetition_penalty,
-                                     device=device)
+            if fast_pattern:
+                outs = fast_sample_sequence_batch(model, context_tokens, length, nsamples=nsamples,
+                                           temperature=temperature, top_k=topk, repitition_penalty=repetition_penalty,device=device)
+            else:
+                outs = sample_sequence_batch_opti(model, context_tokens, length, n_ctx, tokenizer, nsamples, temperature=temperature,
+                                         top_k=topk,
+                                         top_p=topp, repitition_penalty=repetition_penalty,
+                                         device=device)
         #print('model predict all time:%0.4f' % (t1 - t0))
         for out in outs:
             tmptext = untokenization(out, config, tokenizer, punc, continue_writing)
@@ -629,7 +675,7 @@ def untokenization_poem(out,tokenizer,config):
             if len(tmptext) >= config["min_length"]:
                 break
     return tmptext
-def generating_poem(app,prefix,model,config,tokenizer,device,quick=False,num=5,batchGenerating=False,gpu='0',onlyMax=False):
+def generating_poem(app,prefix,model,config,tokenizer,device,quick=False,num=5,batchGenerating=False,gpu='0',onlyMax=False,fast_pattern=False):
     torch.cuda.set_device(int(gpu))
     if len(prefix)>7:
         return []
@@ -637,9 +683,6 @@ def generating_poem(app,prefix,model,config,tokenizer,device,quick=False,num=5,b
     global a
     a = app
     n_ctx = model.config.n_ctx
-    fast_pattern = False
-    if config['fast_pattern'] == "True":
-        fast_pattern = True
     length = config['length']
     nsamples = num
     batch_size = config['batch_size']
@@ -650,7 +693,6 @@ def generating_poem(app,prefix,model,config,tokenizer,device,quick=False,num=5,b
     repetition_penalty = config['repetition_penalty']
     if length == -1:
         length = model.config.n_ctx
-
     #print('generating-begin for %s'%prefix)
     raw_text = prefix[0]+prefix
     context_tokens = tokenizer.convert_tokens_to_ids(tokenizer.tokenize(raw_text))
@@ -661,7 +703,12 @@ def generating_poem(app,prefix,model,config,tokenizer,device,quick=False,num=5,b
                                               top_p=topp, repitition_penalty=repetition_penalty,
                                               device=device)
         else:
-            outs = sample_sequence_batch_opti(model, context_tokens, length, n_ctx, tokenizer, nsamples, temperature=temperature, top_k=topk,
+            if fast_pattern:
+                outs = fast_sample_sequence_batch(model, context_tokens, length, nsamples=nsamples,
+                                                  temperature=temperature, top_k=topk,
+                                                  repitition_penalty=repetition_penalty, device=device)
+            else:
+                outs = sample_sequence_batch_opti(model, context_tokens, length, n_ctx, tokenizer, nsamples, temperature=temperature, top_k=topk,
                                   top_p=topp, repitition_penalty=repetition_penalty,
                                   device=device)
         S = []
