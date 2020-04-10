@@ -28,12 +28,12 @@ idx1=140000
 gpu=1
 nohup sh run_each.sh $idx0 $idx1 $gpu >> ./log/poemGen-$idx0-$idx1.log 2>&1 &
 
-idx0=150000
-idx1=160000
+idx0=140000
+idx1=150000
 gpu=2
 nohup sh run_each.sh $idx0 $idx1 $gpu >> ./log/poemGen-$idx0-$idx1.log 2>&1 &
 
-idx0=160000
-idx1=170000
+idx0=150000
+idx1=160000
 gpu=3
 nohup sh run_each.sh $idx0 $idx1 $gpu >> ./log/poemGen-$idx0-$idx1.log 2>&1 &
