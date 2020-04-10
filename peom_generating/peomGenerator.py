@@ -44,11 +44,13 @@ def main(path_source,path_config,idx0,idx1,gpu,nsamples):
                 D_prefix[s[0]] = 1
                 R[s[0]] = r
             if len(R[s[0]])%10==0:
-                with open(path_target+'/'+s[0]+'.json','w') as f:
-                    json.dump(R[s[0]],f,ensure_ascii=False,indent=4)
+                with open(path_target+'/'+s[0]+'.txt','a+') as f:
+                    f.write('\n'.join(R[s[0]])+'\n')
+                R[s[0]] = []
     for s in D_prefix:
-        with open(path_target + '/' + s + '.json', 'w') as f:
-            json.dump(R[s], f, ensure_ascii=False, indent=4)
+        with open(path_target + '/' + s + '.txt', 'a+') as f:
+            f.write('\n'.join(R[s]) + '\n')
+        R[s] = []
 if __name__=='__main__':
     path_source, path_config, idx0, idx1, gpu, nsamples = sys.argv[1:]
     idx0 = int(idx0)
