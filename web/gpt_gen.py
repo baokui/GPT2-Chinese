@@ -359,6 +359,38 @@ def fast_sample_sequence(model, context, length, temperature=1.0, top_k=30, top_
             generate.append(next_token.item())
             prev = next_token.view(1, 1)
     return generate
+def fast_sample_sequence_batch(model, context, length, nsamples=10,temperature=1.0, top_k=30, top_p=0.0, device='cpu'):
+    #inputs = torch.LongTensor(context).view(1, -1).to(device)
+    inputs = [context] * nsamples
+    inputs = torch.tensor(inputs, dtype=torch.long, device=device)
+    if len(context) > 1:
+        _, past = model(inputs[:, :-1], None)[:2]
+        #prev = inputs[:, -1].view(1, -1)
+        prev = inputs[:, -1].view(-1, 1)
+    else:
+        past = None
+        prev = inputs
+    generate = [context for _ in range(nsamples)]
+    with torch.no_grad():
+        for i in range(length):
+            #now = datetime.now()
+            output = model(prev, past=past)
+            #then = datetime.now()
+            #a.logger.info('for : {}'.format(then - now))
+            output, past = output[:2]
+            #output = output[-1].squeeze(0) / temperature
+            output = output.squeeze(1)
+            output /= temperature
+            filtered_logits = top_k_top_p_filtering(output, top_k=top_k, top_p=0)
+            next_token = torch.multinomial(torch.softmax(filtered_logits, dim=-1), num_samples=1)
+            #generate.append(next_token.item())
+            #prev = next_token.view(1, 1)
+            prev = next_token
+            NT_np = next_token.cpu().numpy()
+            for ii in range(nsamples):
+                generate[ii].append(NT_np[ii][0])
+    return generate
+
 # 通过命令行参数--fast_pattern，指定模式
 def generate(n_ctx, model, context, length, tokenizer,is_quick=False, temperature=1, top_k=0, top_p=0.0, repitition_penalty=1.0,
              device='cpu',
