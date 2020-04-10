@@ -19,14 +19,11 @@ def peomSplit(s):
 def generating(prefix,model,config,tokenizer,device,num,gpu):
     r = generating_poem(0,prefix,model,config,tokenizer,device,quick=False,num=num,batchGenerating=True,gpu=gpu)
     return r
-def main(path_source,path_config,idx0,idx1,gpu,nsamples):
+def fun(S,path_config,gpu,nsamples):
     model, tokenizer, config, device = getModel(path_config=path_config,gpu=gpu)
-    with open(path_source,'r') as f:
-        data = json.load(f)
-    path_target = 'data/'+str(idx0)+'_'+str(idx1)
+    path_target = 'data/'
     if not os.path.exists(path_target):
         os.mkdir(path_target)
-    S = data[idx0:idx1]
     N = 0
     n = 0
     for i in range(len(S)):
@@ -42,6 +39,20 @@ def main(path_source,path_config,idx0,idx1,gpu,nsamples):
             r = [s+'\t'+rr[len(s):] for rr in r]
             with open(path_target+'/'+s[0]+'.txt','a+') as f:
                 f.write('\n'.join(r)+'\n')
+            f.close()
+def main(path_source, path_config, idx0, idx1, gpu, nsamples):
+    with open(path_source, 'r') as f:
+        data = json.load(f)
+    S0 = data[idx0:idx1]
+    batch_size=100
+    i0 = 0
+    i1 = i0+batch_size
+    while i0<len(S0):
+        print('##########################BATCH-%d################'%int(i0/batch_size))
+        S = S0[i0:i1]
+        fun(S, path_config, gpu, nsamples)
+        i0 = i1
+        i1 = i1+batch_size
 if __name__=='__main__':
     path_source, path_config, idx0, idx1, gpu, nsamples = sys.argv[1:]
     idx0 = int(idx0)

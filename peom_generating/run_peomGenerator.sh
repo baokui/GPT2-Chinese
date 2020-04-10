@@ -4,6 +4,7 @@ path_source=../data/poetry_small.json
 nsamples=15
 path_config=../web/demo_config/config_poem.json
 
+
 idx0=80000
 idx1=90000
 gpu=0
