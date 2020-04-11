@@ -1,5 +1,5 @@
-idx0=560000
-idx1=570000
+idx0=640000
+idx1=648389
 gpu=0
 nohup sh run_each.sh $idx0 $idx1 $gpu >> ./log/poemGen-$idx0-$idx1.log 2>&1 &
 

@@ -48,7 +48,7 @@ def main(path_source, path_config, idx0, idx1, gpu, nsamples):
     i0 = 0
     i1 = i0+batch_size
     while i0<len(S0):
-        print('##########################BATCH-%d################'%int(i0/batch_size))
+        print('##########################%d-%d################'%(idx0+i0,idx0+min(i1,len(S0))))
         S = S0[i0:i1]
         fun(S, path_config, gpu, nsamples)
         i0 = i1
