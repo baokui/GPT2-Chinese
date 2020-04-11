@@ -1,39 +1,39 @@
-idx0=80000
-idx1=90000
+idx0=560000
+idx1=570000
 gpu=0
 nohup sh run_each.sh $idx0 $idx1 $gpu >> ./log/poemGen-$idx0-$idx1.log 2>&1 &
 
-idx0=90000
-idx1=100000
+idx0=570000
+idx1=580000
 gpu=1
 nohup sh run_each.sh $idx0 $idx1 $gpu >> ./log/poemGen-$idx0-$idx1.log 2>&1 &
 
-idx0=100000
-idx1=110000
+idx0=580000
+idx1=590000
 gpu=2
 nohup sh run_each.sh $idx0 $idx1 $gpu >> ./log/poemGen-$idx0-$idx1.log 2>&1 &
 
-idx0=110000
-idx1=120000
+idx0=590000
+idx1=600000
 gpu=3
 nohup sh run_each.sh $idx0 $idx1 $gpu >> ./log/poemGen-$idx0-$idx1.log 2>&1 &
 
-idx0=120000
-idx1=130000
+idx0=600000
+idx1=610000
 gpu=0
 nohup sh run_each.sh $idx0 $idx1 $gpu >> ./log/poemGen-$idx0-$idx1.log 2>&1 &
 
-idx0=130000
-idx1=140000
+idx0=610000
+idx1=620000
 gpu=1
 nohup sh run_each.sh $idx0 $idx1 $gpu >> ./log/poemGen-$idx0-$idx1.log 2>&1 &
 
-idx0=140000
-idx1=150000
+idx0=620000
+idx1=630000
 gpu=2
 nohup sh run_each.sh $idx0 $idx1 $gpu >> ./log/poemGen-$idx0-$idx1.log 2>&1 &
 
-idx0=150000
-idx1=160000
+idx0=630000
+idx1=640000
 gpu=3
 nohup sh run_each.sh $idx0 $idx1 $gpu >> ./log/poemGen-$idx0-$idx1.log 2>&1 &
