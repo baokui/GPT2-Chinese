@@ -540,7 +540,7 @@ def generating(app,prefix,model,config,tokenizer,device,config_predict,quick=Fal
     S = postprocess(S,prefix0,config_predict,removeHighFreqWords=removeHighFreqWords)
     S = dropDuplicateContent(S)
     if config_predict.resort:
-        S = resort(prefix0, S, config)
+        S = resort(prefix0, S, config_predict)
     t2 = time.time()
     #print('text generating and posprocess time:%0.4f and %0.4f' % (t1 - t0,t2-t1))
     return S
