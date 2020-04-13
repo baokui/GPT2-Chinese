@@ -1,3 +1,4 @@
+import numpy as np
 def postprocess(S,prefix,config_postprocess,dropPerson=True,maxNbSents=True,removeEndPunc=True,removeWords = True, removeSingleWord=True,transfer = True,sentEndcontent=True,removeDupulicate=True,dropSpecial=True,removeHighFreqWords=False,removeIncompletePunc=True):
     stopwords = config_postprocess.stopwords
     map_e2z = config_postprocess.map_e2z
@@ -287,3 +288,85 @@ def findMaxMatch(inputStr,D_simi,D_next,config_predict):
             prefix = s
         i -= 1
     return prefix,punc
+def resort(prefix,S,config,useNumSents=True,useSentLen=True,useNumLessChar=True,useMaxMinLen=False):
+    Score = []
+    stopwords = config.stopwords
+    W = [1000,100,10,1]
+    len_prefix = len(prefix)
+    for sent in S:
+        score = []
+        sents,sents0 = sent_split(sent,prefix,stopwords)
+        if useNumSents:
+            nb = len(sents)
+            t = 0
+            if nb==3:
+                t = 1
+            if nb==4:
+                t = 0.5
+            score.append(t)
+        if useSentLen:
+            t = 0
+            len_sent = len(sent)
+            if len(prefix)<10:
+                if len_sent > len_prefix*2.5 and len_sent < len_prefix*3.5:
+                    t = 1
+            else:
+                if len_sent > len_prefix*1.5 and len_sent < len_prefix*2.5:
+                    t = 1
+            score.append(t)
+        if useNumLessChar:
+            n = len([t for t in sents if len(t)<=3])
+            t = 0
+            if n>2:
+                t = -1
+            if n==2:
+                t = -0.7
+            if n==1:
+                t = -0.5
+            score.append(t)
+        if useMaxMinLen:
+            p = [len(t) for t in sents]
+            a = (max(p)-min(p))/max(p)
+            score.append(-a)
+        Score.append(score)
+    Score = np.array(Score)
+    Max = np.max(Score,axis=0)
+    Min = np.min(Score,axis=0)
+    eps = 1e-5
+    Score = (Score-Min)/(Max-Min+eps)
+    Score = np.sum(Score,axis=-1)
+    R = [(S[i],Score[i]) for i in range(len(S))]
+    R = sorted(R,key=lambda x:-x[-1])
+    R = [r[0] for r in R]
+    return R
+def demo_resort():
+    path_data = 'data/test_text.txt'
+    path_source = 'result/test_text.json'
+    path_target = 'result/test_text-resort.json'
+    from Config import config_predict
+    import json
+    config = config_predict()
+    with open(path_data,'r') as f:
+        Data = f.read().strip().split('\n')
+    with open(path_source,'r') as f:
+        S = json.load(f)
+    D = []
+    for i in range(len(Data)):
+        prefix = Data[i]
+        outputs = S[i]['result']
+        s1 = [s[:-3] for s in outputs if '(文)' in s]
+        s2 = [s[:-5] for s in outputs if '(大白狗)' in s]
+        if len(s1)==0:
+            r1 = []
+        else:
+            r1 = resort(prefix,s1,config)
+        if len(s2)==0:
+            r2 = []
+        else:
+            r2 = resort(prefix,s2,config)
+        R = [r+'(文)' for r in r1]
+        R += [r+'(大白狗)' for r in r2]
+        d = {'input':prefix,'outputs':R}
+        D.append(d)
+    with open(path_target,'w') as f:
+        json.dump(D,f,ensure_ascii=False,indent=4)

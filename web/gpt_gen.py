@@ -14,7 +14,7 @@ import json
 import random
 from time import strftime, localtime
 import time
-from modules import postprocess,poemFilter1,dropDuplicateContent,_is_chinese_char,sentTriming,findMaxMatch
+from modules import postprocess,poemFilter1,dropDuplicateContent,_is_chinese_char,sentTriming,findMaxMatch,resort
 print_log = False
 # 打印当前时间
 def printTime():
@@ -539,6 +539,8 @@ def generating(app,prefix,model,config,tokenizer,device,config_predict,quick=Fal
         S = [prefix0+s[len(prefix):] for s in S]
     S = postprocess(S,prefix0,config_predict,removeHighFreqWords=removeHighFreqWords)
     S = dropDuplicateContent(S)
+    if config_predict.resort:
+        S = resort(prefix0, S, config)
     t2 = time.time()
     #print('text generating and posprocess time:%0.4f and %0.4f' % (t1 - t0,t2-t1))
     return S

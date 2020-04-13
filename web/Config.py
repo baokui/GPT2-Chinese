@@ -34,6 +34,7 @@ class config_predict(object):
         self.fast_pattern = True
         self.repetition_penalty = [1.2,1.5,1.2]
         self.temperature = [0.6,0.7,0.5]
+        self.resort = True
     def addStopwords(self):
         punc_zh = "！？｡＂＃＄％＆＇（）＊＋，－／：；＜＝＞＠［＼］＾＿｀｛｜｝～｟｠｢｣､、〃》「」『』【】〔〕〖〗〘〙〚〛〜〝〞〟〰〾〿–—‘’‛“”„‟‧﹏.…"
         punc_en = unicodedata.normalize('NFKC', punc_zh[:-1]) + unicodedata.normalize('NFKC', punc_zh[-1])[-1]
