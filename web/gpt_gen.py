@@ -473,7 +473,7 @@ def untokenization(out,config,tokenizer,punc,continue_writing):
     tmp.append(tmptext[-1])
     tmptext = ''.join(tmp)
     return tmptext
-def generating(app,prefix,model,config,tokenizer,device,config_predict,quick=False,num=5,continue_writing=False,removeHighFreqWords=False,batchGenerating=False,gpu='0',onlyMax=False,fast_pattern=False):
+def generating(app,prefix,model,config,tokenizer,device,config_predict,quick=False,num=5,continue_writing=False,removeHighFreqWords=False,batchGenerating=False,gpu='0',onlyMax=False):
     #print("start:",prefix)
     #os.environ["CUDA_VISIBLE_DEVICES"] = gpu
     torch.cuda.set_device(int(gpu))
@@ -485,8 +485,7 @@ def generating(app,prefix,model,config,tokenizer,device,config_predict,quick=Fal
     punc = '.,?!;\t 。，？！；'
     global a
     a = app
-    if config_predict.fast_pattern:
-        fast_pattern = True
+    fast_pattern = config_predict.fast_pattern
     n_ctx = model.config.n_ctx
     length = config['length']
     nsamples = num
