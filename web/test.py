@@ -42,6 +42,7 @@ app = 0
 quick = False
 def main():
     S = []
+    T0 = time.time()
     for data in Data:
         if ConfigPredict.useThread:
             result = gpt_gen_thread.generating_thread(app, data, model, config, tokenizer, device, ConfigPredict,quick, num0,
@@ -62,8 +63,11 @@ def main():
             result += [tmp+tags[-1] for tmp in result_nnlm]
         response = {'input':data,'result': result}
         S.append(response)
-        with open(path_target,'w') as f:
-            json.dump(S,f,ensure_ascii=False,indent=4)
+    T1 = time.time()
+    T = T1 - T0
+    with open(path_target, 'w') as f:
+        json.dump(S, f, ensure_ascii=False, indent=4)
+    print('used time %0.2f and QPS=%0.2f'%(T,len(Data)/T))
 # start flask app
 if __name__ == '__main__':
     main()
