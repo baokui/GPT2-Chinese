@@ -337,6 +337,8 @@ def resort(prefix,S,config,useNumSents=True,useSentLen=True,useNumLessChar=True,
             a = [len(k) for k in sents]
             if len(a)>2:
                 t = -np.std(a,ddof=1)
+            if len(a)==2:
+                t = -1
             score.append(t)
         Score.append(score)
     Score = np.array(Score)
