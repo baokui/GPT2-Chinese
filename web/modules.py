@@ -288,7 +288,7 @@ def findMaxMatch(inputStr,D_simi,D_next,config_predict):
             prefix = s
         i -= 1
     return prefix,punc
-def resort(prefix,S,config,useNumSents=True,useSentLen=True,useNumLessChar=True,useMaxMinLen=False):
+def resort(prefix,S,config,useNumSents=True,useSentLen=True,useNumLessChar=True,useMaxMinLen=False,useStdSentLen=True):
     Score = []
     stopwords = config.stopwords
     W = [1000,100,10,1]
@@ -332,6 +332,12 @@ def resort(prefix,S,config,useNumSents=True,useSentLen=True,useNumLessChar=True,
             p = [len(t) for t in sents]
             a = (max(p)-min(p))/max(p)
             score.append(-a)
+        if useStdSentLen:
+            t = -3
+            a = [len(k) for k in sents]
+            if len(a)>2:
+                t = -np.std(a,ddof=1)
+            score.append(t)
         Score.append(score)
     Score = np.array(Score)
     Max = np.max(Score,axis=0)

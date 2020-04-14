@@ -18,7 +18,7 @@ if len(sys.argv)>3:
     ConfigPredict = config_predict(model_config=path_config)
     print('use input configs:%s'%'\n'.join(path_config))
 else:
-    print('use input default configs')
+    print('use default configs')
     ConfigPredict = config_predict()
 with open(path_source,'r') as f:
     Data = f.read().strip().split('\n')
