@@ -31,10 +31,10 @@ def postprocess(S,prefix,config_postprocess,dropPerson=True,maxNbSents=True,remo
             s0 = drop_blackwords(s0,prefix,blackwords = blackwords)
         if dropPerson:
             s0 = drop_person(s0,prefix)
-        if removeEndPunc:
-            s0 = remove_endPunc(s0,stopwords,punc_end)
         if maxNbSents:
             s0 = sentCutting(s0,prefix,stopwords,max_nb_sents)
+        if removeEndPunc:
+            s0 = remove_endPunc(s0,stopwords,punc_end)
         if len(s0)>min_contenlen:
             if len(prefix)>10 and len(s0) - len(prefix)>5:
                 R.append(s0)
