@@ -50,6 +50,18 @@ def save_model_for_production(model, version='1', path='prod_models'):
                 tf.saved_model.signature_constants.DEFAULT_SERVING_SIGNATURE_DEF_KEY: prediction_signature
             })
         builder.save()
+def getmodel():
+    import tensorflow as tf
+    tf.keras.backend.clear_session()
+    from tensorflow import keras
+    from tensorflow.keras import layers
+    inputs = keras.Input(shape=(784,), name='digits')
+    x = layers.Dense(64, activation='relu', name='dense_1')(inputs)
+    x = layers.Dense(64, activation='relu', name='dense_2')(x)
+    outputs = layers.Dense(10, activation='softmax', name='predictions')(x)
+    model = keras.Model(inputs=inputs, outputs=outputs, name='3_layer_mlp')
+    model.summary()
+
 model = ConvBlock(32, 3, 1e-4, 0.5)
 x = tf.ones((4, 224, 224, 3))
 y = model(x)
