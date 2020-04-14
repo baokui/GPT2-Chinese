@@ -13,10 +13,13 @@ from Config import config_predict
 
 path_source = sys.argv[1]
 path_target = sys.argv[2]
+if len(sys.argv)>3:
+    path_config = sys.argv[3].split(',')
+    print('use input configs:%s'%'\n'.join(path_config))
 with open(path_source,'r') as f:
     Data = f.read().strip().split('\n')
 
-ConfigPredict = config_predict()
+ConfigPredict = config_predict(model_config=path_config)
 batchGenerating=ConfigPredict.batchGenerating
 path_configs = ConfigPredict.model_configs
 num0 = ConfigPredict.predict_nums
