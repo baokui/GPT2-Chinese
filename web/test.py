@@ -16,6 +16,8 @@ path_target = sys.argv[2]
 if len(sys.argv)>3:
     path_config = sys.argv[3].split(',')
     print('use input configs:%s'%'\n'.join(path_config))
+else:
+    print('use input default configs')
 with open(path_source,'r') as f:
     Data = f.read().strip().split('\n')
 
