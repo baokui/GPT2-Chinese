@@ -473,7 +473,7 @@ def untokenization(out,config,tokenizer,punc,continue_writing):
     tmp.append(tmptext[-1])
     tmptext = ''.join(tmp)
     return tmptext
-def generating(app,prefix,model,config,tokenizer,device,config_predict,quick=False,num=5,continue_writing=False,removeHighFreqWords=False,batchGenerating=False,gpu='0',onlyMax=False):
+def generating(app,prefix,model,config,tokenizer,device,config_predict,quick=False,num=5,continue_writing=False,removeHighFreqWords=False,batchGenerating=False,gpu='0',onlyMax=False,maxNb = 20):
     #print("start:",prefix)
     #os.environ["CUDA_VISIBLE_DEVICES"] = gpu
     torch.cuda.set_device(int(gpu))
@@ -489,6 +489,7 @@ def generating(app,prefix,model,config,tokenizer,device,config_predict,quick=Fal
     n_ctx = model.config.n_ctx
     length = config['length']
     nsamples = num
+    maxNb = max(nsamples,maxNb)
     temperature = config['temperature']
     topk = config['topk']
     topp = config['topp']
@@ -509,10 +510,10 @@ def generating(app,prefix,model,config,tokenizer,device,config_predict,quick=Fal
                                               device=device)
         else:
             if fast_pattern:
-                outs = fast_sample_sequence_batch(model, context_tokens, length, nsamples=nsamples,
+                outs = fast_sample_sequence_batch(model, context_tokens, length, nsamples=maxNb,
                                            temperature=temperature, top_k=topk, repitition_penalty=repetition_penalty,device=device)
             else:
-                outs = sample_sequence_batch_opti(model, context_tokens, length, n_ctx, tokenizer, nsamples, temperature=temperature,
+                outs = sample_sequence_batch_opti(model, context_tokens, length, n_ctx, tokenizer, maxNb, temperature=temperature,
                                          top_k=topk,
                                          top_p=topp, repitition_penalty=repetition_penalty,
                                          device=device)
@@ -523,7 +524,7 @@ def generating(app,prefix,model,config,tokenizer,device,config_predict,quick=Fal
         #print('model untokenization time:%0.4f' % (t2 - t1))
     else:
         S = []
-        for _ in range(nsamples):
+        for _ in range(maxNb):
             out = generate(
                 n_ctx=n_ctx,
                 model=model,
@@ -544,6 +545,7 @@ def generating(app,prefix,model,config,tokenizer,device,config_predict,quick=Fal
             S = resort(prefix0, S, config_predict)
     t2 = time.time()
     #print('text generating and posprocess time:%0.4f and %0.4f' % (t1 - t0,t2-t1))
+    S = S[:nsamples]
     return S
 def generating_sentence(prefix,model,config,tokenizer):
     print("start:",prefix,config)
