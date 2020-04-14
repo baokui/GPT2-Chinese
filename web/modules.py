@@ -310,9 +310,13 @@ def resort(prefix,S,config,useNumSents=True,useSentLen=True,useNumLessChar=True,
             if len(prefix)<10:
                 if len_sent > len_prefix*2.5 and len_sent < len_prefix*3.5:
                     t = 1
+                elif len_sent < len_prefix*1.5 or len_sent > len_prefix*5:
+                    t = -1
             else:
                 if len_sent > len_prefix*1.5 and len_sent < len_prefix*2.5:
                     t = 1
+                elif len_sent < len_prefix*0.5 or len_sent > len_prefix*3:
+                    t = -1
             score.append(t)
         if useNumLessChar:
             n = len([t for t in sents if len(t)<=3])
