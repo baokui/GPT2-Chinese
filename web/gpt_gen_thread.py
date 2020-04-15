@@ -70,6 +70,8 @@ def generating_thread(app,prefix, models, configs, tokenizers,devices,ConfigPred
     nb_thread = len(models)
     Thread = []
     for t in range(nb_thread):
+        if not ConfigPredict.doPredict[t]:
+            continue
         if tags[t] == '(诗)':
             isPoem = True
         else:
@@ -81,10 +83,11 @@ def generating_thread(app,prefix, models, configs, tokenizers,devices,ConfigPred
                                         removeHighFreqWordss[t],batchGenerating,isPoem,tags[t],gpu=gpu,onlyMax=onlyMax)
         Thread.append(thread1)
     t = nb_thread
-    thread2 = GPT2_generator_thread(t, "thread-"+str(t), app,models[t-1],prefix,configs[t-1],tokenizers[t-1],
+    if ConfigPredict.doPredict[t]:
+        thread2 = GPT2_generator_thread(t, "thread-"+str(t), app,models[t-1],prefix,configs[t-1],tokenizers[t-1],
                                         devices[t-1],ConfigPredict,quick,nums[t],
                                         removeHighFreqWordss[t-1],batchGenerating=False,tags=tags[t],nnlm=True,D_simi=D_simi,D_next=D_next,maxNext=maxNext,maxChoice=maxChoice)
-    Thread.append(thread2)
+        Thread.append(thread2)
     #print('# 开启新线程')
     for th in Thread:
         th.start()
