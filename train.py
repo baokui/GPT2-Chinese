@@ -258,8 +258,8 @@ def main():
                     overall_step += 1
                 except:
                     print("TRAIN ERROR:")
-                    print('input:')
-                    print(batch_inputs)
+                    print('step:%d'%step)
+                    #print(batch_inputs)
             piece_num += 1
         if not os.path.exists(output_dir + 'model_epoch{}'.format(epoch + 1)):
             os.mkdir(output_dir + 'model_epoch{}'.format(epoch + 1))
