@@ -44,10 +44,13 @@ for ii in range(len(path_configs)):
     tokenizer.append(t0)
     config.append(c0)
     device.append(d0)
-D_simi = json.load(open(path_simi,'r',encoding='utf-8'))
-D_next = json.load(open(path_next,'r',encoding='utf-8'))
-D_simi = {k:json.loads(D_simi[k]) for k in D_simi}
-D_next = {k:json.loads(D_next[k]) for k in D_next}
+if ConfigPredict.doPredict[-1]:
+    D_simi = json.load(open(path_simi,'r',encoding='utf-8'))
+    D_next = json.load(open(path_next,'r',encoding='utf-8'))
+    D_simi = {k:json.loads(D_simi[k]) for k in D_simi}
+    D_next = {k:json.loads(D_next[k]) for k in D_next}
+else:
+    D_simi,D_next = [],[]
 app = 0
 quick = False
 def main():
