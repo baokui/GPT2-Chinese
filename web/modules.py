@@ -65,6 +65,9 @@ def hasCompletePunc(s):
                 Flag = False
                 break
             D[L[idx]]-=1
+    for d in D:
+        if D[d]>0:
+            Flag = False
     if Flag:
         n0 = s.count('\'')
         if n0%2==0:
