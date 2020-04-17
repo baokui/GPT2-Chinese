@@ -109,7 +109,7 @@ def main():
                 z = ['', S[i]['result'][j]]
             z.append(tag)
             A.append(z)
-    path_target1 = path_target.replace('txt', 'xls')
+    path_target1 = path_target.replace('json', 'xls')
     write_excel(path_target1, A)
     print('used time %0.2f and QPS=%0.2f' % (T, len(Data) / T))
 # start flask app
