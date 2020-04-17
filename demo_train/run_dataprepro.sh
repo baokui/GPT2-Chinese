@@ -5,4 +5,4 @@ mkdir log
 padding=1
 path_vocab=model/modelexample/vocab.txt
 n_ctx=64
-nohup python -u datapro_godText.py $path_source $path_target $padding $path_vocab $n_ctx >> log/godText-padding.log 2>&1 &
+nohup python -u dataprepro.py $path_source $path_target $padding $path_vocab $n_ctx >> log/godText-padding.log 2>&1 &

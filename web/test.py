@@ -38,6 +38,7 @@ for ii in range(len(path_configs)):
         m0,t0,c0,d0 = gpt_gen.getModel(path_config=path_configs[ii],gpu=ConfigPredict.gpus[ii])
         c0['repetition_penalty'] = ConfigPredict.repetition_penalty[ii]
         c0['temperature'] = ConfigPredict.temperature[ii]
+        c0['length'] = ConfigPredict.length[ii]
     else:
         m0,t0,c0,d0 = '','','',''
     model.append(m0)
@@ -53,6 +54,20 @@ else:
     D_simi,D_next = [],[]
 app = 0
 quick = False
+def write_excel(path_target,data,sheetname='Sheet1'):
+    import xlwt
+    # 创建一个workbook 设置编码
+    workbook = xlwt.Workbook(encoding='utf-8')
+    # 创建一个worksheet
+    worksheet = workbook.add_sheet(sheetname)
+    # 写入excel
+    # 参数对应 行, 列, 值
+    rows,cols = len(data),len(data[0])
+    for i in range(rows):
+        for j in range(cols):
+            worksheet.write(i, j, label=str(data[i][j]))
+    # 保存
+    workbook.save(path_target)
 def main():
     S = []
     T0 = time.time()
@@ -80,7 +95,23 @@ def main():
     T = T1 - T0
     with open(path_target, 'w') as f:
         json.dump(S, f, ensure_ascii=False, indent=4)
-    print('used time %0.2f and QPS=%0.2f'%(T,len(Data)/T))
+    A = []
+    for i in range(len(S)):
+        for j in range(len(S[i]['result'])):
+            s = S[i]['result'][j]
+            t = ''.join([s[len(s) - i - 1] for i in range(len(s))])
+            idx0 = len(s) - t.find('(') - 1
+            idx1 = len(s) - t.find(')') - 1
+            tag = s[idx0:idx1 + 1]
+            if j == 0:
+                z = [S[i]['input'], S[i]['result'][j]]
+            else:
+                z = ['', S[i]['result'][j]]
+            z.append(tag)
+            A.append(z)
+    path_target1 = path_target.replace('txt', 'xls')
+    write_excel(path_target1, A)
+    print('used time %0.2f and QPS=%0.2f' % (T, len(Data) / T))
 # start flask app
 if __name__ == '__main__':
     main()

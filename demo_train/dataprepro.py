@@ -2,6 +2,28 @@ import sys
 import os
 import json
 from tokenizations import tokenization_bert
+def _is_chinese_char(char):
+    """Checks whether CP is the codepoint of a CJK character."""
+    # This defines a "chinese character" as anything in the CJK Unicode block:
+    #   https://en.wikipedia.org/wiki/CJK_Unified_Ideographs_(Unicode_block)
+    #
+    # Note that the CJK Unicode block is NOT all Japanese and Korean characters,
+    # despite its name. The modern Korean Hangul alphabet is a different block,
+    # as is Japanese Hiragana and Katakana. Those alphabets are used to write
+    # space-separated words, so they are not treated specially and handled
+    # like the all of the other languages.
+    cp = ord(char)
+    if ((cp >= 0x4E00 and cp <= 0x9FFF) or  #
+            (cp >= 0x3400 and cp <= 0x4DBF) or  #
+            (cp >= 0x20000 and cp <= 0x2A6DF) or  #
+            (cp >= 0x2A700 and cp <= 0x2B73F) or  #
+            (cp >= 0x2B740 and cp <= 0x2B81F) or  #
+            (cp >= 0x2B820 and cp <= 0x2CEAF) or
+            (cp >= 0xF900 and cp <= 0xFAFF) or  #
+            (cp >= 0x2F800 and cp <= 0x2FA1F)):  #
+        return True
+
+    return False
 def token_pad(line,full_tokenizer,subline,n_ctx):
     punc = '.;!?。；！？'
     tmp = [full_tokenizer.convert_tokens_to_ids('[MASK]')]
@@ -21,7 +43,7 @@ def token_pad(line,full_tokenizer,subline,n_ctx):
     line = line[idx0:]
     tmp = tmp + [full_tokenizer.convert_tokens_to_ids('[CLS]')]
     return tmp,line
-def build_files(full_tokenizer,path_source,path_target,padding,n_ctx=64,min_length=10,maxNb=1000000):
+def build_files(full_tokenizer,path_source,path_target,padding,n_ctx=64,min_length=6,maxNb=1000000):
     if not os.path.exists(path_target):
         os.mkdir(path_target)
     full_line = []
@@ -32,7 +54,8 @@ def build_files(full_tokenizer,path_source,path_target,padding,n_ctx=64,min_leng
     for file in files:
         f = open(os.path.join(path_source,file),'r')
         for line in f:
-            if len(line)<min_length:
+            line_zh = [tt for tt in line if _is_chinese_char(tt)]
+            if len(line_zh)<min_length or len(line)>len(line_zh)*2:
                 continue
             nb_lines+=1
             subline = full_tokenizer.convert_tokens_to_ids(list(line))
@@ -59,11 +82,11 @@ def build_files(full_tokenizer,path_source,path_target,padding,n_ctx=64,min_leng
         with open(os.path.join(path_target, 'godTokenizer_' + str(idx) + '.txt'), 'w') as f:
             f.write(' '.join(full_line))
     print('finish')
-def main(path_source,path_target,padding,path_vocab,nb_piece,n_ctx):
+def main(path_source,path_target,padding,path_vocab,n_ctx):
     #tokenizer_path = '../data/vocab/vocab_god_userdata.txt'
     #tokenized_data_path = '../data/userdata_tokenized_new/'
     full_tokenizer = tokenization_bert.BertTokenizer(vocab_file=path_vocab)
-    build_files(full_tokenizer,path_source,path_target,padding,nb_piece=nb_piece,n_ctx=n_ctx)
+    build_files(full_tokenizer,path_source,path_target,padding,n_ctx=n_ctx)
     #shutil.rmtree(data_path)
 if __name__=='__main__':
     path_source,path_target,padding,path_vocab,n_ctx = sys.argv[1:6]

@@ -476,6 +476,8 @@ def untokenization(out,config,tokenizer,punc,continue_writing):
 def generating(app,prefix,model,config,tokenizer,device,config_predict,quick=False,num=5,continue_writing=False,removeHighFreqWords=False,batchGenerating=False,gpu='0',onlyMax=False,maxNb = 20):
     #print("start:",prefix)
     #os.environ["CUDA_VISIBLE_DEVICES"] = gpu
+    if len(prefix)==0 or len(prefix)>model.config.n_ctx:
+        return []
     torch.cuda.set_device(int(gpu))
     prefix0 = prefix
     if config_predict.prefixTrim:
@@ -487,7 +489,14 @@ def generating(app,prefix,model,config,tokenizer,device,config_predict,quick=Fal
     a = app
     fast_pattern = config_predict.fast_pattern
     n_ctx = model.config.n_ctx
-    length = config['length']
+    len_prefix = len(prefix)
+    if len_prefix<5:
+        max_genlen = 5*len_prefix
+    elif len_prefix<10:
+        max_genlen = 3*len_prefix
+    else:
+        max_genlen = config['length']
+    length = min(max_genlen,n_ctx-len_prefix-1)
     nsamples = num
     maxNb = max(nsamples,maxNb)
     temperature = config['temperature']
@@ -681,7 +690,7 @@ def untokenization_poem(out,tokenizer,config):
     return tmptext
 def generating_poem(app,prefix,model,config,tokenizer,device,quick=False,num=5,batchGenerating=False,gpu='0',onlyMax=False,fast_pattern=False):
     torch.cuda.set_device(int(gpu))
-    if len(prefix)>7:
+    if len(prefix)>10:
         return []
     #print("start:", prefix)
     global a

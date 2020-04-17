@@ -30,6 +30,7 @@ for ii in range(len(path_configs)):
     m0,t0,c0,d0 = gpt_gen.getModel(path_config=path_configs[ii],gpu=ConfigPredict.gpus[ii])
     c0['repetition_penalty'] = ConfigPredict.repetition_penalty[ii]
     c0['temperature'] = ConfigPredict.temperature[ii]
+    c0['length'] = ConfigPredict.length[ii]
     model.append(m0)
     tokenizer.append(t0)
     config.append(c0)
