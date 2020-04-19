@@ -59,7 +59,9 @@ D_next = {k:json.loads(D_next[k]) for k in D_next}
 def test2():
     modelidx = [np.random.randint(0,len(t)) for t in ModelIndex]
     #gpu_av = GPUtil.getAvailable(order='load', limit=8, maxLoad=0.9, maxMemory=0.9)
-    gpu_av = GPUtil.getAvailable(order='memory', limit=8)
+    #gpu_av = GPUtil.getAvailable(order='random',maxLoad=0.9, maxMemory=0.9, limit=8)
+    #gpu_av = GPUtil.getAvailable(order='memory', limit=8)
+    gpu_av = []
     gpu_opt = 0
     if len(gpu_av)>0:
         for i in range(len(gpu_av)):
