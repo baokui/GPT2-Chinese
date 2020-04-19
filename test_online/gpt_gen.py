@@ -488,7 +488,7 @@ def generating(app,prefix,model,config,tokenizer,device,config_predict,quick=Fal
         device = "cuda" if torch.cuda.is_available() else "cpu"
     else:
         device = 'cpu'
-    print("use device:%s" % device)
+    #print("use device:%s" % device)
     prefix0 = prefix
     if config_predict.prefixTrim:
         prefix = sentTriming(prefix0)
@@ -704,7 +704,7 @@ def generating_poem(app,prefix,model,config,tokenizer,device,quick=False,num=5,b
         device = "cuda" if torch.cuda.is_available() else "cpu"
     else:
         device = 'cpu'
-    print("use device:%s" % device)
+    #print("use device:%s" % device)
     if len(prefix)>10:
         return []
     #print("start:", prefix)
