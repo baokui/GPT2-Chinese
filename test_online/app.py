@@ -106,6 +106,6 @@ def test2():
 
 # start flask app
 if __name__ == '__main__':
-    app.run(threaded=True)
-    app.run(host="0.0.0.0", port=port)
+    #app.run(threaded=True)
+    app.run(host="0.0.0.0", port=port,threaded=True)
     #WSGIServer(('127.0.0.1', port), app).serve_forever()
