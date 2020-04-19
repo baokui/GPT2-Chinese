@@ -2,7 +2,7 @@
 import unicodedata
 class config_predict(object):
     # 定义构造方法
-    def __init__(self,model_config='', doPredict = [1,1,1,1]):  #__init__() 是类的初始化方法；它在类的实例化操作后 会自动调用，不需要手动调用；
+    def __init__(self,model_config='', doPredict = [1,1,1,1],gpus = ''):  #__init__() 是类的初始化方法；它在类的实例化操作后 会自动调用，不需要手动调用；
         # 设置属性
         self.stopwords = [" ", "　", " ", ",", "，", ".", "。", "、", "!", "！", "?", "？", ";", "；", "~", "～", "·", "·", ".", "…", "-",
              "#_", "—", "+", "=", "'", "\"", "‘", "’", "“", "”", "*", "&", "^", "%", "$", "/", "\\", "@"]
@@ -17,7 +17,10 @@ class config_predict(object):
         self.rate_gen2inp = 1.4
         self.batchGenerating = True
         self.max_nb_sents=4
-        self.gpus = ['','','']
+        if len(gpus)==0:
+            self.gpus = ['0','1','2']
+        else:
+            self.gpus = gpus
         if len(model_config)==0:
             self.model_configs = ['demo_config/config_godText_large1.json', 'demo_config/config_poem.json',
                             'demo_config/config_dabaigou.json']
