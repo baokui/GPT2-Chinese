@@ -4,7 +4,7 @@ nohup python -u train.py \
         --tokenized_data_path=data_tokenized/ \
         --epochs=3 \
         --min_length=10 \
-        --stride=50 \
+        --stride=64 \
         --padding \
         --log_step=10 \
         --batch_size=16 \

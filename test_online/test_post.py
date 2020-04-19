@@ -1,5 +1,5 @@
 import requests
 url = "http://10.160.25.112:5000/api/gen"
-data = '{"input":"ab"}'
-res = requests.post(url=url,data=data)
+data = {"input":"你好"}
+res = requests.post(url=url,json=data)
 print(res.text)

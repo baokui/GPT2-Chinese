@@ -18,11 +18,11 @@ class config_predict(object):
         self.batchGenerating = True
         self.max_nb_sents=4
         if len(gpus)==0:
-            self.gpus = ['0','1','2']
+            self.gpus = ['0','1,2,3,4,5','6,7']
         else:
             self.gpus = gpus
         if len(model_config)==0:
-            self.model_configs = ['demo_config/config_godText_large1.json', 'demo_config/config_poem.json',
+            self.model_configs = [ 'demo_config/config_poem.json','demo_config/config_godText_large1.json',
                             'demo_config/config_dabaigou.json']
         else:
             if type(model_config)==list:
@@ -30,7 +30,7 @@ class config_predict(object):
             else:
                 self.model_configs = [model_config]
         self.predict_nums = [8, 4, 8, 5]
-        self.tags = ['(文)', '(诗)', '(大白狗)', '(句联想)']
+        self.tags = ['(诗)', '(文)', '(狗)', '(联)']
         self.doPredict = [t==1 for t in doPredict]
         self.rmHFW = [False, False, True, False]
         self.maxNext_JLX = 3
