@@ -4,7 +4,7 @@ import sys
 def main(port):
     t0 = time.time()
     url = "http://10.160.25.112:"+port+"/api/gen"
-    path_data = 'data/test_parallel.txt'
+    path_data = 'data/test_text.txt'
     with open(path_data,'r') as f:
         s = f.read().strip().split('\n')
     for str in s:
