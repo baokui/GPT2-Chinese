@@ -52,14 +52,22 @@ class GPT2_generator_thread (threading.Thread):
         #print ("退出线程：" + self.name)
     def generating_th(self,app, model, prefix, config, tokenizer, device, ConfigPredict,
                    quick, num, removeHighFreqWords, batchGenerating):
-        torch.cuda.set_device(int(self.gpu))
+        if self.gpu:
+            torch.cuda.set_device(int(self.gpu))
+            device = "cuda" if torch.cuda.is_available() else "cpu"
+        else:
+            device = 'cpu'
         S = generating(app, prefix, model, config, tokenizer, device, ConfigPredict,
                    quick, num, continue_writing = False,removeHighFreqWords=removeHighFreqWords,
                        batchGenerating=batchGenerating,gpu=self.gpu,onlyMax=self.onlyMax)
         return S
     def generating_poem_th(self,app, model, prefix, config, tokenizer, device, ConfigPredict,
                    quick, num, removeHighFreqWords, batchGenerating):
-        torch.cuda.set_device(int(self.gpu))
+        if self.gpu:
+            torch.cuda.set_device(int(self.gpu))
+            device = "cuda" if torch.cuda.is_available() else "cpu"
+        else:
+            device = 'cpu'
         S = generating_poem(app, prefix, model, config, tokenizer, device,
                    quick, num, batchGenerating,gpu=self.gpu,onlyMax=self.onlyMax,fast_pattern=ConfigPredict.fast_pattern)
         return S
@@ -77,7 +85,11 @@ def generating_thread(app,prefix, models, configs, tokenizers,devices,ConfigPred
         else:
             isPoem = False
         gpu = ConfigPredict.gpus[t]
-        torch.cuda.set_device(int(gpu))
+        if gpu:
+            torch.cuda.set_device(int(gpu))
+            device = "cuda" if torch.cuda.is_available() else "cpu"
+        else:
+            device = 'cpu'
         thread1 = GPT2_generator_thread(t, "thread-"+str(t), app,models[t],prefix,configs[t],tokenizers[t],
                                         devices[t],ConfigPredict,quick,nums[t],
                                         removeHighFreqWordss[t],batchGenerating,isPoem,tags[t],gpu=gpu,onlyMax=onlyMax)
