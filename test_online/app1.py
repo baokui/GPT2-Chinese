@@ -54,7 +54,7 @@ D_next = json.load(open(path_next,'r',encoding='utf-8'))
 D_simi = {k:json.loads(D_simi[k]) for k in D_simi}
 D_next = {k:json.loads(D_next[k]) for k in D_next}
 # 这里的json使用中文key
-@app.route("/api/gen", methods=['GET', 'POST'])
+@app.route("/api/gen", methods=['POST'])
 def index():
     modelidx = [np.random.randint(0,len(t)) for t in ModelIndex]
     r = request.json
