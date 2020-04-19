@@ -12,6 +12,7 @@ nb2=${#gpus2[@]}
 for((i=0;i<10;i++))
 do
 idx=$i
+path_target=result/test-$idx.json
 g0=$(( $i % $nb0 ))
 g1=$(( $i % $nb1 ))
 g2=$(( $i % $nb2 ))
