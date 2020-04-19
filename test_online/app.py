@@ -89,7 +89,7 @@ def test2():
             result_nnlm = gpt_gen.nnlm_modelpredict(D_simi,D_next,ConfigPredict,inputStr=data,maxNext=maxNext,maxChoice=10,num=num)
             result += [tmp+tags[-1] for tmp in result_nnlm]
         t1 = time.time()
-        modelidx_s = ','.join([t for t in modelidx])
+        modelidx_s = ','.join([str(t) for t in modelidx])
         app.logger.info('generating {}-th string and use time: {} s'.format(modelidx_s,'%0.4f'%(t1-t0)))
         #app.logger.info('time for : {}'.format(then - now))
         app.logger.info("input:{}".format(data))
