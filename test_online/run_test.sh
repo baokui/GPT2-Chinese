@@ -9,7 +9,7 @@ gpus2=(6 7)
 nb0=${#gpus0[@]}
 nb1=${#gpus1[@]}
 nb2=${#gpus2[@]}
-for((i=0;i<10;i++))
+for((i=0;i<20;i++))
 do
 idx=$i
 path_target=result/test-$idx.json
