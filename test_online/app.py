@@ -10,9 +10,10 @@ import logging
 import torch
 from Config import config_predict
 from datetime import datetime
+from gevent.wsgi import WSGIServer #关键这个
 app = Flask(__name__)
 #app.run(threaded=True)
-app.run(processes=True)
+#app.run(processes=True)
 app.logger.setLevel(logging.INFO)
 port = 5000
 style = 0#0大白狗, 1散文
@@ -105,4 +106,5 @@ def test2():
 
 # start flask app
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=port)
+    #app.run(host="0.0.0.0", port=port)
+    WSGIServer(('127.0.0.1', port), app).serve_forever()
