@@ -25,7 +25,7 @@ rmHFW = ConfigPredict.rmHFW
 maxNext = ConfigPredict.maxNext_JLX
 path_next = ConfigPredict.path_JLX_next
 path_simi = ConfigPredict.path_JLX_simi
-model,tokenizer,config,device = [],[],[],[]
+model,tokenizer,config,device,GPUs = [],[],[],[],[]
 ModelIndex = []
 for ii in range(len(path_configs)):
     M0,T0,C0,D0 = [],[],[],[]
@@ -46,6 +46,7 @@ for ii in range(len(path_configs)):
     config.append(C0)
     device.append(D0)
     ModelIndex.append([kk for kk in range(len(gpus))])
+    GPUs.append(gpus)
 D_simi = json.load(open(path_simi,'r',encoding='utf-8'))
 D_next = json.load(open(path_next,'r',encoding='utf-8'))
 D_simi = {k:json.loads(D_simi[k]) for k in D_simi}
@@ -69,6 +70,7 @@ def test2():
         conf = [config[ii][modelidx[ii]] for ii in range(len(modelidx))]
         tokn = [tokenizer[ii][modelidx[ii]] for ii in range(len(modelidx))]
         devi = [device[ii][modelidx[ii]] for ii in range(len(modelidx))]
+        ConfigPredict.gpus = [GPUs[ii][modelidx[ii]] for ii in range(len(modelidx))]
         if ConfigPredict.useThread:
             result = gpt_gen_thread.generating_thread(app, data, modl, conf, tokn, devi, ConfigPredict,quick, num0,
                                                        removeHighFreqWordss=rmHFW, batchGenerating=batchGenerating,tags=tags,
