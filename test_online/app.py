@@ -65,7 +65,7 @@ def test2():
             for j in range(len(GPUs)):
                 if str(gpu_av[i]) in GPUs[j]:
                     gpu_opt = 1
-                    modelidx[j] = gpu_av[i]
+                    modelidx[j] = GPUs[j].index(str(gpu_av[i]))
                     break
     r = request.json
     data = r["input"]
