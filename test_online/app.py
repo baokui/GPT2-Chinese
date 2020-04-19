@@ -10,6 +10,7 @@ import logging
 import torch
 from Config import config_predict
 from datetime import datetime
+import GPUtil
 from gevent.pywsgi import WSGIServer #关键这个
 app = Flask(__name__)
 #app.run(threaded=True)
@@ -57,6 +58,15 @@ D_next = {k:json.loads(D_next[k]) for k in D_next}
 @app.route('/api/gen', methods=['POST'])
 def test2():
     modelidx = [np.random.randint(0,len(t)) for t in ModelIndex]
+    gpu_av = GPUtil.getAvailable(order='first', limit=8, maxLoad=0.9, maxMemory=0.9)
+    gpu_opt = 0
+    if len(gpu_av)>0:
+        for i in range(len(gpu_av)):
+            for j in range(len(GPUs)):
+                if str(gpu_av[i]) in GPUs[j]:
+                    gpu_opt = 1
+                    modelidx[j] = gpu_av[i]
+                    break
     r = request.json
     data = r["input"]
     quick = False
@@ -93,7 +103,7 @@ def test2():
             result += [tmp+tags[-1] for tmp in result_nnlm]
         t1 = time.time()
         modelidx_s = ','.join([str(t) for t in ConfigPredict.gpus])
-        app.logger.info('gpus {}-th string and use time: {} s'.format(modelidx_s,'%0.4f'%(t1-t0)))
+        app.logger.info('gpus {}-th (opt is {}) string and use time: {} s'.format(modelidx_s,gpu_opt,'%0.4f'%(t1-t0)))
         #app.logger.info('time for : {}'.format(then - now))
         app.logger.info("input:{}".format(data))
         app.logger.info("output:\n{}".format('\n'.join(result)))
