@@ -1,4 +1,4 @@
-path_source=data/test_cut.txt
+path_source=data/test_parallel.txt
 path_target=result/test_text-godTextPretrain.json
 path_config=demo_config/config_godText_large1.json,demo_config/config_poem.json,demo_config/config_dabaigou.json
 doPredict=1,1,1,1
