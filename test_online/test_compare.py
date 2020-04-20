@@ -1,5 +1,8 @@
 import sys
 import json
+from app import *
+import numpy as np
+import time
 def read_excel(path_source1,index=0):
     import xlrd
     workbook = xlrd.open_workbook(path_source1)  # 打开excel文件
@@ -34,9 +37,6 @@ def getdata(path_data='D:\项目\输入法\神配文数据\生成评测\主动�
     with open(path_targe,'w',encoding='utf-8') as f:
         json.dump(D,f,ensure_ascii=False,indent=4)
 def test(Data):
-    from app import *
-    import numpy as np
-    import time
     def test2():
         modelidx = [np.random.randint(0, len(t)) for t in ModelIndex]
         # gpu_av = GPUtil.getAvailable(order='load', limit=8, maxLoad=0.9, maxMemory=0.9)
