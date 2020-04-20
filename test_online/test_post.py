@@ -17,4 +17,4 @@ def main(url0,port):
 if __name__=='__main__':
     port = sys.argv[1]
     url0 = sys.argv[2]
-    main(port,url0)
+    main(url0,port)
