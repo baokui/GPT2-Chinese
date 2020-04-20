@@ -104,7 +104,7 @@ def test(Data):
     ConfigPredict.gpus = [GPUs[ii][modelidx[ii]] for ii in range(len(modelidx))]
     if ConfigPredict.useThread:
         for D in Data:
-            result = gpt_gen_thread.generating_thread(app, data, modl, conf, tokn, devi, ConfigPredict, quick, num0,
+            result = gpt_gen_thread.generating_thread(app, D['input'], modl, conf, tokn, devi, ConfigPredict, quick, num0,
                                                       removeHighFreqWordss=rmHFW, batchGenerating=batchGenerating,
                                                       tags=tags,
                                                       D_simi=D_simi, D_next=D_next, maxNext=maxNext, maxChoice=10)
