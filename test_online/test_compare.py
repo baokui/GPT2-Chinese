@@ -91,7 +91,7 @@ def write_excel(path_target,data,sheetname='Sheet1'):
             worksheet.write(i, j, label=str(data[i][j]))
     # 保存
     workbook.save(path_target)
-def test(Data):
+def test(Data,sym='-new'):
     modelidx = [np.random.randint(0, len(t)) for t in ModelIndex]
     # gpu_av = GPUtil.getAvailable(order='load', limit=8, maxLoad=0.9, maxMemory=0.9)
     # gpu_av = GPUtil.getAvailable(order='random',maxLoad=0.9, maxMemory=0.9, limit=8)
@@ -120,7 +120,7 @@ def test(Data):
                                                       removeHighFreqWordss=rmHFW, batchGenerating=batchGenerating,
                                                       tags=tags,
                                                       D_simi=D_simi, D_next=D_next, maxNext=maxNext, maxChoice=10)
-            D['ouput'].extend([r + '(new)' for r in result])
+            D['ouput'].extend([r + sym for r in result])
     else:
         result = []
         for ii in range(len(path_configs)):
@@ -143,12 +143,12 @@ def test(Data):
     print('total inputs:{} and use time: {} s'.format(len(Data), '%0.4f' % (t1 - t0)))
     return Data
 
-def main(path_source):
+def main(path_source,sym):
     print('test-begin')
     with open(path_source,'r') as f:
         Data = json.load(f)
     t0 = time.time()
-    Data = test(Data)
+    Data = test(Data,sym)
     t1 = time.time()
     print('total samples:{},used time:{} s,QPS:{}'.format(len(Data),'%0.4f'%(t1-t0),'%0.4f'%(len(Data)/(t1-t0))))
     with open(path_source.replace('.json','-new.json'),'w',encoding='utf-8') as f:
@@ -172,5 +172,5 @@ def main(path_source):
     write_excel(path_target,A)
     print('test-over')
 if __name__=='__main__':
-    path_source=sys.argv[1]
-    main(path_source)
+    path_source,sym=sys.argv[1:]
+    main(path_source,sym)
