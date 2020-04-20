@@ -108,7 +108,7 @@ def test(Data):
                                                       removeHighFreqWordss=rmHFW, batchGenerating=batchGenerating,
                                                       tags=tags,
                                                       D_simi=D_simi, D_next=D_next, maxNext=maxNext, maxChoice=10)
-            D['ouput'].append([r + '(new)' for r in result])
+            D['ouput'].extend([r + '(new)' for r in result])
     else:
         result = []
         for ii in range(len(path_configs)):
@@ -128,7 +128,7 @@ def test(Data):
         result += [tmp + tags[-1] for tmp in result_nnlm]
     t1 = time.time()
     modelidx_s = ','.join([str(t) for t in ConfigPredict.gpus])
-    print('gpus {}-th (opt is {}) string and use time: {} s'.format(modelidx_s, gpu_opt, '%0.4f' % (t1 - t0)))
+    print('total inputs:{} and use time: {} s'.format(len(Data), '%0.4f' % (t1 - t0)))
     return Data
 
 def main(path_source):
