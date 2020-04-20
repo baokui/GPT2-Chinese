@@ -108,7 +108,7 @@ def test(Data):
                                                       removeHighFreqWordss=rmHFW, batchGenerating=batchGenerating,
                                                       tags=tags,
                                                       D_simi=D_simi, D_next=D_next, maxNext=maxNext, maxChoice=10)
-            D['output'].append([r + '(new)' for r in result])
+            D['ouput'].append([r + '(new)' for r in result])
     else:
         result = []
         for ii in range(len(path_configs)):
@@ -132,11 +132,13 @@ def test(Data):
     return Data
 
 def main(path_source):
+    print('test-begin')
     with open(path_source,'r') as f:
         Data = json.load(f)
     Data = test(Data)
     with open(path_source.replace('.json','-new.json'),'w',encoding='utf-8') as f:
         json.dump(Data,f,ensure_ascii=False,indent=4)
+    print('test-over')
 if __name__=='__main__':
     path_source=sys.argv[1]
     main(path_source)
