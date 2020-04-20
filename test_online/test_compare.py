@@ -95,44 +95,40 @@ def test(Data):
                     break
     quick = False
     app = ''
-    try:
-        t0 = time.time()
-        modl = [model[ii][modelidx[ii]] for ii in range(len(modelidx))]
-        conf = [config[ii][modelidx[ii]] for ii in range(len(modelidx))]
-        tokn = [tokenizer[ii][modelidx[ii]] for ii in range(len(modelidx))]
-        devi = [device[ii][modelidx[ii]] for ii in range(len(modelidx))]
-        ConfigPredict.gpus = [GPUs[ii][modelidx[ii]] for ii in range(len(modelidx))]
-        if ConfigPredict.useThread:
-            R = []
-            for D in Data:
-                d = D['input']
-                result = gpt_gen_thread.generating_thread(app, data, modl, conf, tokn, devi, ConfigPredict, quick, num0,
-                                                          removeHighFreqWordss=rmHFW, batchGenerating=batchGenerating,
-                                                          tags=tags,
-                                                          D_simi=D_simi, D_next=D_next, maxNext=maxNext, maxChoice=10)
-                D['output'].append([r + '(new)' for r in result])
-        else:
-            result = []
-            for ii in range(len(path_configs)):
-                gpu = ConfigPredict.gpus[ii]
-                torch.cuda.set_device(int(gpu))
-                if ii == 1:
-                    r0 = gpt_gen.generating_poem(app, data, model[ii], config[ii], tokenizer[ii], device[ii], quick,
-                                                 num0[ii], batchGenerating=batchGenerating, gpu=gpu)
-                else:
-                    r0 = gpt_gen.generating(app, data, model[ii], config[ii], tokenizer[ii], device[ii],
-                                            ConfigPredict, quick=quick, num=num0[ii], removeHighFreqWords=rmHFW[ii],
-                                            batchGenerating=batchGenerating, gpu=gpu)
-                r0 = [rr + tags[ii] for rr in r0]
-                result.extend(r0)
-            result_nnlm = gpt_gen.nnlm_modelpredict(D_simi, D_next, ConfigPredict, inputStr=data, maxNext=maxNext,
-                                                    maxChoice=10, num=num)
-            result += [tmp + tags[-1] for tmp in result_nnlm]
-        t1 = time.time()
-        modelidx_s = ','.join([str(t) for t in ConfigPredict.gpus])
-        print('gpus {}-th (opt is {}) string and use time: {} s'.format(modelidx_s, gpu_opt, '%0.4f' % (t1 - t0)))
-    except Exception as e:
-        pass
+
+    t0 = time.time()
+    modl = [model[ii][modelidx[ii]] for ii in range(len(modelidx))]
+    conf = [config[ii][modelidx[ii]] for ii in range(len(modelidx))]
+    tokn = [tokenizer[ii][modelidx[ii]] for ii in range(len(modelidx))]
+    devi = [device[ii][modelidx[ii]] for ii in range(len(modelidx))]
+    ConfigPredict.gpus = [GPUs[ii][modelidx[ii]] for ii in range(len(modelidx))]
+    if ConfigPredict.useThread:
+        for D in Data:
+            result = gpt_gen_thread.generating_thread(app, data, modl, conf, tokn, devi, ConfigPredict, quick, num0,
+                                                      removeHighFreqWordss=rmHFW, batchGenerating=batchGenerating,
+                                                      tags=tags,
+                                                      D_simi=D_simi, D_next=D_next, maxNext=maxNext, maxChoice=10)
+            D['output'].append([r + '(new)' for r in result])
+    else:
+        result = []
+        for ii in range(len(path_configs)):
+            gpu = ConfigPredict.gpus[ii]
+            torch.cuda.set_device(int(gpu))
+            if ii == 1:
+                r0 = gpt_gen.generating_poem(app, data, model[ii], config[ii], tokenizer[ii], device[ii], quick,
+                                             num0[ii], batchGenerating=batchGenerating, gpu=gpu)
+            else:
+                r0 = gpt_gen.generating(app, data, model[ii], config[ii], tokenizer[ii], device[ii],
+                                        ConfigPredict, quick=quick, num=num0[ii], removeHighFreqWords=rmHFW[ii],
+                                        batchGenerating=batchGenerating, gpu=gpu)
+            r0 = [rr + tags[ii] for rr in r0]
+            result.extend(r0)
+        result_nnlm = gpt_gen.nnlm_modelpredict(D_simi, D_next, ConfigPredict, inputStr=data, maxNext=maxNext,
+                                                maxChoice=10, num=num)
+        result += [tmp + tags[-1] for tmp in result_nnlm]
+    t1 = time.time()
+    modelidx_s = ','.join([str(t) for t in ConfigPredict.gpus])
+    print('gpus {}-th (opt is {}) string and use time: {} s'.format(modelidx_s, gpu_opt, '%0.4f' % (t1 - t0)))
     return Data
 
 def main(path_source):
