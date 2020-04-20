@@ -77,8 +77,20 @@ def getdata(path_data='D:\项目\输入法\神配文数据\生成评测\主动�
         D.append(d)
     with open(path_targe,'w',encoding='utf-8') as f:
         json.dump(D,f,ensure_ascii=False,indent=4)
-
-
+def write_excel(path_target,data,sheetname='Sheet1'):
+    import xlwt
+    # 创建一个workbook 设置编码
+    workbook = xlwt.Workbook(encoding='utf-8')
+    # 创建一个worksheet
+    worksheet = workbook.add_sheet(sheetname)
+    # 写入excel
+    # 参数对应 行, 列, 值
+    rows,cols = len(data),len(data[0])
+    for i in range(rows):
+        for j in range(cols):
+            worksheet.write(i, j, label=str(data[i][j]))
+    # 保存
+    workbook.save(path_target)
 def test(Data):
     modelidx = [np.random.randint(0, len(t)) for t in ModelIndex]
     # gpu_av = GPUtil.getAvailable(order='load', limit=8, maxLoad=0.9, maxMemory=0.9)
@@ -135,9 +147,29 @@ def main(path_source):
     print('test-begin')
     with open(path_source,'r') as f:
         Data = json.load(f)
+    t0 = time.time()
     Data = test(Data)
+    t1 = time.time()
+    print('total samples:{},used time:{} s,QPS:{}'.format(len(Data),'%0.4f'%(t1-t0),'%0.4f'%(len(Data)/(t1-t0))))
     with open(path_source.replace('.json','-new.json'),'w',encoding='utf-8') as f:
         json.dump(Data,f,ensure_ascii=False,indent=4)
+    path_target = path_source.replace('.json', '-new.json').replace('.json','.xls')
+    A = []
+    for ii in range(len(Data)):
+        a = [Data[ii]['input']]
+        r = Data[ii]['ouput']
+        for i in range(len(r)):
+            t = r[i].split('\t')
+            if len(t)==1:
+                b = [t[0],'']
+            else:
+                b = t
+            if i==0:
+                a = [Data[ii]['input']]+b
+            else:
+                a = ['']+b
+            A.append(a)
+    write_excel(path_target,A)
     print('test-over')
 if __name__=='__main__':
     path_source=sys.argv[1]
