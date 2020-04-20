@@ -10,6 +10,7 @@ path_configs = sys.argv[1].split(',')
 path_source,path_target = sys.argv[2:4]
 ConfigPredict = config_predict()
 ConfigPredict.doPredict[:len(path_configs)] = [True for i in range(len(path_configs))]
+ConfigPredict.doPredict[len(path_configs):] = [False for i in range(len(ConfigPredict.doPredict)-len(path_configs))]
 ConfigPredict.gpus[:len(path_configs)] = [str(i) for i in range(len(path_configs))]
 ConfigPredict.tags[:len(path_configs)] = ['('+str(i)+')' for i in range(len(path_configs))]
 batchGenerating=ConfigPredict.batchGenerating
