@@ -5,7 +5,7 @@ import json
 def main(url0,port):
     t0 = time.time()
     url = url0+port+"/api/gen"
-    path_data = 'data/test_text.txt'
+    path_data = 'data/test_text10.txt'
     with open(path_data,'r',encoding='utf-8') as f:
         s = f.read().strip().split('\n')
     D = []
