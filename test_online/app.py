@@ -11,7 +11,7 @@ import torch
 from Config import config_predict
 from datetime import datetime
 import GPUtil
-from gevent.pywsgi import WSGIServer #关键这个
+#from gevent.pywsgi import WSGIServer #关键这个
 app = Flask(__name__)
 #app.run(threaded=True)
 #app.run(processes=True)
