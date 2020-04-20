@@ -32,7 +32,7 @@ class config_predict(object):
             else:
                 self.model_configs = [model_config]
         self.predict_nums = [8, 4, 8, 5]
-        self.tags = ['(诗)', '(文)', '(狗)', '(联)']
+        self.tags = ['(诗)', '(文)', '(大白狗)', '(句联想)']
         self.doPredict = [t==1 for t in doPredict]
         self.rmHFW = [False, False, True, False]
         self.maxNext_JLX = 3
