@@ -133,11 +133,12 @@ def test(Data):
         print('gpus {}-th (opt is {}) string and use time: {} s'.format(modelidx_s, gpu_opt, '%0.4f' % (t1 - t0)))
     except Exception as e:
         pass
+    return Data
 
 def main(path_source):
     with open(path_source,'r') as f:
         Data = json.load(f)
-    test(Data)
+    Data = test(Data)
     with open(path_source.replace('.json','-new.json'),'w',encoding='utf-8') as f:
         json.dump(Data,f,ensure_ascii=False,indent=4)
 if __name__=='__main__':
