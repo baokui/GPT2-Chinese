@@ -16,7 +16,8 @@ path_target = sys.argv[2]
 if len(sys.argv)>3:
     path_config = sys.argv[3].split(',')
     doPredict = [int(t) for t in sys.argv[4].split(',')]
-    ConfigPredict = config_predict(model_config=path_config,doPredict=doPredict)
+    gpus = sys.argv[5].split(',')
+    ConfigPredict = config_predict(model_config=path_config,doPredict=doPredict,gpus=gpus)
     print('use input configs:%s'%'\n'.join(path_config))
 
 else:
