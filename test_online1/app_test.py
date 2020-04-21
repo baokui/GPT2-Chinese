@@ -2,6 +2,8 @@ from flask import Flask
 from  gevent.pywsgi import WSGIServer
 from gevent import monkey
 import time
+import sys
+port = sys.argv[1]
 monkey.patch_all()
 app = Flask(__name__)
 @app.route('/')
@@ -28,5 +30,5 @@ def hello_world():
 def beijing():
     return 'Beijing'
 if __name__ == '__main__':
-    http_server = WSGIServer(('127.0.0.1', 5001), app)
+    http_server = WSGIServer(('127.0.0.1', port), app)
     http_server.serve_forever()
