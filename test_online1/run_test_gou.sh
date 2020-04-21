@@ -1,5 +1,5 @@
-N=$1
-maxThread=1
+maxThread=$1
+N=$2
 url0=http://10.160.22.73:
 port=5000
 for((i=0;i<$N;i++))
