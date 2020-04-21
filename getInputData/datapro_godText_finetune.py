@@ -31,7 +31,7 @@ def build_files(full_tokenizer,path_source,path_target,padding,sym='',n_ctx=64,m
     nb_lines = 0
     lines = []
     for ii in range(5):
-        with open(path_source+'/part-0000'+str(ii),'r') as f:
+        with open(path_source+'/part-000'+str(ii),'r') as f:
             lines0 = f.read().strip().split('\n')
         if len(lines0)>1:
             lines.extend([line.split('\t')[-1] for line in lines0])
