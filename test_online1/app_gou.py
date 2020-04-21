@@ -40,7 +40,7 @@ def test2():
         app.logger.info('time: {}'.format(now))
         t0 = time.time()
 
-        result = gpt_gen.generating(app, data, model, config, tokenizer, device, config_predict, quick=quick,num=num0,
+        result = gpt_gen.generating(app, data, model, config, tokenizer, device, ConfigPredict, quick=quick,num=num0,
                        removeHighFreqWords=rmHFW,batchGenerating=batchGenerating,gpu=gpus)
         t1 = time.time()
         #app.logger.info('time for : {}'.format(then - now))
