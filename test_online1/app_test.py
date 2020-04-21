@@ -24,7 +24,7 @@ os.environ["CUDA_VISIBLE_DEVICES"]=gpus
 model,tokenizer,config,device = gpt_gen.getModel(path_config=path_configs,gpu=ConfigPredict.gpus)
 
 app = Flask(__name__)
-@app.route('/')
+@app.route('/', methods=['POST'])
 def hello_world():
     T0 = time.asctime( time.localtime(time.time()) )
     time.sleep(10)
