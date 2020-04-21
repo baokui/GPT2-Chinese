@@ -29,7 +29,8 @@ def test():
     #r = request.json
     #data = r["input"]
     data = '我们'
-    result = gpt_gen.generating(app, data, model, config, tokenizer, device, ConfigPredict, quick=quick, num=num0,
+    for _ in range(20):
+        result = gpt_gen.generating(app, data, model, config, tokenizer, device, ConfigPredict, quick=quick, num=num0,
                                 removeHighFreqWords=rmHFW, batchGenerating=batchGenerating, gpu=gpus)
     T0 = time.asctime( time.localtime(time.time()) )
     time.sleep(3)
