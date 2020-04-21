@@ -26,22 +26,9 @@ model,tokenizer,config,device = gpt_gen.getModel(path_config=path_configs,gpu=Co
 app = Flask(__name__)
 @app.route('/')
 def hello_world():
-    year = time.localtime().tm_year
-    month = time.localtime().tm_mon
-    day = time.localtime().tm_mday
-
-    hour = time.localtime().tm_hour
-    minute = time.localtime().tm_min
-    second = time.localtime().tm_sec
-
-    T0 = '-'.join([str(hour), '时', str(minute), '分', str(second), '秒'])
+    T0 = time.asctime( time.localtime(time.time()) )
     time.sleep(10)
-
-    hour = time.localtime().tm_hour
-    minute = time.localtime().tm_min
-    second = time.localtime().tm_sec
-
-    T1 = '-'.join([str(hour), '时', str(minute), '分', str(second), '秒'])
+    T1 = time.asctime( time.localtime(time.time()) )
     return 'Hello World!'+T0+'->'+T1
 
 @app.route('/index')
