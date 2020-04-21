@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask,request
 from  gevent.pywsgi import WSGIServer
 from gevent import monkey
 import time
@@ -26,11 +26,12 @@ model,tokenizer,config,device = gpt_gen.getModel(path_config=path_configs,gpu=Co
 app = Flask(__name__)
 @app.route('/api/gen_test', methods=['POST'])
 def test():
-    a = [model,tokenizer,config,device]
+    r = request.json
+    data = r["input"]
     T0 = time.asctime( time.localtime(time.time()) )
-    time.sleep(10)
+    time.sleep(3)
     T1 = time.asctime( time.localtime(time.time()) )
-    return 'Hello World!'+T0+'->'+T1
+    return 'Hello World!'+T0+'->'+T1+':'+str(model.config.n_ctx)+':'+data
 
 @app.route('/index')
 def beijing():
