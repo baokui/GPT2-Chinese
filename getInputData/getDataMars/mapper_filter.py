@@ -48,6 +48,8 @@ for line in sys.stdin:
     s = fields[3].decode('utf-8')
     if len(s)<10 or len(s)>60:
         continue
+    if len(s)<15 and random.uniform(0,1)<0.6:
+        continue
     s_zh = [_is_chinese_char(char) for char in s]
     if len(s)<sum(s_zh)*0.7:
         continue
