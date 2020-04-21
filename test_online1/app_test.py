@@ -34,7 +34,7 @@ def test():
     T0 = time.asctime( time.localtime(time.time()) )
     time.sleep(3)
     T1 = time.asctime( time.localtime(time.time()) )
-    return 'Hello World!'+T0+'->'+T1+':'+str(model.config.n_ctx)+':'+data
+    return 'Hello World!'+T0+'->'+T1+':'+str(model.config.n_ctx)+':'+str(len(result))
 
 @app.route('/index')
 def beijing():
