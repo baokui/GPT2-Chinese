@@ -24,6 +24,8 @@ os.environ["CUDA_VISIBLE_DEVICES"]=gpus
 model,tokenizer,config,device = gpt_gen.getModel(path_config=path_configs,gpu=ConfigPredict.gpus)
 quick = False
 app = Flask(__name__)
+def fun1(tokenizer,data):
+    return tokenizer.tokenize(data)
 @app.route('/api/gen_test', methods=['POST'])
 def test():
     #r = request.json
@@ -35,9 +37,10 @@ def test():
         result = gpt_gen.generating(app, data, model, config, tokenizer, device, ConfigPredict, quick=quick, num=num0,
                                 removeHighFreqWords=rmHFW, batchGenerating=batchGenerating, gpu=gpus)
     '''
+    result = fun1(tokenizer,data)
     time.sleep(5)
     T1 = time.asctime( time.localtime(time.time()) )
-    return 'Hello World!'+T0+'->'+T1+':'+str(model.config.n_ctx)+':'+result[0]
+    return 'Hello World!'+T0[11:19]+'->'+T1[11:19]+':'+str(model.config.n_ctx)+':'+str(result[0])
 
 @app.route('/index')
 def beijing():

@@ -142,10 +142,10 @@ def test(Data,sym='-new'):
     modelidx_s = ','.join([str(t) for t in ConfigPredict.gpus])
     print('total inputs:{} and use time: {} s'.format(len(Data), '%0.4f' % (t1 - t0)))
     return Data
-def test_myself(path_data='result/test_text2.json'):
+def test_myself(path_data='D:\\项目\\输入法\\数据处理\\GPT2-Chinese\\test_online\\result\\test_text4.json'):
     import random
     import json
-    with open(path_data,'r') as f:
+    with open(path_data,'r',encoding='utf-8') as f:
         Data = json.load(f)
     A = []
     for ii in range(len(Data)):
