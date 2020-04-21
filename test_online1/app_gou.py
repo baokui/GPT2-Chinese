@@ -3,14 +3,11 @@ from flask import Flask, request, Response
 import json
 import numpy as np
 import gpt_gen
-import gpt_gen_thread
 import sys
 import time
 import logging
-import torch
 from Config_gou import config_predict
 from datetime import datetime
-import GPUtil
 import os
 #from gevent.pywsgi import WSGIServer #关键这个
 app = Flask(__name__)
