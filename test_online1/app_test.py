@@ -3,7 +3,7 @@ from  gevent.pywsgi import WSGIServer
 from gevent import monkey
 import time
 import sys
-port = sys.argv[1]
+port = int(sys.argv[1])
 monkey.patch_all()
 app = Flask(__name__)
 @app.route('/')
