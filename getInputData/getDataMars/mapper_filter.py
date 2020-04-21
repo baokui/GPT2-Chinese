@@ -11,6 +11,7 @@ punc = ''.join(stopwords)+punc_zh
 punc = punc.decode('utf-8')
 app = 'com.tencent.mobileqq,com.tencent.mm,com.tencent.tim,com.sina.weibo,com.weico.international,com.weibo.international,com.taobao.taobao,com.taobao.taobao4iphone,com.wemomo.momoappdemo1,com.sogou.pandora.pandoralmClosedBeta,com.immomo.momo,com.sogou.xiaop_android,com.alibaba.android.rimet,com.laiwang.DingTalk,com.smile.gifmaker,com.jiangjia.gif,com.ss.android.ugc.aweme,com.ss.iphone.ugc.Aweme,com.bytedance.ee.lark,com.ss.android.lark,com.tencent.ww,com.tencent.wework,com.tencent.tim'
 app = set(app.split(','))
+idx = list('012345')
 def _is_chinese_char(char):
     """Checks whether CP is the codepoint of a CJK character."""
     # This defines a "chinese character" as anything in the CJK Unicode block:
@@ -37,7 +38,7 @@ def _is_punc(char):
         return True
     return False
 for line in sys.stdin:
-    if random.uniform(0,1)<0.7:
+    if random.uniform(0,1)<0.9:
         continue
     fields = line.strip().split('\t')
     if len(fields)!=5:
@@ -53,5 +54,7 @@ for line in sys.stdin:
     s_punc = [_is_punc(char) for char in s]
     if sum(s_punc)>4:
         continue
-    S = fields[3]
+    random.shuffle(idx)
+    Id = ''.join(idx)
+    S = Id + '\t' + fields[3]
     sys.stdout.write("%s\n" % S)
