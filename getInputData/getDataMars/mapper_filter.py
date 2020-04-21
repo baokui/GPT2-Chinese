@@ -37,6 +37,8 @@ def _is_punc(char):
         return True
     return False
 for line in sys.stdin:
+    if random.uniform(0,1)<0.7:
+        continue
     fields = line.strip().split('\t')
     if len(fields)!=5:
         continue
