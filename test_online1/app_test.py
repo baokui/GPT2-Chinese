@@ -30,9 +30,12 @@ def test():
     #data = r["input"]
     data = '我们'
     T0 = time.asctime(time.localtime(time.time()))
-    for _ in range(20):
+    '''
+        for _ in range(20):
         result = gpt_gen.generating(app, data, model, config, tokenizer, device, ConfigPredict, quick=quick, num=num0,
                                 removeHighFreqWords=rmHFW, batchGenerating=batchGenerating, gpu=gpus)
+    '''
+    time.sleep(5)
     T1 = time.asctime( time.localtime(time.time()) )
     return 'Hello World!'+T0+'->'+T1+':'+str(model.config.n_ctx)+':'+result[0]
 
