@@ -5,6 +5,6 @@ then
 else
     for((i=0;i<10;i++))
     do
-        nohup curl http://127.0.0.1:6000 >> log/apptest-$i.log 2>&1 &
+        nohup curl http://127.0.0.1:6000 -X POST >> log/apptest-post-$i.log 2>&1 &
     done
 fi
