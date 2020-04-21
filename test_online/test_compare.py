@@ -142,8 +142,11 @@ def test(Data,sym='-new'):
     modelidx_s = ','.join([str(t) for t in ConfigPredict.gpus])
     print('total inputs:{} and use time: {} s'.format(len(Data), '%0.4f' % (t1 - t0)))
     return Data
-def test_myself(Data):
+def test_myself():
     import random
+    import json
+    with open('result/test_text.json','r') as f:
+        Data = json.load(f)
     A = []
     for ii in range(len(Data)):
         r = Data[ii]['output']
@@ -165,12 +168,12 @@ def test_myself(Data):
                     a.append([Data[ii]['input']] + [r[i]] + [tag])
             random.shuffle(a)
         A.extend(a)
-    write_excel('result/test_parallel_compare.xls', A)
+    write_excel('result/test_text1.xls', A)
 def test_result():
     path0 = 'D:\\项目\\输入法\\数据处理\\GPT2-Chinese\\test_online\\result\\test_cut_compare.xls'
     n0 = 141
-    path0 = 'D:\\项目\\输入法\\数据处理\\GPT2-Chinese\\test_online\\result\\test_parallel_compare.xls'
-    n0 = 201
+    path0 = 'D:\\项目\\输入法\\数据处理\\GPT2-Chinese\\test_online\\result\\test_text1.xls'
+    n0 = 51
     Data = read_excel(path0)
     N0 = 0
     N1 = 0
