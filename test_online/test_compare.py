@@ -142,6 +142,50 @@ def test(Data,sym='-new'):
     modelidx_s = ','.join([str(t) for t in ConfigPredict.gpus])
     print('total inputs:{} and use time: {} s'.format(len(Data), '%0.4f' % (t1 - t0)))
     return Data
+def test_myself(Data):
+    import random
+    A = []
+    for ii in range(len(Data)):
+        r = Data[ii]['output']
+        n0 = 0
+        n1 = 0
+        a = []
+        for i in range(len(r)):
+            if '(0)' in r[i]:
+                r[i] = r[i].replace('(0)','')
+                tag = '0'
+                n0 += 1
+                if n0 < 3:
+                    a.append([Data[ii]['input']] + [r[i]] + [tag])
+            else:
+                r[i] = r[i].replace('(1)', '')
+                tag = '1'
+                n1 += 1
+                if n1 < 3:
+                    a.append([Data[ii]['input']] + [r[i]] + [tag])
+            random.shuffle(a)
+        A.extend(a)
+    write_excel('result/test_parallel_compare.xls', A)
+def test_result():
+    path0 = 'D:\\项目\\输入法\\数据处理\\GPT2-Chinese\\test_online\\result\\test_cut_compare.xls'
+    n0 = 141
+    path0 = 'D:\\项目\\输入法\\数据处理\\GPT2-Chinese\\test_online\\result\\test_parallel_compare.xls'
+    n0 = 201
+    Data = read_excel(path0)
+    N0 = 0
+    N1 = 0
+    T0 = [0, 0, 0]
+    T1 = [0, 0, 0]
+    for i in range(n0):
+        if Data[i][4] == '0':
+            N0 += 1
+            T0[int(Data[i][2]) - 1] += 1
+        else:
+            N1 += 1
+            T1[int(Data[i][2]) - 1] += 1
+    print(N0, N1)
+    print(T0, T1)
+    print((T0[1] + T0[2]) / N0, (T1[1] + T1[2]) / N1)
 
 def main(path_source,sym):
     print('test-begin')
@@ -174,3 +218,6 @@ def main(path_source,sym):
 if __name__=='__main__':
     path_source,sym=sys.argv[1:]
     main(path_source,sym)
+
+
+

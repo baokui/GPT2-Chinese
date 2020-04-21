@@ -22,7 +22,6 @@ def _is_chinese_char(char):
             (cp >= 0xF900 and cp <= 0xFAFF) or  #
             (cp >= 0x2F800 and cp <= 0x2FA1F)):  #
         return True
-
     return False
 def token_pad(line,full_tokenizer,subline,n_ctx):
     punc = '.;!?。；！？'

@@ -13,8 +13,6 @@ from datetime import datetime
 import GPUtil
 #from gevent.pywsgi import WSGIServer #关键这个
 app = Flask(__name__)
-#app.run(threaded=True)
-#app.run(processes=True)
 app.logger.setLevel(logging.INFO)
 port = 5000
 style = 0#0大白狗, 1散文
