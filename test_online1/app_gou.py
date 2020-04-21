@@ -10,6 +10,8 @@ from datetime import datetime
 import os
 from gevent.pywsgi import WSGIServer
 from gevent import monkey
+from geventwebsocket.handler import WebSocketHandler
+
 import time
 monkey.patch_all()
 #from gevent.pywsgi import WSGIServer #关键这个
@@ -62,5 +64,5 @@ if __name__ == '__main__':
     #app.run(threaded=True)
     #app.run(host="0.0.0.0", port=port)
     #WSGIServer(('127.0.0.1', port), app).serve_forever()
-    http_server = WSGIServer(('127.0.0.1', port), app)
+    http_server = WSGIServer(('127.0.0.1', port), app, handler_class=WebSocketHandler)
     http_server.serve_forever()
