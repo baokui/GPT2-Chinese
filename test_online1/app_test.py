@@ -29,6 +29,7 @@ for i in range(len(gpus.split(','))):
     model,tokenizer,config,device = gpt_gen.getModel(path_config=path_configs,gpu=ConfigPredict.gpus)
     Model.append(model)
     Tokenizer.append(tokenizer)
+    Config.append(config)
     Device.append(device)
 Idx = [i for i in range(len(gpus.split(',')))]
 quick = False
