@@ -1,5 +1,5 @@
 from flask import Flask,request
-from  gevent.pywsgi import WSGIServer
+from gevent.pywsgi import WSGIServer
 from gevent import monkey
 import time
 import sys
@@ -22,12 +22,15 @@ rmHFW = ConfigPredict.rmHFW
 gpus = ConfigPredict.gpus
 os.environ["CUDA_VISIBLE_DEVICES"]=gpus
 model,tokenizer,config,device = gpt_gen.getModel(path_config=path_configs,gpu=ConfigPredict.gpus)
-
+quick = False
 app = Flask(__name__)
 @app.route('/api/gen_test', methods=['POST'])
 def test():
-    r = request.json
-    data = r["input"]
+    #r = request.json
+    #data = r["input"]
+    data = '我们'
+    result = gpt_gen.generating(app, data, model, config, tokenizer, device, ConfigPredict, quick=quick, num=num0,
+                                removeHighFreqWords=rmHFW, batchGenerating=batchGenerating, gpu=gpus)
     T0 = time.asctime( time.localtime(time.time()) )
     time.sleep(3)
     T1 = time.asctime( time.localtime(time.time()) )
