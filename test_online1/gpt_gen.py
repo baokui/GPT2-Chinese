@@ -421,7 +421,7 @@ def generate(n_ctx, model, context, length, tokenizer,is_quick=False, temperatur
 def getModel(path_config,gpu='0'):
     print("load model......")
     if gpu:
-        #torch.cuda.set_device(int(gpu))
+        torch.cuda.set_device(int(gpu))
         device = "cuda" if torch.cuda.is_available() else "cpu"
     else:
         device = 'cpu'
@@ -484,7 +484,7 @@ def generating(app,prefix,model,config,tokenizer,device,config_predict,quick=Fal
     if len(prefix)==0 or len(prefix)>model.config.n_ctx:
         return []
     if gpu:
-        #torch.cuda.set_device(int(gpu))
+        torch.cuda.set_device(int(gpu))
         device = "cuda" if torch.cuda.is_available() else "cpu"
     else:
         device = 'cpu'
@@ -700,7 +700,7 @@ def untokenization_poem(out,tokenizer,config):
     return tmptext
 def generating_poem(app,prefix,model,config,tokenizer,device,quick=False,num=5,batchGenerating=False,gpu='0',onlyMax=False,fast_pattern=False):
     if gpu:
-        #torch.cuda.set_device(int(gpu))
+        torch.cuda.set_device(int(gpu))
         device = "cuda" if torch.cuda.is_available() else "cpu"
     else:
         device = 'cpu'
@@ -768,7 +768,7 @@ def testFun(app,prefix,model,config,tokenizer,device,config_predict,quick=False,
     if len(prefix)==0 or len(prefix)>model.config.n_ctx:
         return []
     if gpu:
-        #torch.cuda.set_device(int(gpu))
+        torch.cuda.set_device(int(gpu))
         device = "cuda" if torch.cuda.is_available() else "cpu"
     else:
         device = 'cpu'
