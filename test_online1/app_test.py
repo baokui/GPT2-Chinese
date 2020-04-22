@@ -98,11 +98,11 @@ def test():
     inputStr = request.form.get('input')
     ii = random.sample(Idx,1)[0]
     #ii = int(request.form.get('idx'))%len(Config)
-    model = Model[ii]
-    config = Config[ii]
-    tokenizer = Tokenizer[ii]
-    device = Device[ii]
-    gpu = Gpus[ii]
+    #model = Model[ii]
+    #config = Config[ii]
+    #tokenizer = Tokenizer[ii]
+    #device = Device[ii]
+    #gpu = Gpus[ii]
     result = ['TEST']
     T0 = time.asctime(time.localtime(time.time()))
     gen = True
