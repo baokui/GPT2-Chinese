@@ -52,7 +52,7 @@ def test():
     data = '我们'
     result = ['TEST']
     T0 = time.asctime(time.localtime(time.time()))
-    for _ in range(20):
+    for _ in range(8):
         result = gpt_gen.generating(app, data, model, config, tokenizer, device, ConfigPredict, quick=quick, num=num0,
                                 removeHighFreqWords=rmHFW, batchGenerating=batchGenerating, gpu=gpus)
         #rr = gpt_gen.testFun(app, data, model, config, tokenizer, device, ConfigPredict, quick=quick, num=num0,
