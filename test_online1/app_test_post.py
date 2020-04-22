@@ -11,9 +11,9 @@ def main(path_data,path_target,path_log):
     for data in Data:
         idx = random.randint(0,10)
         user_info = {"input":data,"idx":idx}
-        T0 = time.asctime(time.localtime(time.time()))
+        T0 = time.asctime(time.localtime(time.time()))[11:19]
         r = requests.post("http://127.0.0.1:7000/api/gen_test", data=user_info)
-        T1 = time.asctime(time.localtime(time.time()))
+        T1 = time.asctime(time.localtime(time.time()))[11:19]
         s = r.text.split('\t')
         R.append(json.loads(s[0]))
         t0,t1 = s[1:3]
