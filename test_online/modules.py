@@ -65,8 +65,8 @@ def removewords(s0,removed_words):
         sn = sn.replace(t,'')
     return sn
 def hasCompletePunc(s):
-    L = ['(','<','{','[','‘','“','《','［','（']
-    R = [')','>','}',']','’','”','》','］','）']
+    L = ['(','<','{','[','‘','“','《','［','（','【']
+    R = [')','>','}',']','’','”','》','］','）','】']
     D = {k:0 for k in L}
     Flag = True
     for i in range(len(s)):
