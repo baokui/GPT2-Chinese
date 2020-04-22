@@ -1,4 +1,5 @@
-path_target=../data/GodText_tokenized_padding_finetune
+path_target=../data/GodText_tokenized_padding_finetune2
+#加入结尾标点判断
 mkdir $path_target
 padding=1
 path_vocab=../model/model_godText_pretrain/vocab.txt

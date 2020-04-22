@@ -26,6 +26,7 @@ def token_pad(line,full_tokenizer,subline,n_ctx):
 def build_files(full_tokenizer,path_source,path_target,padding,sym='',n_ctx=64,min_length=10,nb_piece=10):
     if not os.path.exists(path_target):
         os.mkdir(path_target)
+    punc = '。？！'
     full_line = []
     print('reading lines')
     nb_lines = 0
@@ -38,6 +39,8 @@ def build_files(full_tokenizer,path_source,path_target,padding,sym='',n_ctx=64,m
     for line in lines:
         nb_lines += 1
         if len(line)<min_length:
+            continue
+        if line[-1] not in punc:
             continue
         subline = full_tokenizer.convert_tokens_to_ids(list(line))
         if padding:
