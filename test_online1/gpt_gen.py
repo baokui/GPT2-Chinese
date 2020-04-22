@@ -860,6 +860,6 @@ def testFun(app,prefix,model,config,tokenizer,device,config_predict,quick=False,
 def testFun1():
     import numpy as np
     for _ in range(20):
-        a = np.random.uniform(-1,1,(1000,10000))
-        b = np.random.uniform(-1,1,(10000,1000))
+        a = np.random.uniform(-1,1,(10,10000))
+        b = np.random.uniform(-1,1,(10000,10))
         c = a.dot(b)
