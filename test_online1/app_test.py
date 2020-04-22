@@ -77,7 +77,7 @@ def getTime(n):
 def test():
     #r = request.json
     #data = r["input"]
-    print(request.form.get('input'))
+    inputStr = request.form.get('input')
     ii = random.sample(Idx,1)[0]
     model = Model[ii]
     config = Config[ii]
@@ -99,7 +99,7 @@ def test():
     else:
         time.sleep(5)
     T1 = time.asctime( time.localtime(time.time()) )
-    return 'TIME--'+T0[11:19]+'->'+T1[11:19]+'   '+str(model.config.n_ctx)+':'+str(ii)
+    return 'TIME--'+T0[11:19]+'->'+T1[11:19]+'   '+str(model.config.n_ctx)+':'+str(ii)+' input:'+inputStr
 
 @app.route('/index')
 def beijing():
