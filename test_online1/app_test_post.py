@@ -4,7 +4,7 @@ import sys
 import random
 import json
 def main(path_data,path_target,path_log):
-    with open(path_data,'r') as f:
+    with open(path_data,'r',encoding='utf-8') as f:
         Data = f.read().strip().split('\n')
     R = []
     f = open(path_log,'a+')
@@ -19,7 +19,7 @@ def main(path_data,path_target,path_log):
         t0,t1 = s[1:3]
         f.write('outer:'+'\t'+T0+'\t'+T1+'\n')
         f.write('inter:' + '\t' + t0 + '\t' + t1 + '\n')
-    with open(path_target,'w') as f:
+    with open(path_target,'w',encoding='utf-8') as f:
         json.dump(R,f,ensure_ascii=False,indent=4)
 if __name__=="__main__":
     path_data,path_target,path_log = sys.argv[1:]

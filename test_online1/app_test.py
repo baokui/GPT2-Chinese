@@ -1,3 +1,4 @@
+# coding=utf-8
 from flask import Flask,request
 from gevent.pywsgi import WSGIServer
 from gevent import monkey
@@ -100,12 +101,11 @@ def test():
     tokenizer = Tokenizer[ii]
     device = Device[ii]
     gpu = Gpus[ii]
-    data = '我们'
     result = ['TEST']
     T0 = time.asctime(time.localtime(time.time()))
     gen = True
     if gen:
-        result = gpt_gen.generating(app, data, model, config, tokenizer, device, ConfigPredict, quick=quick, num=num0,
+        result = gpt_gen.generating(app, inputStr, model, config, tokenizer, device, ConfigPredict, quick=quick, num=num0,
                                 removeHighFreqWords=rmHFW, batchGenerating=batchGenerating, gpu=gpu)
         #rr = gpt_gen.testFun(app, data, model, config, tokenizer, device, ConfigPredict, quick=quick, num=num0,
                                 #removeHighFreqWords=rmHFW, batchGenerating=batchGenerating, gpu=gpus)
