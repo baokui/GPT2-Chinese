@@ -1,26 +1,11 @@
 # coding=utf-8
 import unicodedata
-class config_predict(object):
+from Config import Config
+class config_predict(Config):
     # 定义构造方法
     def __init__(self):  #__init__() 是类的初始化方法；它在类的实例化操作后 会自动调用，不需要手动调用；
-        # 设置属性
-        self.stopwords = [" ", "　", " ", ",", "，", ".", "。", "、", "!", "！", "?", "？", ";", "；", "~", "～", "·", "·", ".", "…", "-",
-             "#_", "—", "+", "=", "'", "\"", "‘", "’", "“", "”", "*", "&", "^", "%", "$", "/", "\\", "@"]
-        self.stopwords,self.map_e2z = self.addStopwords()
-        self.blackwords = ['自杀','死']
-        self.specialwords_pre = ['祝福', '祝愿', '预祝']
-        self.specialwords_gen = ['生日','新年','新春','春节','节日','元旦']
-        self.singlewords = ['哈','啊','哦','哦','呵','嘿','哎','哼']
-        self.removed_words = ['⊙']
-        self.punc_end = '.?!。？！》>'
-        self.path_HighFreqWords = '../data/words_highFreq.txt'
-        self.HighFreqWords = self.getHFW()
-        self.min_contenlen = 8
-        self.rate_gen2inp = 1.4
-        self.batchGenerating = True
-        self.max_nb_sents=4
         self.gpus = ',,'
-        self.model_configs = 'demo_config/config_dabaigou.json'
+        self.model_configs = '../bin/config/config_dabaigou.json'
         self.predict_nums = 8
         self.tags = '(大白狗)'
         self.rmHFW = True

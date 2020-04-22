@@ -21,15 +21,19 @@ port = 5000
 style = 0#0大白狗, 1散文
 if len(sys.argv)>1:
    port = int(sys.argv[1])
+gpus = []
+if len(sys.argv)>2:
+    gpus = sys.argv[2]
 ConfigPredict = config_predict()
 batchGenerating=ConfigPredict.batchGenerating
 path_configs = ConfigPredict.model_configs
 num0 = ConfigPredict.predict_nums
 tags = ConfigPredict.tags
 rmHFW = ConfigPredict.rmHFW
-gpus = ConfigPredict.gpus
+if len(gpus)==0:
+    gpus = ConfigPredict.gpus
 os.environ["CUDA_VISIBLE_DEVICES"]=gpus
-model,tokenizer,config,device = gpt_gen.getModel(path_config=path_configs,gpu=ConfigPredict.gpus)
+model,tokenizer,config,device = gpt_gen.getModel(path_config=path_configs,gpu=gpus)
 @app.route('/api/gen_gou', methods=['POST'])
 def test2():
     r = request.json
@@ -62,7 +66,7 @@ def test2():
 # start flask app
 if __name__ == '__main__':
     #app.run(threaded=True)
-    #app.run(host="0.0.0.0", port=port)
+    app.run(host="0.0.0.0", port=port)
     #WSGIServer(('127.0.0.1', port), app).serve_forever()
-    http_server = WSGIServer(('127.0.0.1', port), app, handler_class=WebSocketHandler)
-    http_server.serve_forever()
+    #http_server = WSGIServer(('127.0.0.1', port), app, handler_class=WebSocketHandler)
+    #http_server.serve_forever()
