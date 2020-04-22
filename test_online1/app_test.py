@@ -14,13 +14,13 @@ import json
 port = 6000
 if len(sys.argv)>1:
     port = int(sys.argv[1])
+monkey.patch_all()
 '''
 if len(sys.argv)>2:
     gpus = sys.argv[2]
     ConfigPredict = config_predict(gpus = gpus)
 else:
     ConfigPredict = config_predict()
-monkey.patch_all()
 
 batchGenerating=ConfigPredict.batchGenerating
 path_configs = ConfigPredict.model_configs
@@ -132,6 +132,6 @@ def test():
 def beijing():
     return 'Beijing'
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=port)
-    #http_server = WSGIServer(('127.0.0.1', port), app)
-    #http_server.serve_forever()
+    #app.run(host="0.0.0.0", port=port)
+    http_server = WSGIServer(('127.0.0.1', port), app)
+    http_server.serve_forever()
