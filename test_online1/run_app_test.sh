@@ -25,7 +25,7 @@ else
         path_data=aaa
         path_target=bbb
         path_log=log/app_testmode-$i.log
-        mode=gen
+        mode=test
         nohup python -u app_test_post.py $path_data $path_target $path_log $mode >> $path_log 2>&1 &
 
     done
