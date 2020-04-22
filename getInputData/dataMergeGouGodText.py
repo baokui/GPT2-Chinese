@@ -9,7 +9,7 @@ def iterData(path0,batch_size=5000000,n_ctx=64):
         s = f.read().strip().split()
         t = [s[i*n_ctx:(i+1)*n_ctx] for i in range(int(len(s)/n_ctx))]
         S.extend(t)
-        if len(S)>batch_size:
+        while len(S)>batch_size:
             yield S[:batch_size]
             S = S[batch_size:]
         f.close()
@@ -41,6 +41,7 @@ def pro(path_gou,path_godText,path_target,r=0.5):
         idx+=1
         s0 = next(iter_gou)
         s1 = next(iter_godText)
+
 if __name__=='__main__':
     path_gou, path_godText, path_target = sys.argv[1:]
     pro(path_gou,path_godText,path_target)
