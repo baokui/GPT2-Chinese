@@ -818,13 +818,13 @@ def testFun(app,prefix,model,config,tokenizer,device,config_predict,quick=False,
             A0.append(kk)
             A1.append(generate[kk][jj])
     with torch.no_grad():
-        for i in range(1):
+        for i in range(nsamples):
             output = model(prev, past=past)
             output, past = output[:2]
             output = output.squeeze(1)
             output[A0, A1] *= rev_repitition_penalty
             output /= temperature
-            filtered_logits = top_k_top_p_filtering(output, top_k=top_k, top_p=0)
+            filtered_logits = top_k_top_p_filtering(output, top_k=topk, top_p=0)
             next_token = torch.multinomial(torch.softmax(filtered_logits, dim=-1), num_samples=1)
             prev = next_token
             NT_np = next_token.cpu().numpy()
@@ -832,8 +832,11 @@ def testFun(app,prefix,model,config,tokenizer,device,config_predict,quick=False,
                 generate[ii].append(NT_np[ii][0])
                 A0.append(ii)
                 A1.append(NT_np[ii])
-    time.sleep(0.5)
-    return []
+    outs = generate
+    for out in outs:
+        tmptext = untokenization(out, config, tokenizer, punc, continue_writing)
+        S.append(tmptext)
+    return S
     outs = fast_sample_sequence_batch(model, context_tokens, length, nsamples=maxNb,
                                       temperature=temperature, top_k=topk, repitition_penalty=repetition_penalty,
                                       device=device)
