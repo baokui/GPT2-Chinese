@@ -51,8 +51,12 @@ def test2():
         now = datetime.now()
         app.logger.info('time: {}'.format(now))
         t0 = time.time()
+        if style=='poem':
+            result = gpt_gen.generating_poem(app, data, model, config, tokenizer, device, quick = quick, num = num0,
+                                             batchGenerating = batchGenerating, gpu = gpus, fast_pattern = ConfigPredict.fast_pattern)
 
-        result = gpt_gen.generating(app, data, model, config, tokenizer, device, ConfigPredict, quick=quick,num=num0,
+        else:
+            result = gpt_gen.generating(app, data, model, config, tokenizer, device, ConfigPredict, quick=quick,num=num0,
                        removeHighFreqWords=rmHFW,batchGenerating=batchGenerating,gpu=gpus)
         t1 = time.time()
         #app.logger.info('time for : {}'.format(then - now))
