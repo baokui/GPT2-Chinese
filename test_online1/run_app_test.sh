@@ -8,6 +8,11 @@ then
 else
     for((i=0;i<$N;i++))
     do
-        nohup curl http://127.0.0.1:7000/api/gen_test -d '{"input":$i}' -X POST >> log/apptest-post-$N-$i.log 2>&1 &
+        s="'"
+        t="\""
+        inputStr=input
+        param=$s{$t$inputStr$t:$i}$s
+        nohup curl http://127.0.0.1:7000/api/gen_test -d $param -X POST >> log/apptest-post-$N-$i.log 2>&1 &
+        echo http://127.0.0.1:7000/api/gen_test -d $param -X POST
     done
 fi
