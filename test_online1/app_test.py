@@ -10,10 +10,14 @@ from Config_gou import config_predict
 
 port = 6000
 if len(sys.argv)>1:
-   port = int(sys.argv[1])
+    port = int(sys.argv[1])
+if len(sys.argv)>2:
+    gpus = sys.argv[2]
+    ConfigPredict = config_predict(gpus = gpus)
+else:
+    ConfigPredict = config_predict()
 monkey.patch_all()
 
-ConfigPredict = config_predict()
 batchGenerating=ConfigPredict.batchGenerating
 path_configs = ConfigPredict.model_configs
 num0 = ConfigPredict.predict_nums
