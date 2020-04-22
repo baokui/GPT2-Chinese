@@ -20,14 +20,14 @@ else
         path_target=result/tmp-$i.json
         path_log=log/apptest-post-$time.log
         mode=gen
-        #nohup python -u app_test_post.py $path_data $path_target $path_log $mode >> log/tmp.log 2>&1 &
+        nohup python -u app_test_post.py $path_data $path_target $path_log $mode >> log/tmp.log 2>&1 &
 
         path_data=aaa
         path_target=bbb
         path_log=log/app_testmode-$N-$i.log
         mode=test
-        rm -rf log/app_testmode-$N-$i.log
-        nohup python -u app_test_post.py $path_data $path_target $path_log $mode >> $path_log 2>&1 &
+        #rm -rf log/app_testmode-$N-$i.log
+        #nohup python -u app_test_post.py $path_data $path_target $path_log $mode >> $path_log 2>&1 &
 
     done
 fi
