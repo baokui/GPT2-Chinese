@@ -39,8 +39,9 @@ for i in range(len(Gpus)):
     Config.append(config)
     Device.append(device)
 
-Idx = [i for i in range(len(Gpus))]
 quick = False
+urlList = ["http://127.0.0.1:200"+str(i)+"/api/gen_gou" for i in range(8)]
+Idx = [i for i in range(8)]
 app = Flask(__name__)
 def fun1(tokenizer,data):
     return tokenizer.convert_tokens_to_ids(tokenizer.tokenize(data))
@@ -112,7 +113,8 @@ def test():
                                 #removeHighFreqWords=rmHFW, batchGenerating=batchGenerating, gpu=gpus)
         #result = fun1(tokenizer,data)
         user_info = {"input": inputStr}
-        r = requests.post("http://127.0.0.1:6002/api/gen_gou", json=user_info)
+        url = urlList[ii]
+        r = requests.post(url, json=user_info)
         R = r.text
         time.sleep(0)
     else:
