@@ -104,7 +104,7 @@ def test():
     gpu = Gpus[ii]
     result = ['TEST']
     T0 = time.asctime(time.localtime(time.time()))
-    gen = False
+    gen = True
     if gen:
         #result = gpt_gen.generating(app, inputStr, model, config, tokenizer, device, ConfigPredict, quick=quick, num=num0,
                                 #removeHighFreqWords=rmHFW, batchGenerating=batchGenerating, gpu=gpu)
@@ -112,7 +112,7 @@ def test():
                                 #removeHighFreqWords=rmHFW, batchGenerating=batchGenerating, gpu=gpus)
         #result = fun1(tokenizer,data)
         user_info = {"input": inputStr}
-        r = requests.post("http://127.0.0.1:6002/api/gen_gou", data=user_info)
+        r = requests.post("http://127.0.0.1:6002/api/gen_gou", json=user_info)
         R = r.text
         time.sleep(0)
     else:
