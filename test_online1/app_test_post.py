@@ -17,8 +17,7 @@ def main_gen(path_data,path_target,path_log):
         s = r.text.split('\t')
         R.append(json.loads(s[0]))
         t0,t1 = s[1:3]
-        f.write('outer:'+'\t'+T0+'\t'+T1+'\n')
-        f.write('inter:' + '\t' + t0 + '\t' + t1 + '\n')
+        f.write('outer:'+'\t'+T0+'\t'+T1+'\t'+'inter:' + '\t' + t0 + '\t' + t1 + '\n')
     with open(path_target,'w',encoding='utf-8') as f:
         json.dump(R,f,ensure_ascii=False,indent=4)
 def main_test(path_data,path_target,path_log):

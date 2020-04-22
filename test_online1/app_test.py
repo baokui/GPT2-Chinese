@@ -8,12 +8,13 @@ import sys
 import os
 import random
 import numpy as np
-import gpt_gen
-from Config_gou import config_predict
+#import gpt_gen
+#from Config_gou import config_predict
 import json
 port = 6000
 if len(sys.argv)>1:
     port = int(sys.argv[1])
+'''
 if len(sys.argv)>2:
     gpus = sys.argv[2]
     ConfigPredict = config_predict(gpus = gpus)
@@ -38,7 +39,7 @@ for i in range(len(Gpus)):
     Tokenizer.append(tokenizer)
     Config.append(config)
     Device.append(device)
-
+'''
 quick = False
 urlList = ["http://127.0.0.1:200"+str(i)+"/api/gen_gou" for i in range(8)]
 Idx = [i for i in range(8)]
@@ -118,7 +119,7 @@ def test():
         R = r.text
         time.sleep(0)
     else:
-        gpt_gen.testFun1()
+        #gpt_gen.testFun1()
         R = {'input': inputStr, 'output': result}
         R = json.dumps(R)
         time.sleep(0)
