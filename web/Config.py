@@ -19,7 +19,7 @@ class config_predict(object):
         self.max_nb_sents=4
         self.gpus = ['5','6','7']
         if len(model_config)==0:
-            self.model_configs = ['demo_config/config_godText_large1.json', 'demo_config/config_poem.json',
+            self.model_configs = ['demo_config/config_godText_small_finetune.json', 'demo_config/config_poem.json',
                             'demo_config/config_dabaigou.json']
         else:
             if type(model_config)==list:
