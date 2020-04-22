@@ -3,7 +3,7 @@ path_target=../data/GodText_tokenized_padding_finetune2
 mkdir $path_target
 padding=1
 path_vocab=../model/model_godText_pretrain/vocab.txt
-nb_piece=50
+nb_piece=2
 n_ctx=64
 for((i=0;i<10;i++))
 do
