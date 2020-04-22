@@ -77,7 +77,7 @@ def test():
     else:
         time.sleep(5)
     T1 = time.asctime( time.localtime(time.time()) )
-    return 'TIME:'+T0[11:19]+'->'+T1[11:19]+'   '+str(model.config.n_ctx)+':'+str(result[0])
+    return 'TIME:'+T0[11:19]+'->'+T1[11:19]+'   '+str(model.config.n_ctx)+':'+str(ii)
 
 @app.route('/index')
 def beijing():
