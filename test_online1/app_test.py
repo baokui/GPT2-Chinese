@@ -78,7 +78,8 @@ def test():
     #r = request.json
     #data = r["input"]
     inputStr = request.form.get('input')
-    ii = random.sample(Idx,1)[0]
+    #ii = random.sample(Idx,1)[0]
+    ii = int(request.form.get('idx'))%len(Config)
     model = Model[ii]
     config = Config[ii]
     tokenizer = Tokenizer[ii]
