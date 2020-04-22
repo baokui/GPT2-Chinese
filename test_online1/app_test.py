@@ -29,8 +29,8 @@ Tokenizer = []
 Config = []
 Device = []
 for i in range(len(gpus.split(','))):
-    os.environ["CUDA_VISIBLE_DEVICES"]=gpus.split(',')[i]
-    model,tokenizer,config,device = gpt_gen.getModel(path_config=path_configs,gpu=ConfigPredict.gpus)
+    #os.environ["CUDA_VISIBLE_DEVICES"]=gpus.split(',')[i]
+    model,tokenizer,config,device = gpt_gen.getModel(path_config=path_configs,gpu=gpus.split(',')[i])
     Model.append(model)
     Tokenizer.append(tokenizer)
     Config.append(config)
