@@ -60,6 +60,7 @@ def getTime(n):
 def test():
     #r = request.json
     #data = r["input"]
+    print(request.form.get('input'))
     ii = random.sample(Idx,1)[0]
     model = Model[ii]
     config = Config[ii]
