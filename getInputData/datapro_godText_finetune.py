@@ -38,9 +38,18 @@ def build_files(full_tokenizer,path_source,path_target,padding,sym='',n_ctx=64,m
             lines.extend([line.split('\t')[-1] for line in lines0])
     for line in lines:
         nb_lines += 1
-        if len(line)<min_length:
+        line_re = "".join(line[::-1])
+        idx = -1
+        len_line = len(line)
+        for pc in punc:
+            if pc in line:
+                t = len_line - line_re.index(pc) - 1
+                if t>idx:
+                    idx = t
+        if idx==-1:
             continue
-        if line[-1] not in punc:
+        line = line[:idx+1]
+        if len(line)<min_length:
             continue
         subline = full_tokenizer.convert_tokens_to_ids(list(line))
         if padding:
