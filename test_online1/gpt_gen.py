@@ -807,6 +807,8 @@ def testFun(app,prefix,model,config,tokenizer,device,config_predict,quick=False,
     rev_repitition_penalty = 1.0 / repetition_penalty
     inputs = [context_tokens] * nsamples
     inputs = torch.tensor(inputs, dtype=torch.long, device=device)
+    _, past = model(inputs[:, :-1], None)[:2]
+    #prev = inputs[:, -1].view(-1, 1)
     time.sleep(0.5)
     return []
     outs = fast_sample_sequence_batch(model, context_tokens, length, nsamples=maxNb,
