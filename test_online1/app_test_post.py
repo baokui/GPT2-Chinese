@@ -8,8 +8,8 @@ def main(path_data,path_target,path_log):
         Data = f.read().strip().split('\n')
     R = []
     f = open(path_log,'a+')
-    idx = 0
     for data in Data:
+        idx = random.randint(0,10)
         user_info = {"input":data,"idx":idx}
         T0 = time.asctime(time.localtime(time.time()))
         r = requests.post("http://127.0.0.1:7000/api/gen_test", data=user_info)
