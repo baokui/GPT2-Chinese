@@ -49,10 +49,11 @@ def getTime(n):
     idx0 = s[0].find(':')
     t0 = [s[i][idx0 - 2:idx0 + 6] for i in range(len(s))]
     t1 = [s[i][idx0 + 8:idx0 + 16] for i in range(len(s))]
+    devi = [s[i][-1] for i in range(len(s))]
     T = [(t0[i],t1[i]) for i in range(len(t0))]
     T = sorted(T,key=lambda x:x[0])
     D = [(int(t1[:2])-int(t0[:2]))*3600+(int(t1[3:5])-int(t0[3:5]))*60+(int(t1[6::])-int(t0[6:])) for (t0,t1) in T]
-    S = ['\t'.join(T[i])+'\t'+str(D[i]) for i in range(len(T))]
+    S = ['\t'.join(T[i])+'\t'+str(D[i])+'\t'+devi[i] for i in range(len(T))]
     print('\n'.join(S))
 @app.route('/api/gen_test', methods=['POST'])
 def test():
@@ -77,7 +78,7 @@ def test():
     else:
         time.sleep(5)
     T1 = time.asctime( time.localtime(time.time()) )
-    return 'TIME:'+T0[11:19]+'->'+T1[11:19]+'   '+str(model.config.n_ctx)+':'+str(ii)
+    return 'TIME--'+T0[11:19]+'->'+T1[11:19]+'   '+str(model.config.n_ctx)+':'+str(ii)
 
 @app.route('/index')
 def beijing():
