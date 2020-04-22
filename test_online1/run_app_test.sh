@@ -18,7 +18,7 @@ else
 
         path_data=data/test.txt
         path_target=result/tmp-$i.json
-        path_log=log/apptest-post-$time-$i.log
+        path_log=log/apptest-post-$time-$N-$i.log
         mode=gen
         nohup python -u app_test_post.py $path_data $path_target $path_log $mode >> log/tmp.log 2>&1 &
 
