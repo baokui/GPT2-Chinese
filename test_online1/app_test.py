@@ -23,19 +23,20 @@ path_configs = ConfigPredict.model_configs
 num0 = ConfigPredict.predict_nums
 tags = ConfigPredict.tags
 rmHFW = ConfigPredict.rmHFW
-gpus = ConfigPredict.gpus
+Gpus = ConfigPredict.gpus.split(',')
 Model = []
 Tokenizer = []
 Config = []
 Device = []
-for i in range(len(gpus.split(','))):
+for i in range(len(Gpus)):
     #os.environ["CUDA_VISIBLE_DEVICES"]=gpus.split(',')[i]
-    model,tokenizer,config,device = gpt_gen.getModel(path_config=path_configs,gpu=gpus.split(',')[i])
+    model,tokenizer,config,device = gpt_gen.getModel(path_config=path_configs,gpu=Gpus[i])
     Model.append(model)
     Tokenizer.append(tokenizer)
     Config.append(config)
     Device.append(device)
-Idx = [i for i in range(len(gpus.split(',')))]
+
+Idx = [i for i in range(len(Gpus))]
 quick = False
 app = Flask(__name__)
 def fun1(tokenizer,data):
@@ -64,6 +65,7 @@ def test():
     config = Config[ii]
     tokenizer = Tokenizer[ii]
     device = Device[ii]
+    gpu = Gpus[ii]
     data = '我们'
     result = ['TEST']
     T0 = time.asctime(time.localtime(time.time()))
@@ -71,7 +73,7 @@ def test():
     if gen:
         for _ in range(8):
             result = gpt_gen.generating(app, data, model, config, tokenizer, device, ConfigPredict, quick=quick, num=num0,
-                                    removeHighFreqWords=rmHFW, batchGenerating=batchGenerating, gpu=gpus)
+                                    removeHighFreqWords=rmHFW, batchGenerating=batchGenerating, gpu=gpu)
             #rr = gpt_gen.testFun(app, data, model, config, tokenizer, device, ConfigPredict, quick=quick, num=num0,
                                     #removeHighFreqWords=rmHFW, batchGenerating=batchGenerating, gpu=gpus)
         #result = fun1(tokenizer,data)
