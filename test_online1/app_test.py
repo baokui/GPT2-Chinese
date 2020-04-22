@@ -1,5 +1,6 @@
 # coding=utf-8
 from flask import Flask,request
+import requests
 from gevent.pywsgi import WSGIServer
 from gevent import monkey
 import time
@@ -105,18 +106,23 @@ def test():
     T0 = time.asctime(time.localtime(time.time()))
     gen = False
     if gen:
-        result = gpt_gen.generating(app, inputStr, model, config, tokenizer, device, ConfigPredict, quick=quick, num=num0,
-                                removeHighFreqWords=rmHFW, batchGenerating=batchGenerating, gpu=gpu)
+        #result = gpt_gen.generating(app, inputStr, model, config, tokenizer, device, ConfigPredict, quick=quick, num=num0,
+                                #removeHighFreqWords=rmHFW, batchGenerating=batchGenerating, gpu=gpu)
         #rr = gpt_gen.testFun(app, data, model, config, tokenizer, device, ConfigPredict, quick=quick, num=num0,
                                 #removeHighFreqWords=rmHFW, batchGenerating=batchGenerating, gpu=gpus)
         #result = fun1(tokenizer,data)
+        user_info = {"input": inputStr}
+        r = requests.post("http://127.0.0.1:6002/api/gen_gou", data=user_info)
+        R = r.text
         time.sleep(0)
     else:
         gpt_gen.testFun1()
+        R = {'input': inputStr, 'output': result}
+        R = json.dumps(R)
         time.sleep(0)
     T1 = time.asctime( time.localtime(time.time()) )
-    R = {'input':inputStr,'output':result}
-    log0 = [json.dumps(R),T0[11:19],T1[11:19]]
+
+    log0 = [R,T0[11:19],T1[11:19]]
     return '\t'.join(log0)
 
 @app.route('/index')
