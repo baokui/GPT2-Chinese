@@ -53,14 +53,14 @@ def test():
     result = ['TEST']
     T0 = time.asctime(time.localtime(time.time()))
     for _ in range(20):
-        #result = gpt_gen.generating(app, data, model, config, tokenizer, device, ConfigPredict, quick=quick, num=num0,
-                                #removeHighFreqWords=rmHFW, batchGenerating=batchGenerating, gpu=gpus)
-        rr = gpt_gen.testFun(app, data, model, config, tokenizer, device, ConfigPredict, quick=quick, num=num0,
+        result = gpt_gen.generating(app, data, model, config, tokenizer, device, ConfigPredict, quick=quick, num=num0,
                                 removeHighFreqWords=rmHFW, batchGenerating=batchGenerating, gpu=gpus)
+        #rr = gpt_gen.testFun(app, data, model, config, tokenizer, device, ConfigPredict, quick=quick, num=num0,
+                                #removeHighFreqWords=rmHFW, batchGenerating=batchGenerating, gpu=gpus)
     #result = fun1(tokenizer,data)
     time.sleep(5)
     T1 = time.asctime( time.localtime(time.time()) )
-    return 'Hello World!'+T0[11:19]+'->'+T1[11:19]+':'+str(model.config.n_ctx)+':'+str(result[0])
+    return 'TIME:'+T0[11:19]+'->'+T1[11:19]+'   '+str(model.config.n_ctx)+':'+str(result[0])
 
 @app.route('/index')
 def beijing():
