@@ -103,7 +103,7 @@ def test():
     gpu = Gpus[ii]
     result = ['TEST']
     T0 = time.asctime(time.localtime(time.time()))
-    gen = True
+    gen = False
     if gen:
         result = gpt_gen.generating(app, inputStr, model, config, tokenizer, device, ConfigPredict, quick=quick, num=num0,
                                 removeHighFreqWords=rmHFW, batchGenerating=batchGenerating, gpu=gpu)
@@ -112,7 +112,8 @@ def test():
         #result = fun1(tokenizer,data)
         time.sleep(0)
     else:
-        time.sleep(5)
+        gpt_gen.testFun1()
+        time.sleep(0)
     T1 = time.asctime( time.localtime(time.time()) )
     R = {'input':inputStr,'output':result}
     log0 = [json.dumps(R),T0[11:19],T1[11:19]]

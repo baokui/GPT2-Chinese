@@ -857,3 +857,9 @@ def testFun(app,prefix,model,config,tokenizer,device,config_predict,quick=False,
     #print('text generating and posprocess time:%0.4f and %0.4f' % (t1 - t0,t2-t1))
     S = S[:nsamples]
     return S
+def testFun1():
+    import numpy as np
+    for _ in range(20):
+        a = np.random.uniform(-1,1,(1000,10000))
+        b = np.random.uniform(-1,1,(10000,1000))
+        c = a.dot(b)
