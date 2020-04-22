@@ -21,15 +21,15 @@ class config_predict(object):
         self.max_nb_sents=4
         self.gpus = ['5','6','7']
         if len(model_config)==0:
-            self.model_configs = ['demo_config/config_godText_small_finetune.json', 'demo_config/config_poem.json',
+            self.model_configs = ['demo_config/config_poem.json','demo_config/config_godText_small_finetune.json',
                             'demo_config/config_dabaigou.json']
         else:
             if type(model_config)==list:
                 self.model_configs = model_config
             else:
                 self.model_configs = [model_config]
-        self.predict_nums = [8, 4, 8, 5]
-        self.tags = ['(文)', '(诗)', '(大白狗)', '(句联想)']
+        self.predict_nums = [4, 8, 8, 5]
+        self.tags = ['(诗)', '(文)', '(大白狗)', '(句联想)']
         self.doPredict = [t==1 for t in doPredict]
         self.rmHFW = [False, False, True, False]
         self.maxNext_JLX = 3
@@ -38,9 +38,9 @@ class config_predict(object):
         self.prefixTrim = True
         self.useThread = True
         self.fast_pattern = True
-        self.repetition_penalty = [1.2,1.5,1.2]
-        self.temperature = [0.6,0.7,0.5]
-        self.length = [30,64,30]
+        self.repetition_penalty = [1.5,1.2,1.2]
+        self.temperature = [0.7,0.6,0.5]
+        self.length = [64,30,30]
         self.resort = True
     def addStopwords(self):
         punc_zh = "！？｡＂＃＄％＆＇（）＊＋，－／：；＜＝＞＠［＼］＾＿｀｛｜｝～｟｠｢｣､、〃》「」『』【】〔〕〖〗〘〙〚〛〜〝〞〟〰〾〿–—‘’‛“”„‟‧﹏.…"
