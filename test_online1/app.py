@@ -16,9 +16,9 @@ app = Flask(__name__)
 app.logger.setLevel(logging.INFO)
 port = 5000
 style = sys.argv[1]
-if style=='0':
+if style=='poem':
     from Config_poem import config_predict
-elif style=='1':
+elif style=='prose':
     from Config_prose import config_predict
 else:
     from Config_gou import config_predict
@@ -37,7 +37,7 @@ rmHFW = ConfigPredict.rmHFW
 gpus = ConfigPredict.gpus
 os.environ["CUDA_VISIBLE_DEVICES"]=gpus
 model,tokenizer,config,device = gpt_gen.getModel(path_config=path_configs,gpu=gpus)
-@app.route('/api/gen_gou', methods=['POST'])
+@app.route('/api/gen_'+style, methods=['POST'])
 def test2():
     r = request.json
     data = r["input"]
