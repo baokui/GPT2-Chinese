@@ -55,7 +55,8 @@ def test():
     for _ in range(20):
         #result = gpt_gen.generating(app, data, model, config, tokenizer, device, ConfigPredict, quick=quick, num=num0,
                                 #removeHighFreqWords=rmHFW, batchGenerating=batchGenerating, gpu=gpus)
-        rr = gpt_gen.testFun(model)
+        rr = gpt_gen.testFun(app, data, model, config, tokenizer, device, ConfigPredict, quick=quick, num=num0,
+                                removeHighFreqWords=rmHFW, batchGenerating=batchGenerating, gpu=gpus)
     #result = fun1(tokenizer,data)
     time.sleep(5)
     T1 = time.asctime( time.localtime(time.time()) )

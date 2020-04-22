@@ -762,5 +762,92 @@ def generating_poem(app,prefix,model,config,tokenizer,device,quick=False,num=5,b
                 S.append(poem)
     S = dropDuplicateContent(S)
     return S
-def testFun(model):
-    return model.config
+def testFun(app,prefix,model,config,tokenizer,device,config_predict,quick=False,num=5,continue_writing=False,removeHighFreqWords=False,batchGenerating=False,gpu='0',onlyMax=False,maxNb = 20):
+    #print("start:",prefix)
+    #os.environ["CUDA_VISIBLE_DEVICES"] = gpu
+    if len(prefix)==0 or len(prefix)>model.config.n_ctx:
+        return []
+    if gpu:
+        #torch.cuda.set_device(int(gpu))
+        device = "cuda" if torch.cuda.is_available() else "cpu"
+    else:
+        device = 'cpu'
+    #print("use device:%s" % device)
+    prefix0 = prefix
+    if config_predict.prefixTrim:
+        prefix = sentTriming(prefix0)
+        if len(prefix)==0:
+            prefix = prefix0
+    punc = '.,?!;\t 。，？！；'
+    global a
+    a = app
+    fast_pattern = config_predict.fast_pattern
+    n_ctx = model.config.n_ctx
+    len_prefix = len(prefix)
+    if len_prefix<5:
+        max_genlen = 5*len_prefix
+    elif len_prefix<10:
+        max_genlen = 3*len_prefix
+    else:
+        max_genlen = config['length']
+    length = min(max_genlen,n_ctx-len_prefix-1)
+    nsamples = num
+    maxNb = max(nsamples,maxNb)
+    temperature = config['temperature']
+    topk = config['topk']
+    topp = config['topp']
+    quick_pattern = quick
+    repetition_penalty = config['repetition_penalty']
+    if length == -1:
+        length = model.config.n_ctx
+    raw_text = prefix
+    context_tokens = tokenizer.convert_tokens_to_ids(tokenizer.tokenize(raw_text))
+    t0 = time.time()
+    return 'TEST'
+    if batchGenerating:
+        S = []
+        if onlyMax:
+            outs = sample_sequence_batch_max(model, context_tokens, length, n_ctx, tokenizer, nsamples=2,
+                                              temperature=temperature,
+                                              top_k=topk,
+                                              top_p=topp, repitition_penalty=repetition_penalty,
+                                              device=device)
+        else:
+            if fast_pattern:
+                outs = fast_sample_sequence_batch(model, context_tokens, length, nsamples=maxNb,
+                                           temperature=temperature, top_k=topk, repitition_penalty=repetition_penalty,device=device)
+            else:
+                outs = sample_sequence_batch_opti(model, context_tokens, length, n_ctx, tokenizer, maxNb, temperature=temperature,
+                                         top_k=topk,
+                                         top_p=topp, repitition_penalty=repetition_penalty,
+                                         device=device)
+        #print('model predict all time:%0.4f' % (t1 - t0))
+        for out in outs:
+            tmptext = untokenization(out, config, tokenizer, punc, continue_writing)
+            S.append(tmptext)
+        #print('model untokenization time:%0.4f' % (t2 - t1))
+    else:
+        S = []
+        for _ in range(maxNb):
+            out = generate(
+                n_ctx=n_ctx,
+                model=model,
+                context=context_tokens,
+                length=length,
+                is_fast_pattern=fast_pattern, tokenizer=tokenizer,is_quick=quick_pattern,
+                temperature=temperature, top_k=topk, top_p=topp, repitition_penalty=repetition_penalty, device=device
+            )
+            tmptext = untokenization(out,config,tokenizer,punc,continue_writing)
+            S.append(tmptext)
+    t1 = time.time()
+    if config_predict.prefixTrim:
+        S = [prefix0+s[len(prefix):] for s in S]
+    S = postprocess(S,prefix0,config_predict,removeHighFreqWords=removeHighFreqWords)
+    S = dropDuplicateContent(S)
+    if config_predict.resort:
+        if len(S)>0:
+            S = resort(prefix0, S, config_predict)
+    t2 = time.time()
+    #print('text generating and posprocess time:%0.4f and %0.4f' % (t1 - t0,t2-t1))
+    S = S[:nsamples]
+    return S
