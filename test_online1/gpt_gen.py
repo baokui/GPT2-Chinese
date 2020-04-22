@@ -762,3 +762,5 @@ def generating_poem(app,prefix,model,config,tokenizer,device,quick=False,num=5,b
                 S.append(poem)
     S = dropDuplicateContent(S)
     return S
+def testFun(model):
+    return model.config

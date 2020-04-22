@@ -52,10 +52,11 @@ def test():
     data = '我们'
     T0 = time.asctime(time.localtime(time.time()))
     for _ in range(20):
-        result = gpt_gen.generating(app, data, model, config, tokenizer, device, ConfigPredict, quick=quick, num=num0,
-                                removeHighFreqWords=rmHFW, batchGenerating=batchGenerating, gpu=gpus)
+        #result = gpt_gen.generating(app, data, model, config, tokenizer, device, ConfigPredict, quick=quick, num=num0,
+                                #removeHighFreqWords=rmHFW, batchGenerating=batchGenerating, gpu=gpus)
+        rr = gpt_gen.testFun(model)
     #result = fun1(tokenizer,data)
-    #time.sleep(5)
+    time.sleep(5)
     T1 = time.asctime( time.localtime(time.time()) )
     return 'Hello World!'+T0[11:19]+'->'+T1[11:19]+':'+str(model.config.n_ctx)+':'+str(result[0])
 
