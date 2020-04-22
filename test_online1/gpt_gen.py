@@ -804,6 +804,8 @@ def testFun(app,prefix,model,config,tokenizer,device,config_predict,quick=False,
     context_tokens = tokenizer.convert_tokens_to_ids(tokenizer.tokenize(raw_text))
     t0 = time.time()
     S = []
+    time.sleep(3)
+    return []
     outs = fast_sample_sequence_batch(model, context_tokens, length, nsamples=maxNb,
                                       temperature=temperature, top_k=topk, repitition_penalty=repetition_penalty,
                                       device=device)
