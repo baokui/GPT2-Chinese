@@ -803,42 +803,15 @@ def testFun(app,prefix,model,config,tokenizer,device,config_predict,quick=False,
     raw_text = prefix
     context_tokens = tokenizer.convert_tokens_to_ids(tokenizer.tokenize(raw_text))
     t0 = time.time()
-    return 'TEST'
-    if batchGenerating:
-        S = []
-        if onlyMax:
-            outs = sample_sequence_batch_max(model, context_tokens, length, n_ctx, tokenizer, nsamples=2,
-                                              temperature=temperature,
-                                              top_k=topk,
-                                              top_p=topp, repitition_penalty=repetition_penalty,
-                                              device=device)
-        else:
-            if fast_pattern:
-                outs = fast_sample_sequence_batch(model, context_tokens, length, nsamples=maxNb,
-                                           temperature=temperature, top_k=topk, repitition_penalty=repetition_penalty,device=device)
-            else:
-                outs = sample_sequence_batch_opti(model, context_tokens, length, n_ctx, tokenizer, maxNb, temperature=temperature,
-                                         top_k=topk,
-                                         top_p=topp, repitition_penalty=repetition_penalty,
-                                         device=device)
-        #print('model predict all time:%0.4f' % (t1 - t0))
-        for out in outs:
-            tmptext = untokenization(out, config, tokenizer, punc, continue_writing)
-            S.append(tmptext)
-        #print('model untokenization time:%0.4f' % (t2 - t1))
-    else:
-        S = []
-        for _ in range(maxNb):
-            out = generate(
-                n_ctx=n_ctx,
-                model=model,
-                context=context_tokens,
-                length=length,
-                is_fast_pattern=fast_pattern, tokenizer=tokenizer,is_quick=quick_pattern,
-                temperature=temperature, top_k=topk, top_p=topp, repitition_penalty=repetition_penalty, device=device
-            )
-            tmptext = untokenization(out,config,tokenizer,punc,continue_writing)
-            S.append(tmptext)
+    S = []
+    outs = fast_sample_sequence_batch(model, context_tokens, length, nsamples=maxNb,
+                                      temperature=temperature, top_k=topk, repitition_penalty=repetition_penalty,
+                                      device=device)
+    return outs
+    for out in outs:
+        tmptext = untokenization(out, config, tokenizer, punc, continue_writing)
+        S.append(tmptext)
+
     t1 = time.time()
     if config_predict.prefixTrim:
         S = [prefix0+s[len(prefix):] for s in S]
