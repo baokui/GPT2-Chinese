@@ -808,7 +808,30 @@ def testFun(app,prefix,model,config,tokenizer,device,config_predict,quick=False,
     inputs = [context_tokens] * nsamples
     inputs = torch.tensor(inputs, dtype=torch.long, device=device)
     _, past = model(inputs[:, :-1], None)[:2]
-    #prev = inputs[:, -1].view(-1, 1)
+    prev = inputs[:, -1].view(-1, 1)
+    context = context_tokens
+    generate = [[t for t in context] for _ in range(nsamples)]
+    A0 = []
+    A1 = []
+    for kk in range(len(generate)):
+        for jj in range(len(generate[kk])):
+            A0.append(kk)
+            A1.append(generate[kk][jj])
+    with torch.no_grad():
+        for i in range(1):
+            output = model(prev, past=past)
+            output, past = output[:2]
+            output = output.squeeze(1)
+            output[A0, A1] *= rev_repitition_penalty
+            output /= temperature
+            filtered_logits = top_k_top_p_filtering(output, top_k=top_k, top_p=0)
+            next_token = torch.multinomial(torch.softmax(filtered_logits, dim=-1), num_samples=1)
+            prev = next_token
+            NT_np = next_token.cpu().numpy()
+            for ii in range(nsamples):
+                generate[ii].append(NT_np[ii][0])
+                A0.append(ii)
+                A1.append(NT_np[ii])
     time.sleep(0.5)
     return []
     outs = fast_sample_sequence_batch(model, context_tokens, length, nsamples=maxNb,
