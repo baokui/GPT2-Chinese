@@ -50,6 +50,7 @@ def test():
     tokenizer = Tokenizer[ii]
     device = Device[ii]
     data = '我们'
+    result = ['TEST']
     T0 = time.asctime(time.localtime(time.time()))
     for _ in range(20):
         #result = gpt_gen.generating(app, data, model, config, tokenizer, device, ConfigPredict, quick=quick, num=num0,
