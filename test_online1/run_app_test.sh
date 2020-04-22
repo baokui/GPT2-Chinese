@@ -14,6 +14,9 @@ else
         #param=$s{$t$inputStr$t:$i}$s
         #nohup curl http://127.0.0.1:7000/api/gen_test -d $param -X POST >> log/apptest-post-$N-$i.log 2>&1 &
         #echo http://127.0.0.1:7000/api/gen_test -d $param -X POST
-        nohup python -u app_test_post.py text$i $i >> log/apptest-post-$N-$i.log 2>&1 &
+        path_data=data/test.txt
+        path_target=result/tmp-$i.json
+        path_log=log/apptest-post-$N-$i.log
+        nohup python -u app_test_post.py $path_data $path_target $path_log >> log/tmp.log 2>&1 &
     done
 fi
