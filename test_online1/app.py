@@ -35,7 +35,7 @@ num0 = ConfigPredict.predict_nums
 tags = ConfigPredict.tags
 rmHFW = ConfigPredict.rmHFW
 gpus = ConfigPredict.gpus
-os.environ["CUDA_VISIBLE_DEVICES"]=gpus
+#os.environ["CUDA_VISIBLE_DEVICES"]=gpus
 model,tokenizer,config,device = gpt_gen.getModel(path_config=path_configs,gpu=gpus)
 @app.route('/api/gen_'+style, methods=['POST'])
 def test2():
