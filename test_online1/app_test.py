@@ -53,7 +53,24 @@ def getTime(n):
     devi = [s[i][-1] for i in range(len(s))]
     T = [(t0[i],t1[i]) for i in range(len(t0))]
     T = sorted(T,key=lambda x:x[0])
-    D = [(int(t1[:2])-int(t0[:2]))*3600+(int(t1[3:5])-int(t0[3:5]))*60+(int(t1[6::])-int(t0[6:])) for (t0,t1) in T]
+    T0 = [[int(t0[6:]),int(t0[3:5]),int(t0[:2])] for (t0,t1) in T]
+    T1 = [[int(t1[6:]),int(t1[3:5]),int(t1[:2])] for (t0,t1) in T]
+    D = []
+    for i in range(len(T0)):
+        d = 0
+        if T1[i][0]<T0[i][0]:
+            t_s = T1[i][0]+60-T0[i][0]
+            T1[i][1] -= 1
+        else:
+            t_s = T1[i][0] - T0[i][0]
+        if T1[i][1]<T0[i][1]:
+            t_m = T1[i][1]+60-T0[i][1]
+            T1[i][2] -= 1
+        else:
+            t_m = T1[i][1] - T0[i][1]
+        t_h = T1[i][2] - T0[i][2]
+        d = t_s+60*t_m+3600*t_h
+        D.append(d)
     S = ['\t'.join(T[i])+'\t'+str(D[i])+'\t'+devi[i] for i in range(len(T))]
     print('\n'.join(S))
 @app.route('/api/gen_test', methods=['POST'])
