@@ -2,7 +2,7 @@
 import unicodedata
 class Config(object):
     # 定义构造方法
-    def __init__(self,model_config='', doPredict = [1,1,1,1],gpus = ''):  #__init__() 是类的初始化方法；它在类的实例化操作后 会自动调用，不需要手动调用；
+    def __init__(self):  #__init__() 是类的初始化方法；它在类的实例化操作后 会自动调用，不需要手动调用；
         # 设置属性
         self.stopwords = [" ", "　", " ", ",", "，", ".", "。", "、", "!", "！", "?", "？", ";", "；", "~", "～", "·", "·", ".", "…", "-",
              "#_", "—", "+", "=", "'", "\"", "‘", "’", "“", "”", "*", "&", "^", "%", "$", "/", "\\", "@"]
@@ -13,7 +13,7 @@ class Config(object):
         self.singlewords = ['哈','啊','哦','哦','呵','嘿','哎','哼']
         self.removed_words = ['⊙']
         self.punc_end = '.?!。？！》>'
-        self.path_HighFreqWords = '../data/words_highFreq.txt'
+        self.path_HighFreqWords = '../bin/data/words_highFreq.txt'
         self.HighFreqWords = self.getHFW()
         self.min_contenlen = 8
         self.rate_gen2inp = 1.4

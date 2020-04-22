@@ -11,12 +11,12 @@ class config_predict(Config):
         if model_config:
             self.model_configs = model_config
         else:
-            self.model_configs = '../bin/config/config_godText_small_finetune.json'
-        self.predict_nums = 8
-        self.tags = '(文)'
+            self.model_configs = '../bin/config/config_poem.json'
+        self.predict_nums = 5
+        self.tags = '(诗)'
         self.rmHFW = False
-        self.repetition_penalty = 1.2
-        self.temperature = 0.6
-        self.length = 30
-        self.resort = True
+        self.repetition_penalty = 1.5
+        self.temperature = 0.7
+        self.length = 64
+
 

@@ -11,27 +11,25 @@ import os
 from gevent.pywsgi import WSGIServer
 from gevent import monkey
 from geventwebsocket.handler import WebSocketHandler
-
 import time
 monkey.patch_all()
-#from gevent.pywsgi import WSGIServer #关键这个
 app = Flask(__name__)
 app.logger.setLevel(logging.INFO)
 port = 5000
 style = 0#0大白狗, 1散文
 if len(sys.argv)>1:
    port = int(sys.argv[1])
-gpus = []
 if len(sys.argv)>2:
     gpus = sys.argv[2]
-ConfigPredict = config_predict()
+    ConfigPredict = config_predict(gpus=gpus)
+else:
+    ConfigPredict = config_predict()
 batchGenerating=ConfigPredict.batchGenerating
 path_configs = ConfigPredict.model_configs
 num0 = ConfigPredict.predict_nums
 tags = ConfigPredict.tags
 rmHFW = ConfigPredict.rmHFW
-if len(gpus)==0:
-    gpus = ConfigPredict.gpus
+gpus = ConfigPredict.gpus
 os.environ["CUDA_VISIBLE_DEVICES"]=gpus
 model,tokenizer,config,device = gpt_gen.getModel(path_config=path_configs,gpu=gpus)
 @app.route('/api/gen_gou', methods=['POST'])
