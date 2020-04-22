@@ -7,7 +7,7 @@ class config_predict(object):
         self.stopwords = [" ", "　", " ", ",", "，", ".", "。", "、", "!", "！", "?", "？", ";", "；", "~", "～", "·", "·", ".", "…", "-",
              "#_", "—", "+", "=", "'", "\"", "‘", "’", "“", "”", "*", "&", "^", "%", "$", "/", "\\", "@"]
         self.stopwords,self.map_e2z = self.addStopwords()
-        self.blackwords = ['自杀','死']
+        self.blackwords = ['自杀','死','火葬']
         self.singlewords = ['哈','啊','哦','哦','呵','嘿','哎','哼']
         self.removed_words = ['⊙']
         self.punc_end = '.?!。？！》>'

@@ -1,5 +1,5 @@
 import numpy as np
-def postprocess(S,prefix,config_postprocess,dropPerson=True,maxNbSents=True,removeEndPunc=True,removeWords = True, removeSingleWord=True,transfer = True,sentEndcontent=True,removeDupulicate=True,dropSpecial=True,removeHighFreqWords=False,removeIncompletePunc=True):
+def postprocess(S,prefix,config_postprocess,specialWordFilter=True,dropPerson=True,maxNbSents=True,removeEndPunc=True,removeWords = True, removeSingleWord=True,transfer = True,sentEndcontent=True,removeDupulicate=True,dropSpecial=True,removeHighFreqWords=False,removeIncompletePunc=True):
     stopwords = config_postprocess.stopwords
     map_e2z = config_postprocess.map_e2z
     blackwords = config_postprocess.blackwords
@@ -10,8 +10,13 @@ def postprocess(S,prefix,config_postprocess,dropPerson=True,maxNbSents=True,remo
     min_contenlen = config_postprocess.min_contenlen
     r = config_postprocess.rate_gen2inp
     max_nb_sents=config_postprocess.max_nb_sents
+    specialwords_pre = config_postprocess.specialwords_pre
+    specialwords_gen = config_postprocess.specialwords_gen
     R = []
     for s0 in S:
+        if specialWordFilter:
+            if not hasSpectialWords(s0,prefix,specialwords_pre,specialwords_gen):
+                continue
         if removeWords:
             s0 = removewords(s0,removed_words)
         if removeIncompletePunc:
@@ -45,14 +50,23 @@ def postprocess(S,prefix,config_postprocess,dropPerson=True,maxNbSents=True,remo
             if len(prefix)<=7 and len(s0) - len(prefix) > r*len(prefix):
                 R.append(s0)
     return R
+def hasSpectialWords(s0,prefix,specialwords_pre,specialwords_gen):
+    for t in specialwords_pre:
+        if t in prefix:
+            return True#可以包含特殊词汇
+    s1 = s0[len(prefix):]
+    for t in specialwords_gen:
+        if t in s1:
+            return False#句首没有特殊词汇，那么生成文本不能包含特殊词汇
+    return True
 def removewords(s0,removed_words):
     sn = s0
     for t in removed_words:
         sn = sn.replace(t,'')
     return sn
 def hasCompletePunc(s):
-    L = ['(','<','{','[','‘','“','《']
-    R = [')','>','}',']','’','”','》']
+    L = ['(','<','{','[','‘','“','《','［','（']
+    R = [')','>','}',']','’','”','》','］','）']
     D = {k:0 for k in L}
     Flag = True
     for i in range(len(s)):
@@ -66,7 +80,7 @@ def hasCompletePunc(s):
                 break
             D[L[idx]]-=1
     for d in D:
-        if D[d]>0:
+        if D[d]!=0:
             Flag = False
     if Flag:
         n0 = s.count('\'')
@@ -209,7 +223,7 @@ def poemFilter(poem):
         flag = False
     return flag
 def poemFilter1(poem):
-    syms = '。？；'
+    syms = '。？；！，'
     sents = []
     i0 = 0
     i1 = 0
@@ -220,11 +234,16 @@ def poemFilter1(poem):
             i1 = i1+1
         else:
             i1 = i1+1
+    if len(sents)<2:
+        return ''
     R = []
-    for i in range(len(sents)):
-        if len(sents[i])==len(sents[0]):
-            R.append(sents[i])
-    if len(R)>1:
+    R.append(sents[0])
+    R.append(sents[1])
+    for i in range(1,int(len(sents)/2)):
+        if len(sents[2*i])==len(sents[0]) and len(sents[2*i+1])==len(sents[1]):
+            R.append(sents[2*i])
+            R.append(sents[2*i+1])
+    if len(R)>2 and len(R[0])>3:
         return ''.join(R)
     else:
         return ''

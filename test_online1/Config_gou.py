@@ -19,7 +19,7 @@ class config_predict(object):
         self.rate_gen2inp = 1.4
         self.batchGenerating = True
         self.max_nb_sents=4
-        self.gpus = '1,2,3'
+        self.gpus = ',,'
         self.model_configs = 'demo_config/config_dabaigou.json'
         self.predict_nums = 8
         self.tags = '(大白狗)'
