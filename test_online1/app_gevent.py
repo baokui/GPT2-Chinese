@@ -3,7 +3,7 @@ import gpt_gen
 from flask import Flask, request, Response
 from gevent.pywsgi import WSGIServer
 from gevent import monkey
-import time
+import random
 import json
 
 monkey.patch_all()
@@ -11,7 +11,7 @@ app = Flask(__name__)
 
 port = 7000
 from Config_gou import config_predict
-gpus='0'
+gpus='0,1,2,3'
 style='gou'
 ConfigPredict = config_predict(gpus=gpus)
 batchGenerating=ConfigPredict.batchGenerating
@@ -19,8 +19,11 @@ path_configs = ConfigPredict.model_configs
 num0 = ConfigPredict.predict_nums
 tags = ConfigPredict.tags
 rmHFW = ConfigPredict.rmHFW
-gpus = ConfigPredict.gpus
-model,tokenizer,config,device = gpt_gen.getModel(path_config=path_configs,gpu=gpus)
+gpus = ConfigPredict.gpus.split(',')
+Model = []
+for gpu in gpus:
+    model,tokenizer,config,device = gpt_gen.getModel(path_config=path_configs,gpu=gpu)
+    Model.append((model,gpu))
 
 @app.route('/', methods=['POST'])
 def test1():
@@ -32,13 +35,15 @@ def test1():
         if r["quick"]=="True":
             quick = True
     try:
+        random.shuffle(Model)
+        model,gpu = Model[0][0],Model[0][1]
         if style=='poem':
             result = gpt_gen.generating_poem(app, data, model, config, tokenizer, device, quick = quick, num = num0,
-                                             batchGenerating = batchGenerating, gpu = gpus, fast_pattern = ConfigPredict.fast_pattern)
+                                             batchGenerating = batchGenerating, gpu = gpu, fast_pattern = ConfigPredict.fast_pattern)
 
         else:
             result = gpt_gen.generating(app, data, model, config, tokenizer, device, ConfigPredict, quick=quick,num=num0,
-                       removeHighFreqWords=rmHFW,batchGenerating=batchGenerating,gpu=gpus)
+                       removeHighFreqWords=rmHFW,batchGenerating=batchGenerating,gpu=gpu)
         response = {'message':'success','input':data,'result': result}
     except Exception as e:
         app.logger.error("error:",e)
