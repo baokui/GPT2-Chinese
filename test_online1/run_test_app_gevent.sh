@@ -10,4 +10,4 @@ nohup python -u test_app_gevent.py $path_data $path_target $path_log $sym >> log
 sym=index
 path_target=result/tmp-$sym.json
 path_log=log/apptest-post-$time-$parallels-$sym.log
-nohup python -u app_test_post.py $path_data $path_target $path_log $sym >> log/tmp-gen-$sym.log 2>&1 &
+nohup python -u test_app_gevent.py $path_data $path_target $path_log $sym >> log/tmp-gen-$sym.log 2>&1 &
