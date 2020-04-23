@@ -8,41 +8,12 @@ import sys
 import random
 import numpy as np
 import json
-port = 7000
-if len(sys.argv)>1:
-    port = int(sys.argv[1])
+port,mode,nb_server = sys.argv[1:]
+nb_server = int(nb_server)
 monkey.patch_all()
-'''
-if len(sys.argv)>2:
-    gpus = sys.argv[2]
-    ConfigPredict = config_predict(gpus = gpus)
-else:
-    ConfigPredict = config_predict()
-
-batchGenerating=ConfigPredict.batchGenerating
-path_configs = ConfigPredict.model_configs
-num0 = ConfigPredict.predict_nums
-tags = ConfigPredict.tags
-rmHFW = ConfigPredict.rmHFW
-Gpus = ConfigPredict.gpus.split(',')
-Model = []
-Tokenizer = []
-Config = []
-Device = []
-for i in range(len(Gpus)):
-    #os.environ["CUDA_VISIBLE_DEVICES"]=gpus.split(',')[i]
-    model,tokenizer,config,device = gpt_gen.getModel(path_config=path_configs,gpu=Gpus[i])
-    Model.append(model)
-    Tokenizer.append(tokenizer)
-    Config.append(config)
-    Device.append(device)
-'''
-quick = False
-urlList = ["http://127.0.0.1:200"+str(i)+"/api/gen_gou" for i in range(8)]
-Idx = [i for i in range(8)]
+urlList = ["http://127.0.0.1:200"+str(i)+"/api/gen_"+mode for i in range(nb_server)]
+Idx = [i for i in range(nb_server)]
 app = Flask(__name__)
-def fun1(tokenizer,data):
-    return tokenizer.convert_tokens_to_ids(tokenizer.tokenize(data))
 def getTime(n):
     path='log/apptest-post-'+str(n)+'-'
     def getdata(tag):
@@ -91,45 +62,23 @@ def getTime(n):
     print('result-outer:average time = {}s,total posts = {},qps = {}'.format(np.mean(D1),len(D1),len(D1)/np.mean(D1)))
 @app.route('/api/gen_test', methods=['POST'])
 def test():
-    #r = request.json
-    #data = r["input"]
-    #inputStr = request.form.get('input')
     inputData = request.json
     ii = random.sample(Idx,1)[0]
-    #ii = int(request.form.get('idx'))%len(Config)
-    #model = Model[ii]
-    #config = Config[ii]
-    #tokenizer = Tokenizer[ii]
-    #device = Device[ii]
-    #gpu = Gpus[ii]
-    result = ['TEST']
     T0 = time.asctime(time.localtime(time.time()))
-    gen = True
-    if gen:
-        #result = gpt_gen.generating(app, inputStr, model, config, tokenizer, device, ConfigPredict, quick=quick, num=num0,
-                                #removeHighFreqWords=rmHFW, batchGenerating=batchGenerating, gpu=gpu)
-        #rr = gpt_gen.testFun(app, data, model, config, tokenizer, device, ConfigPredict, quick=quick, num=num0,
-                                #removeHighFreqWords=rmHFW, batchGenerating=batchGenerating, gpu=gpus)
-        #result = fun1(tokenizer,data)
-        #user_info = {"input": inputStr}
+    try:
         url = urlList[ii]
         r = requests.post(url, json=inputData)
         R = r.text
         time.sleep(0)
-    else:
+    except:
         #gpt_gen.testFun1()
         inputStr = inputData['input']
-        R = {'input': inputStr, 'output': result}
+        R = {'input': inputStr, 'output': []}
         R = json.dumps(R)
         time.sleep(0)
-    T1 = time.asctime( time.localtime(time.time()) )
-
+    T1 = time.asctime(time.localtime(time.time()))
     log0 = [R,T0[11:19],T1[11:19]]
     return '\t'.join(log0)
-
-@app.route('/index')
-def beijing():
-    return 'Beijing'
 if __name__ == '__main__':
     #app.run(host="0.0.0.0", port=port)
     http_server = WSGIServer(('127.0.0.1', port), app)

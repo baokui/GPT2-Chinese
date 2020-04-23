@@ -1,6 +1,6 @@
 N=$1
-maxGPU=4
-style=gou
+style=$2
+maxGPU=$3
 for((i=0;i<$N;i++))
 do
     port=$[i+2000]
