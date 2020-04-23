@@ -45,9 +45,11 @@ def test1():
             result = gpt_gen.generating(app, data, model, config, tokenizer, device, ConfigPredict, quick=quick,num=num0,
                        removeHighFreqWords=rmHFW,batchGenerating=batchGenerating,gpu=gpu)
         response = {'message':'success','input':data,'result': result}
+        print('generating success')
     except Exception as e:
         app.logger.error("error:",e)
         response = {'message': 'error', 'input': data, 'result': []}
+        print('generating failed')
     response_pickled = json.dumps(response)
     return Response(response=response_pickled, status=200, mimetype="application/json")
 
