@@ -3,7 +3,7 @@ import time
 import sys
 import random
 import json
-def main_gen(path_data,path_target,path_log):
+def main_gen(path_data,path_target,path_log,mode):
     with open(path_data,'r',encoding='utf-8') as f:
         Data = f.read().strip().split('\n')
     R = []
@@ -39,7 +39,4 @@ def main_test(path_data,path_target,path_log):
         print('\t'.join([T0,T1,t0,t1]))
 if __name__=="__main__":
     path_data,path_target,path_log,mode = sys.argv[1:]
-    if mode=='test':
-        main_test(path_data,path_target,path_log)
-    if mode=='gen':
-        main_gen(path_data,path_target,path_log)
+    main_gen(path_data,path_target,path_log,mode)
