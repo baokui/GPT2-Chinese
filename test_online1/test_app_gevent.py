@@ -28,5 +28,7 @@ def main_gen(path_data,path_target,path_log,sym=''):
     s1 = '%0.4f'%(len(Data)/TT0)
     print(path_log+': total samples:{}, total time:{}s, qps:{}'.format(len(Data),s0,s1))
 if __name__=="__main__":
-    path_data,path_target,path_log,mode = sys.argv[1:]
-    main_gen(path_data,path_target,path_log,mode)
+    path_data,path_target,path_log,sym = sys.argv[1:]
+    if sym=='0':
+        sym=''
+    main_gen(path_data,path_target,path_log,sym)
