@@ -7,7 +7,7 @@ then
     do
         path_data=data/test.txt
         path_target=result/tmp-$i.json
-        path_log=log/apptest-post-$time-$N-$i.log
+        path_log=log/apptest-post-$time-$parallels-$i.log
         nohup python -u app_test_post.py $path_data $path_target $path_log gou >> log/tmp.log 2>&1 &
     done
 fi
