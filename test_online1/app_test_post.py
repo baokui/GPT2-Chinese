@@ -14,7 +14,7 @@ def main_gen(path_data,path_target,path_log):
         user_info = {"input":data,"idx":idx}
         T0 = time.asctime(time.localtime(time.time()))[11:19]
         z0 = time.time()
-        r = requests.post("http://127.0.0.1:7000/api/gen_test", data=user_info)
+        r = requests.post("http://127.0.0.1:7000/api/gen_test", json=user_info)
         z1 = time.time()
         TT0 = TT0+z1-z0
         T1 = time.asctime(time.localtime(time.time()))[11:19]

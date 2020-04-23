@@ -5,13 +5,10 @@ from gevent.pywsgi import WSGIServer
 from gevent import monkey
 import time
 import sys
-import os
 import random
 import numpy as np
-#import gpt_gen
-#from Config_gou import config_predict
 import json
-port = 6000
+port = 7000
 if len(sys.argv)>1:
     port = int(sys.argv[1])
 monkey.patch_all()
@@ -96,7 +93,8 @@ def getTime(n):
 def test():
     #r = request.json
     #data = r["input"]
-    inputStr = request.form.get('input')
+    #inputStr = request.form.get('input')
+    inputData = request.json
     ii = random.sample(Idx,1)[0]
     #ii = int(request.form.get('idx'))%len(Config)
     #model = Model[ii]
@@ -113,13 +111,14 @@ def test():
         #rr = gpt_gen.testFun(app, data, model, config, tokenizer, device, ConfigPredict, quick=quick, num=num0,
                                 #removeHighFreqWords=rmHFW, batchGenerating=batchGenerating, gpu=gpus)
         #result = fun1(tokenizer,data)
-        user_info = {"input": inputStr}
+        #user_info = {"input": inputStr}
         url = urlList[ii]
-        r = requests.post(url, json=user_info)
+        r = requests.post(url, json=inputData)
         R = r.text
         time.sleep(0)
     else:
         #gpt_gen.testFun1()
+        inputStr = inputData['input']
         R = {'input': inputStr, 'output': result}
         R = json.dumps(R)
         time.sleep(0)
