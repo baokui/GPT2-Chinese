@@ -18,9 +18,11 @@ def main_gen(path_data,path_target,path_log,sym=''):
         z1 = time.time()
         TT0 = TT0+z1-z0
         T1 = time.asctime(time.localtime(time.time()))[11:19]
-        s = r.text.split('\t')
-        R.append(json.loads(s[0]))
-        t0,t1 = s[1:3]
+        #s = r.text.split('\t')
+        #R.append(json.loads(s[0]))
+        R.append(r.json())
+        #t0,t1 = s[1:3]
+        t0,t1='',''
         f.write('outer:'+'\t'+T0+'\t'+T1+'\t'+'inter:' + '\t' + t0 + '\t' + t1 + '\n')
     with open(path_target,'w',encoding='utf-8') as f:
         json.dump(R,f,ensure_ascii=False,indent=4)
