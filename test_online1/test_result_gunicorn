@@ -1,0 +1,19 @@
+# test-1
+
+workers = 4
+bind = '0.0.0.0:5000'
+daemon = True
+timeout = 120
+accesslog = './log/acess.log'
+errorlog = './log/error.log'
+result(4 paras):
+log/apptest-post-2020-04-23--13:58:48-2-0.log: total samples:100, total time:44.3103s, qps:2.2568
+log/apptest-post-2020-04-23--13:58:48-2-0.log: total samples:100, total time:44.1629s, qps:2.2643
+log/apptest-post-2020-04-23--13:58:48-2-0.log: total samples:100, total time:44.0135s, qps:2.2720
+log/apptest-post-2020-04-23--13:58:48-2-0.log: total samples:100, total time:50.3086s, qps:1.9877
+result(8 paras):
+与4相比减半
+
+workers = 8
+result(8 paras):
+log/apptest-post-2020-04-23--14:14:35-2-0.log: total samples:100, total time:72.2804s, qps:1.3835
