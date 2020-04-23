@@ -9,6 +9,7 @@ import random
 import numpy as np
 import json
 port,mode,nb_server = sys.argv[1:]
+port = int(port)
 nb_server = int(nb_server)
 monkey.patch_all()
 urlList = ["http://127.0.0.1:200"+str(i)+"/api/gen_"+mode for i in range(nb_server)]
