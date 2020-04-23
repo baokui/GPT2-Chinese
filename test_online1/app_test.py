@@ -74,7 +74,7 @@ def test():
     except:
         #gpt_gen.testFun1()
         inputStr = inputData['input']
-        R = {'input': inputStr, 'output': []}
+        R = {'input': inputStr, 'output': ['no results']}
         R = json.dumps(R)
         time.sleep(0)
     T1 = time.asctime(time.localtime(time.time()))

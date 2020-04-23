@@ -11,3 +11,5 @@ then
         nohup python -u app_test_post.py $path_data $path_target $path_log gou >> log/tmp.log 2>&1 &
     done
 fi
+
+#20 servers 30 parallels (有些无结果，空)

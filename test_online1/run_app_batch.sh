@@ -7,3 +7,5 @@ do
     gpus=$[$i%$maxGPU]
     nohup python -u app.py $style $port $gpus >> log/gen-$style-$port-$gpus.log 2>&1 &
 done
+
+#sh run_app_batch.sh 20 gou 4
