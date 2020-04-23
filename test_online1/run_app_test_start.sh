@@ -16,3 +16,5 @@ if [ $mode -eq 2 ]
 then
 nohup python -u app_test.py $port gou  $nb_server >> log/apptest-gou-$port.log 2>&1 &
 fi
+
+#sh run_app_test_start.sh 2 16
