@@ -17,3 +17,13 @@ result(8 paras):
 workers = 8
 result(8 paras):
 log/apptest-post-2020-04-23--14:14:35-2-0.log: total samples:100, total time:72.2804s, qps:1.3835
+
+workers = 10
+result(20)
+log/apptest-post-2020-04-23--14:53:06-2-0.log: total samples:100, total time:70.2105s, qps:1.4243
+no-result:24.9%
+
+workers = 10
+result(30)
+log/apptest-post-2020-04-23--14:57:21-2-0.log: total samples:100, total time:94.3414s, qps:1.0600
+no-result:30.4%

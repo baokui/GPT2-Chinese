@@ -47,7 +47,7 @@ def test1():
         response = {'message':'success','input':data,'result': result}
     except Exception as e:
         app.logger.error("error:",e)
-        response = {'message': 'error', 'input': data, 'result': None}
+        response = {'message': 'error', 'input': data, 'result': []}
     response_pickled = json.dumps(response)
     return Response(response=response_pickled, status=200, mimetype="application/json")
 
@@ -61,17 +61,19 @@ def test2():
         if r["quick"]=="True":
             quick = True
     try:
+        random.shuffle(Model)
+        model,gpu = Model[0][0],Model[0][1]
         if style=='poem':
             result = gpt_gen.generating_poem(app, data, model, config, tokenizer, device, quick = quick, num = num0,
-                                             batchGenerating = batchGenerating, gpu = gpus, fast_pattern = ConfigPredict.fast_pattern)
+                                             batchGenerating = batchGenerating, gpu = gpu, fast_pattern = ConfigPredict.fast_pattern)
 
         else:
             result = gpt_gen.generating(app, data, model, config, tokenizer, device, ConfigPredict, quick=quick,num=num0,
-                       removeHighFreqWords=rmHFW,batchGenerating=batchGenerating,gpu=gpus)
+                       removeHighFreqWords=rmHFW,batchGenerating=batchGenerating,gpu=gpu)
         response = {'message':'success','input':data,'result': result}
     except Exception as e:
         app.logger.error("error:",e)
-        response = {'message': 'error', 'input': data, 'result': None}
+        response = {'message': 'error', 'input': data, 'result': []}
     response_pickled = json.dumps(response)
     return Response(response=response_pickled, status=200, mimetype="application/json")
 
