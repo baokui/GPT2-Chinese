@@ -22,7 +22,7 @@ rmHFW = ConfigPredict.rmHFW
 gpus = ConfigPredict.gpus
 model,tokenizer,config,device = gpt_gen.getModel(path_config=path_configs,gpu=gpus)
 
-@app.route('/')
+@app.route('/', methods=['POST'])
 def test1():
     r = request.json
     data = r["input"]
@@ -46,7 +46,7 @@ def test1():
     response_pickled = json.dumps(response)
     return Response(response=response_pickled, status=200, mimetype="application/json")
 
-@app.route('/index')
+@app.route('/index', methods=['POST'])
 def test2():
     r = request.json
     data = r["input"]
