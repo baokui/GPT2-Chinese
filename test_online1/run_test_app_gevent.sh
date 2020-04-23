@@ -1,7 +1,7 @@
 path_data=data/test.txt
 parallels=2
 time=$(date "+%Y-%m-%d--%H:%M:%S")
-N=1
+N=20
 for((i=0;i<$N;i++))
 do
 sym=0

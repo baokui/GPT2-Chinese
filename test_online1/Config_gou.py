@@ -12,7 +12,7 @@ class config_predict(Config):
             self.model_configs = model_config
         else:
             self.model_configs = '../bin/config/config_dabaigou.json'
-        self.predict_nums = 8
+        self.predict_nums = 5
         self.tags = '(大白狗)'
         self.rmHFW = True
         self.repetition_penalty = 1.2
