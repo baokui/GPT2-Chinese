@@ -12,4 +12,4 @@ then
     done
 fi
 
-#20 servers 30 parallels (有些无结果，空)
+#20 servers 20/30 parallels (有些无结果，空)
