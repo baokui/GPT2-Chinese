@@ -16,3 +16,8 @@ fi
 
 #20 servers 20/30 parallels (有些无结果，空)
 #16 servers 20 parrallels (有空结果）
+
+#ps -ef|grep "app.py gou 20"|grep -v grep|awk  '{print "kill -9 " $2}' |sh
+#sh run_app_batch.sh 12 gou 4
+#sh run_app_test_start.sh 2 12
+#sh run_app_test_test.sh 2 20
