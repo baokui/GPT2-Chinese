@@ -1,11 +1,10 @@
 nohup python -u train.py \
-        --model_config=model/modelexample/config.json \
-        --tokenizer_path=model/modelexample/vocab.txt \
+        --model_config=model/modelexample/config_large.json \
+        --tokenizer_path=model/modelexample/vocab_large.txt \
         --tokenized_data_path=data_tokenized/ \
         --epochs=3 \
         --min_length=10 \
-        --stride=64 \
-        --padding \
+        --stride=1000 \
         --log_step=10 \
         --batch_size=16 \
         --max_steps_perEpoch_perPiece=80 \
