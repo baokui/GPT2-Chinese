@@ -14,6 +14,7 @@ import json
 import random
 from time import strftime, localtime
 import time
+import transformers
 from modules import postprocess,poemFilter1,dropDuplicateContent,_is_chinese_char,sentTriming,findMaxMatch,resort
 print_log = False
 # 打印当前时间
@@ -418,7 +419,7 @@ def generate(n_ctx, model, context, length, tokenizer,is_quick=False, temperatur
         return sample_sequence(model, context, length, n_ctx, tokenizer=tokenizer, temperature=temperature, top_k=top_k,
                                top_p=top_p,
                                repitition_penalty=repitition_penalty, device=device)
-def getModel(path_config,gpu='0'):
+def getModel(path_config,gpu='0',fp16=False):
     print("load model......")
     if gpu:
         torch.cuda.set_device(int(gpu))
@@ -438,6 +439,14 @@ def getModel(path_config,gpu='0'):
     model = GPT2LMHeadModel.from_pretrained(model_path)
     model.to(device)
     model.eval()
+    if fp16:
+        try:
+            from apex import amp
+        except ImportError:
+            raise ImportError("Please install apex from https://www.github.com/nvidia/apex to use fp16 training.")
+        optimizer = transformers.AdamW(model.parameters(), lr=0.1, correct_bias=True)
+        fp16_opt_level = 'O1'
+        model, optimizer = amp.initialize(model, optimizer, opt_level=fp16_opt_level)
     return model,tokenizer,config,device
 def untokenization(out,config,tokenizer,punc,continue_writing):
     text = tokenizer.convert_ids_to_tokens(out)

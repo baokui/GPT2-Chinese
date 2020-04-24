@@ -2,10 +2,11 @@ nohup python -u train.py \
         --model_config=model/modelexample/config_large.json \
         --tokenizer_path=model/modelexample/vocab_large.txt \
         --tokenized_data_path=data_tokenized/ \
-        --epochs=3 \
+        --epochs=10 \
         --min_length=10 \
         --stride=1000 \
         --log_step=10 \
         --batch_size=16 \
         --max_steps_perEpoch_perPiece=80 \
+        --pretrained_model=model/model_join2/ \
         --output_dir=model/modelexample/  >> log/trainexample.log 2>&1 &
