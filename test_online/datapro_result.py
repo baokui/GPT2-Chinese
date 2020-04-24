@@ -26,11 +26,36 @@ def read_excel(path_source1,index=0):
             r.append(table.cell(rows, cols).value)  # 获取excel中单元格的内容
         res.append(r)
     return res
+def test_result(path0,n0,n1):
+    #path0 = 'D:\\项目\\输入法\\数据处理\\GPT2-Chinese\\test_online\\result\\test_text3.xls'
+    Data = read_excel(path0)
+    N0 = 0
+    N1 = 0
+    N2 = 0
+    T0 = [0, 0, 0]
+    T1 = [0, 0, 0]
+    T2 = [0,0,0]
+    for i in range(n0,n1):
+        if Data[i][4] == '0':
+            N0 += 1
+            T0[int(Data[i][2]) - 1] += 1
+        elif Data[i][4]=='1':
+            N1 += 1
+            T1[int(Data[i][2]) - 1] += 1
+        else:
+            N2 += 1
+            T2[int(Data[i][2]) - 1] += 1
+    print(N0, N1,N2)
+    print(T0, T1,T2)
+    print((T0[1] + T0[2]) / N0, (T1[1] + T1[2]) / N1,(T2[1] + T2[2]) / N2)
 def getdata():
     paths = ['D:\项目\输入法\神配文数据\生成评测\固定评测集200条.xlsx']
     for p in paths:
         data = read_excel(p)
     S = []
-    for i in range(len(data)):
-        if '(文)' in data[i][3]:
-            if data[i]
+    predix = ''
+    for i in range(1,len(data)):
+        if data[i][0]!='':
+            predix = data[i][0]
+        if '(文)' in data[i][3] and data[i][8]!='':
+            S.append([predix,data[i][3],data[i][8]])
