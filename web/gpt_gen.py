@@ -490,10 +490,10 @@ def generating(app,prefix,model,config,tokenizer,device,config_predict,quick=Fal
     fast_pattern = config_predict.fast_pattern
     n_ctx = model.config.n_ctx
     len_prefix = len(prefix)
-    if len_prefix<5:
-        max_genlen = 5*len_prefix
-    elif len_prefix<10:
-        max_genlen = 3*len_prefix
+    if len_prefix < 5:
+        max_genlen = 20
+    elif len_prefix < 10:
+        max_genlen = 25
     else:
         max_genlen = config['length']
     length = min(max_genlen,n_ctx-len_prefix-1)
