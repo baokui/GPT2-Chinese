@@ -43,6 +43,7 @@ for ii in range(len(path_configs)):
     ModelIndex.append([kk for kk in range(len(gpus))])
     GPUs.append(gpus)
 maxModel = len(ConfigPredict.gpus)
+'''
 if len(model)<maxModel:
     model.extend([[]]*(maxModel-len(model)))
     tokenizer.extend([[]]*(maxModel-len(model)))
@@ -54,6 +55,8 @@ D_simi = json.load(open(path_simi,'r',encoding='utf-8'))
 D_next = json.load(open(path_next,'r',encoding='utf-8'))
 D_simi = {k:json.loads(D_simi[k]) for k in D_simi}
 D_next = {k:json.loads(D_next[k]) for k in D_next}
+'''
+D_simi,D_next = [],[]
 def test(Data):
     modelidx = [np.random.randint(0, len(t)) for t in ModelIndex]
     # gpu_av = GPUtil.getAvailable(order='load', limit=8, maxLoad=0.9, maxMemory=0.9)
