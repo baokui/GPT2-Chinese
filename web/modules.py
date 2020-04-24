@@ -19,9 +19,6 @@ def postprocess(S,prefix,config_postprocess,specialWordFilter=True,dropPerson=Tr
                 continue
         if removeWords:
             s0 = removewords(s0,removed_words)
-        if removeIncompletePunc:
-            if not hasCompletePunc(s0[len(prefix):]):
-                continue
         if transfer:
             s0 = prefix+Transfer(s0[len(prefix):],map_e2z)
         if sentEndcontent:
@@ -40,6 +37,9 @@ def postprocess(S,prefix,config_postprocess,specialWordFilter=True,dropPerson=Tr
             s0 = sentCutting(s0,prefix,stopwords,max_nb_sents,punc_end)
         if removeEndPunc:
             s0 = remove_endPunc(s0,stopwords,punc_end)
+        if removeIncompletePunc:
+            if not hasCompletePunc(s0[len(prefix):]):
+                continue
         if len(s0)>min_contenlen:
             if len(prefix)>10 and len(s0) - len(prefix)>5:
                 R.append(s0)

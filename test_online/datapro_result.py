@@ -59,3 +59,37 @@ def getdata():
             predix = data[i][0]
         if '(文)' in data[i][3] and data[i][8]!='':
             S.append([predix,data[i][3],data[i][8]])
+def test_myself(path_data='D:\\项目\\输入法\\数据处理\\GPT2-Chinese\\test_online\\result\\test_text4.json'):
+    import random
+    import json
+    with open(path_data,'r',encoding='utf-8') as f:
+        Data = json.load(f)
+    A = []
+    for ii in range(len(Data)):
+        r = Data[ii]['output']
+        n0 = 0
+        n1 = 0
+        n2 = 0
+        a = []
+        for i in range(len(r)):
+            if '(0)' in r[i]:
+                r[i] = r[i].replace('(0)','')
+                tag = '0'
+                n0 += 1
+                if n0 < 3:
+                    a.append([Data[ii]['input']] + [r[i]] + [tag])
+            elif '(1)' in r[i]:
+                r[i] = r[i].replace('(1)', '')
+                tag = '1'
+                n1 += 1
+                if n1 < 3:
+                    a.append([Data[ii]['input']] + [r[i]] + [tag])
+            else:
+                r[i] = r[i].replace('(2)', '')
+                tag = '2'
+                n2 += 1
+                if n2 < 3:
+                    a.append([Data[ii]['input']] + [r[i]] + [tag])
+            random.shuffle(a)
+        A.extend(a)
+    write_excel(path_data.replace('json','xls'), A)

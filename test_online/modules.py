@@ -19,9 +19,6 @@ def postprocess(S,prefix,config_postprocess,specialWordFilter=True,dropPerson=Tr
                 continue
         if removeWords:
             s0 = removewords(s0,removed_words)
-        if removeIncompletePunc:
-            if not hasCompletePunc(s0[len(prefix):]):
-                continue
         if transfer:
             s0 = prefix+Transfer(s0[len(prefix):],map_e2z)
         if sentEndcontent:
@@ -37,9 +34,12 @@ def postprocess(S,prefix,config_postprocess,specialWordFilter=True,dropPerson=Tr
         if dropPerson:
             s0 = drop_person(s0,prefix)
         if maxNbSents:
-            s0 = sentCutting(s0,prefix,stopwords,max_nb_sents)
+            s0 = sentCutting(s0,prefix,stopwords,max_nb_sents,punc_end)
         if removeEndPunc:
             s0 = remove_endPunc(s0,stopwords,punc_end)
+        if removeIncompletePunc:
+            if not hasCompletePunc(s0[len(prefix):]):
+                continue
         if len(s0)>min_contenlen:
             if len(prefix)>10 and len(s0) - len(prefix)>5:
                 R.append(s0)
@@ -65,8 +65,8 @@ def removewords(s0,removed_words):
         sn = sn.replace(t,'')
     return sn
 def hasCompletePunc(s):
-    L = ['(','<','{','[','‘','“','《','［','（','【']
-    R = [')','>','}',']','’','”','》','］','）','】']
+    L = ['(', '<', '{', '[', '‘', '“', '《', '［', '（', '【']
+    R = [')', '>', '}', ']', '’', '”', '》', '］', '）', '】']
     D = {k:0 for k in L}
     Flag = True
     for i in range(len(s)):
@@ -96,6 +96,7 @@ def remove_endPunc(tmptext,stopwords,punc_end):
         return tmptext
     if tmptext[-1] in stopwords and tmptext[-1] not in punc_end:
         tmptext = tmptext[:-1]
+        tmptext = tmptext+'。'
     return tmptext
 def Transfer(s0,map_e2z):
     s0 = strQ2B(s0)
@@ -172,12 +173,15 @@ def remove_duplicate(s0,prefix,stopwords):
             S0.append(L0[i])
     R = prefix+''.join(S0)
     return R
-def sentCutting(s0,prefix,stopwords,max_nb_sents):
+def sentCutting(s0,prefix,stopwords,max_nb_sents,punc_end):
     L, L0 = sent_split(s0[len(prefix):], prefix,stopwords)
     L0 = L0[:max_nb_sents]
     L = L[:max_nb_sents]
     if len(L)==max_nb_sents:
         if len(L[-1])<4:
+            L0 = L0[:-1]
+    if len(s0)>5*len(prefix):
+        if len(L0)>0 and len(s0)-len(L0[-1])>4*len(prefix) and L0[-1][-1] not in punc_end:
             L0 = L0[:-1]
     R = prefix + ''.join(L0)
     return R
