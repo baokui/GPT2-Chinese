@@ -179,6 +179,7 @@ def sentCutting(s0,prefix,stopwords,max_nb_sents,punc_end):
     A, A0 = sent_split(s0[len(prefix):], prefix,stopwords)
     L = [A[i] for i in range(len(A)) if len(A[i])>1]
     L0 = [A0[i] for i in range(len(A)) if len(A[i])>1]
+    L0 = L0[:max_nb_sents]
     L = L[:max_nb_sents]
     if len(L)==max_nb_sents:
         if len(L[-1])<4:
