@@ -827,7 +827,7 @@ def generating_poem_head(app,prefix,model,config,tokenizer,device,num=20,gpu='0'
             outs = fast_sample_sequence_batch_poemHead(model, contexts, inputs, length=len_sent, nsamples=num, temperature=temperature, top_k=topk,
                                                 repitition_penalty=repetition_penalty, device=device)
             S = [untokenization_poem(out, tokenizer, config) for out in outs]
-            if ii==8:
+            if ii==nb_sents:
                 break
             S = [tmptext for tmptext in S if len(tmptext)>ii * (len_sent+1)]
             if ii % 2 == 0:
