@@ -479,6 +479,8 @@ def generating(app,prefix,model,config,tokenizer,device,config_predict,quick=Fal
     if len(prefix)==0 or len(prefix)>model.config.n_ctx:
         return []
     torch.cuda.set_device(int(gpu))
+    if style=='prose':
+        prefix = prefix[0] + prefix
     prefix0 = prefix
     if config_predict.prefixTrim:
         prefix = sentTriming(prefix0)
@@ -506,10 +508,7 @@ def generating(app,prefix,model,config,tokenizer,device,config_predict,quick=Fal
     repetition_penalty = config['repetition_penalty']
     if length == -1:
         length = model.config.n_ctx
-    if style=='prose':
-        raw_text = prefix[0] + prefix
-    else:
-        raw_text = prefix
+    raw_text = prefix
     context_tokens = tokenizer.convert_tokens_to_ids(tokenizer.tokenize(raw_text))
     t0 = time.time()
     if batchGenerating:
