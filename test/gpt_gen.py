@@ -759,3 +759,102 @@ def generating_poem(app,prefix,model,config,tokenizer,device,config_predict,quic
     S = dropDuplicateContent(S)
     S = S[:nsamples]
     return S
+def fast_sample_sequence_batch_poemHead(model, contexts, inputs,length, nsamples=10,temperature=1.0, top_k=30, repitition_penalty=1.0, device='cpu'):
+    #inputs = torch.LongTensor(context).view(1, -1).to(device)
+    rev_repitition_penalty = 1.0 / repitition_penalty
+    #inputs = [context] * nsamples
+    inputs = torch.tensor(inputs, dtype=torch.long, device=device)
+    _, past = model(inputs[:, :-1], None)[:2]
+    #prev = inputs[:, -1].view(1, -1)
+    prev = inputs[:, -1].view(-1, 1)
+    generate = contexts
+    A0 = []
+    A1 = []
+    for kk in range(len(generate)):
+        for jj in range(len(generate[kk])):
+            A0.append(kk)
+            A1.append(generate[kk][jj])
+    with torch.no_grad():
+        for i in range(length):
+            #now = datetime.now()
+            output = model(prev, past=past)
+            #then = datetime.now()
+            #a.logger.info('for : {}'.format(then - now))
+            output, past = output[:2]
+            #output = output[-1].squeeze(0) / temperature
+            output = output.squeeze(1)
+            output[A0, A1] *= rev_repitition_penalty
+            output /= temperature
+            filtered_logits = top_k_top_p_filtering(output, top_k=top_k, top_p=0)
+            next_token = torch.multinomial(torch.softmax(filtered_logits, dim=-1), num_samples=1)
+            #generate.append(next_token.item())
+            #prev = next_token.view(1, 1)
+            prev = next_token
+            NT_np = next_token.cpu().numpy()
+            for ii in range(nsamples):
+                generate[ii].append(NT_np[ii][0])
+                A0.append(ii)
+                A1.append(NT_np[ii])
+    return generate
+
+def generating_poem_head(app,prefix,model,config,tokenizer,device,num=20,gpu='0'):
+    if len(prefix) == 0 or len(prefix) > model.config.n_ctx:
+        return []
+    if gpu:
+        torch.cuda.set_device(int(gpu))
+        device = "cuda" if torch.cuda.is_available() else "cpu"
+    else:
+        device = 'cpu'
+    nsamples = num
+    temperature = config['temperature']
+    topk = config['topk']
+    repetition_penalty = config['repetition_penalty']
+    punc_mid = '，'
+    punc_end = '。！？'
+    def getpoem(len_sent,nb_sents):
+        #len_sent = 7
+        #nb_sents = 8
+        if len(prefix)<nb_sents:
+            prefix0 = list(prefix)+['']*(nb_sents-len(prefix)+1)
+        else:
+            prefix0 = list(prefix)
+        raw_text = prefix0[0] + prefix0[0]
+        context = tokenizer.convert_tokens_to_ids(tokenizer.tokenize(raw_text))
+        contexts = [[c for c in context]  for _ in range(nsamples)]
+        inputs = [[c for c in context]  for _ in range(nsamples)]
+        num = nsamples
+        for ii in range(1,nb_sents+1):
+            outs = fast_sample_sequence_batch_poemHead(model, contexts, inputs, length=len_sent, nsamples=num, temperature=temperature, top_k=topk,
+                                                repitition_penalty=repetition_penalty, device=device)
+            S = [untokenization_poem(out, tokenizer, config) for out in outs]
+            if ii==8:
+                break
+            S = [tmptext for tmptext in S if len(tmptext)>ii * (len_sent+1)]
+            if ii % 2 == 0:
+                S1 = [tt[:ii * (len_sent+1)+1] for tt in S if tt[ii * (len_sent+1)] in punc_end]
+            else:
+                S1 = [tt[:ii * (len_sent+1)+1] for tt in S if tt[ii * (len_sent+1)] in punc_mid]
+            raw_texts = [s+prefix0[ii] for s in S1]
+            num = len(raw_texts)
+            contexts = [tokenizer.convert_tokens_to_ids(tokenizer.tokenize(raw)) for raw in raw_texts]
+            inputs = contexts
+            if num==0:
+                break
+        R = []
+        for s in S:
+            if s[-1] not in punc_end:
+               t = s + '。'
+            else:
+                t = s
+            poem = poemFilter1(t[1:])
+            if poem:
+                R.append(poem)
+        return R
+    R = []
+    R.extend(getpoem(7, 8))
+    R.extend(getpoem(5, 8))
+    if len(prefix)<=4:
+        R.extend(getpoem(7,4))
+        R.extend(getpoem(5,4))
+    random.shuffle(R)
+    return R

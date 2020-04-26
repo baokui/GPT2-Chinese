@@ -66,7 +66,10 @@ def test2():
         now = datetime.now()
         app.logger.info('time: {}'.format(now))
         t0 = time.time()
-        result = gpt_gen_thread.generating_thread(app, data, model, config, tokenizer, device, ConfigPredict,quick, num0,
+        if data[-3:]=='###':
+            result = gpt_gen.generating_poem_head(app,data,model[0],config[0],tokenizer[0],device[0],num=20,gpu=ConfigPredict[0].gpus)
+        else:
+            result = gpt_gen_thread.generating_thread(app, data, model, config, tokenizer, device, ConfigPredict,quick, num0,
                                                    removeHighFreqWordss=rmHFW, batchGenerating=batchGenerating,tags=tags,
                                                   D_simi=D_simi,D_next=D_next,maxNext=maxNext,maxChoice=10)
         t1 = time.time()
