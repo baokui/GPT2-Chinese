@@ -19,6 +19,7 @@ class config_predict(object):
         self.batchGenerating = True
         self.max_nb_sents=4
         self.gpus = ['5','6','7']
+        self.style = ['poem','prose','gou']
         if len(model_config)==0:
             self.model_configs = ['demo_config/config_poem.json','demo_config/config_godText_small_finetune_merged.json',
                             'demo_config/config_dabaigou.json']

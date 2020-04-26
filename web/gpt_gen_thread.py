@@ -10,7 +10,7 @@ class GPT2_generator_thread (threading.Thread):
     def __init__(self, threadID, name,
                  app,model,prefix,config,tokenizer,device,ConfigPredict,
                  quick,nsamples,removeHighFreqWords,batchGenerating,isPoem=False,tags='',gpu='0',
-                 nnlm=False,D_simi={},D_next={},maxNext=3,maxChoice=10,onlyMax=False):
+                 nnlm=False,D_simi={},D_next={},maxNext=3,maxChoice=10,onlyMax=False,style=''):
         threading.Thread.__init__(self)
         self.threadID = threadID
         self.name = name
@@ -35,6 +35,7 @@ class GPT2_generator_thread (threading.Thread):
         self.maxNext = maxNext
         self.maxChoice = maxChoice
         self.onlyMax = onlyMax
+        self.style = style
     def run(self):
         #print ("开始线程：" + self.name)
         #self.print_time(self.name, self.counter, 5)
@@ -55,7 +56,7 @@ class GPT2_generator_thread (threading.Thread):
         torch.cuda.set_device(int(self.gpu))
         S = generating(app, prefix, model, config, tokenizer, device, ConfigPredict,
                    quick, num, continue_writing = False,removeHighFreqWords=removeHighFreqWords,
-                       batchGenerating=batchGenerating,gpu=self.gpu,onlyMax=self.onlyMax)
+                       batchGenerating=batchGenerating,gpu=self.gpu,onlyMax=self.onlyMax,style=self.style)
         return S
     def generating_poem_th(self,app, model, prefix, config, tokenizer, device, ConfigPredict,
                    quick, num, removeHighFreqWords, batchGenerating):
@@ -80,7 +81,7 @@ def generating_thread(app,prefix, models, configs, tokenizers,devices,ConfigPred
         torch.cuda.set_device(int(gpu))
         thread1 = GPT2_generator_thread(t, "thread-"+str(t), app,models[t],prefix,configs[t],tokenizers[t],
                                         devices[t],ConfigPredict,quick,nums[t],
-                                        removeHighFreqWordss[t],batchGenerating,isPoem,tags[t],gpu=gpu,onlyMax=onlyMax)
+                                        removeHighFreqWordss[t],batchGenerating,isPoem,tags[t],gpu=gpu,onlyMax=onlyMax,style=ConfigPredict.style[t])
         Thread.append(thread1)
     t = nb_thread
     if ConfigPredict.doPredict[t]:
