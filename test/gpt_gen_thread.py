@@ -61,8 +61,8 @@ class GPT2_generator_thread (threading.Thread):
     def generating_poem_th(self,app, model, prefix, config, tokenizer, device, ConfigPredict,
                    quick, num, removeHighFreqWords, batchGenerating):
         torch.cuda.set_device(int(self.gpu))
-        S = generating_poem(app, prefix, model, config, tokenizer, device,
-                   quick, num, batchGenerating,gpu=self.gpu,onlyMax=self.onlyMax,fast_pattern=ConfigPredict.fast_pattern)
+        S = generating_poem(app, prefix, model, config, tokenizer, device,ConfigPredict,
+                   quick, num, batchGenerating=batchGenerating,gpu=self.gpu,onlyMax=self.onlyMax)
         return S
     def generating_nnlm_th(self,D_simi,D_next,ConfigPredict,inputStr,maxNext,maxChoice,num):
         result_nnlm = nnlm_modelpredict(D_simi,D_next,ConfigPredict,inputStr=inputStr,maxNext=maxNext,maxChoice=maxChoice,num=num)
