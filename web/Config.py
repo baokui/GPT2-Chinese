@@ -1,7 +1,6 @@
 # coding=utf-8
 import unicodedata
 class config_predict(object):
-    # 定义构造方法
     def __init__(self,model_config='', doPredict = [1,1,1,1]):  #__init__() 是类的初始化方法；它在类的实例化操作后 会自动调用，不需要手动调用；
         # 设置属性
         self.stopwords = [" ", "　", " ", ",", "，", ".", "。", "、", "!", "！", "?", "？", ";", "；", "~", "～", "·", "·", ".", "…", "-",
