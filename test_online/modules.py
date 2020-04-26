@@ -170,7 +170,7 @@ def remove_duplicate(s0,prefix,stopwords):
     S = []
     S0 = []
     for i in range(len(L)):
-        if L[i] not in S:
+        if L[i] not in S and len(L[i])>1:
             S.append(L[i])
             S0.append(L0[i])
     R = prefix+''.join(S0)

@@ -1,15 +1,14 @@
 # coding=utf-8
 import unicodedata
 class config_predict(object):
-    # 定义构造方法
-    def __init__(self,model_config='', doPredict = [1,1,1,1],gpus = ''):  #__init__() 是类的初始化方法；它在类的实例化操作后 会自动调用，不需要手动调用；
+    def __init__(self,model_config='', doPredict = [1,1,1,1]):  #__init__() 是类的初始化方法；它在类的实例化操作后 会自动调用，不需要手动调用；
         # 设置属性
         self.stopwords = [" ", "　", " ", ",", "，", ".", "。", "、", "!", "！", "?", "？", ";", "；", "~", "～", "·", "·", ".", "…", "-",
              "#_", "—", "+", "=", "'", "\"", "‘", "’", "“", "”", "*", "&", "^", "%", "$", "/", "\\", "@"]
         self.stopwords,self.map_e2z = self.addStopwords()
         self.blackwords = ['自杀','死','火葬','我是你爸爸','我是你妈妈']
         self.specialwords_pre = ['祝福', '祝愿', '预祝']
-        self.specialwords_gen = ['生日','新年','新春','春节','节日','元旦']
+        self.specialwords_gen = ['生日', '新年', '新春', '春节', '节日', '元旦']
         self.singlewords = ['哈','啊','哦','哦','呵','嘿','哎','哼']
         self.removed_words = ['⊙']
         self.punc_end = '.?!。？！》>'
@@ -19,19 +18,17 @@ class config_predict(object):
         self.rate_gen2inp = 1.4
         self.batchGenerating = True
         self.max_nb_sents=4
-        if len(gpus)==0:
-            self.gpus = ['0','1,2,3,4,5','6,7']
-        else:
-            self.gpus = gpus
+        self.gpus = ['5','6','7']
+        self.style = ['poem','prose','gou']
         if len(model_config)==0:
-            self.model_configs = [ 'demo_config/config_poem.json','demo_config/config_godText_large1.json',
+            self.model_configs = ['demo_config/config_poem.json','demo_config/config_godText_small_finetune_merged.json',
                             'demo_config/config_dabaigou.json']
         else:
             if type(model_config)==list:
                 self.model_configs = model_config
             else:
                 self.model_configs = [model_config]
-        self.predict_nums = [8, 4, 8, 5]
+        self.predict_nums = [4, 8, 8, 5]
         self.tags = ['(诗)', '(文)', '(大白狗)', '(句联想)']
         self.doPredict = [t==1 for t in doPredict]
         self.rmHFW = [False, False, True, False]
@@ -41,9 +38,9 @@ class config_predict(object):
         self.prefixTrim = True
         self.useThread = True
         self.fast_pattern = True
-        self.repetition_penalty = [1.2,1.5,1.2]
-        self.temperature = [0.6,0.7,0.5]
-        self.length = [30,64,30]
+        self.repetition_penalty = [1.5,1.2,1.2]
+        self.temperature = [0.7,0.6,0.5]
+        self.length = [64,30,30]
         self.resort = True
     def addStopwords(self):
         punc_zh = "！？｡＂＃＄％＆＇（）＊＋，－／：；＜＝＞＠［＼］＾＿｀｛｜｝～｟｠｢｣､、〃》「」『』【】〔〕〖〗〘〙〚〛〜〝〞〟〰〾〿–—‘’‛“”„‟‧﹏.…"

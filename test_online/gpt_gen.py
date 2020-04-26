@@ -14,7 +14,6 @@ import json
 import random
 from time import strftime, localtime
 import time
-import transformers
 from modules import postprocess,poemFilter1,dropDuplicateContent,_is_chinese_char,sentTriming,findMaxMatch,resort
 print_log = False
 # 打印当前时间
@@ -419,34 +418,21 @@ def generate(n_ctx, model, context, length, tokenizer,is_quick=False, temperatur
         return sample_sequence(model, context, length, n_ctx, tokenizer=tokenizer, temperature=temperature, top_k=top_k,
                                top_p=top_p,
                                repitition_penalty=repitition_penalty, device=device)
-def getModel(path_config,gpu='0',fp16=False):
+def getModel(path_config,gpu='0'):
     print("load model......")
-    if gpu:
-        torch.cuda.set_device(int(gpu))
-        device = "cuda" if torch.cuda.is_available() else "cpu"
-    else:
-        device = 'cpu'
-    print("use device:%s" % device)
+    torch.cuda.set_device(int(gpu))
     #os.environ["CUDA_VISIBLE_DEVICES"] = gpu
     with open(path_config,'r') as f:
         config = json.load(f)
     from tokenizations import tokenization_bert
     tokenizer_path = config['tokenizer_path']
     model_path = config['model_path']
-
-
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    print("use device:%s"%device)
     tokenizer = tokenization_bert.BertTokenizer(vocab_file=tokenizer_path)
     model = GPT2LMHeadModel.from_pretrained(model_path)
     model.to(device)
     model.eval()
-    if fp16:
-        try:
-            from apex import amp
-        except ImportError:
-            raise ImportError("Please install apex from https://www.github.com/nvidia/apex to use fp16 training.")
-        optimizer = transformers.AdamW(model.parameters(), lr=0.1, correct_bias=True)
-        fp16_opt_level = 'O1'
-        model, optimizer = amp.initialize(model, optimizer, opt_level=fp16_opt_level)
     return model,tokenizer,config,device
 def untokenization(out,config,tokenizer,punc,continue_writing):
     text = tokenizer.convert_ids_to_tokens(out)
@@ -487,17 +473,14 @@ def untokenization(out,config,tokenizer,punc,continue_writing):
     tmp.append(tmptext[-1])
     tmptext = ''.join(tmp)
     return tmptext
-def generating(app,prefix,model,config,tokenizer,device,config_predict,quick=False,num=5,continue_writing=False,removeHighFreqWords=False,batchGenerating=False,gpu='0',onlyMax=False,maxNb = 20):
+def generating(app,prefix,model,config,tokenizer,device,config_predict,quick=False,num=5,continue_writing=False,removeHighFreqWords=False,batchGenerating=False,gpu='0',onlyMax=False,maxNb = 20,style=''):
     #print("start:",prefix)
     #os.environ["CUDA_VISIBLE_DEVICES"] = gpu
     if len(prefix)==0 or len(prefix)>model.config.n_ctx:
         return []
-    if gpu:
-        torch.cuda.set_device(int(gpu))
-        device = "cuda" if torch.cuda.is_available() else "cpu"
-    else:
-        device = 'cpu'
-    #print("use device:%s" % device)
+    torch.cuda.set_device(int(gpu))
+    if style=='prose':
+        prefix = prefix[0] + prefix
     prefix0 = prefix
     if config_predict.prefixTrim:
         prefix = sentTriming(prefix0)
@@ -509,10 +492,10 @@ def generating(app,prefix,model,config,tokenizer,device,config_predict,quick=Fal
     fast_pattern = config_predict.fast_pattern
     n_ctx = model.config.n_ctx
     len_prefix = len(prefix)
-    if len_prefix<5:
-        max_genlen = 5*len_prefix
-    elif len_prefix<10:
-        max_genlen = 3*len_prefix
+    if len_prefix < 5:
+        max_genlen = 20
+    elif len_prefix < 10:
+        max_genlen = 25
     else:
         max_genlen = config['length']
     length = min(max_genlen,n_ctx-len_prefix-1)
@@ -574,6 +557,8 @@ def generating(app,prefix,model,config,tokenizer,device,config_predict,quick=Fal
     t2 = time.time()
     #print('text generating and posprocess time:%0.4f and %0.4f' % (t1 - t0,t2-t1))
     S = S[:nsamples]
+    if style == 'prose':
+        S = [r[1:] for r in S]
     return S
 def generating_sentence(prefix,model,config,tokenizer):
     print("start:",prefix,config)
@@ -708,12 +693,7 @@ def untokenization_poem(out,tokenizer,config):
                 break
     return tmptext
 def generating_poem(app,prefix,model,config,tokenizer,device,quick=False,num=5,batchGenerating=False,gpu='0',onlyMax=False,fast_pattern=False):
-    if gpu:
-        torch.cuda.set_device(int(gpu))
-        device = "cuda" if torch.cuda.is_available() else "cpu"
-    else:
-        device = 'cpu'
-    #print("use device:%s" % device)
+    torch.cuda.set_device(int(gpu))
     if len(prefix)>10:
         return []
     #print("start:", prefix)
