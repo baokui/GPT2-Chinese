@@ -7,7 +7,7 @@ class Config(object):
         self.stopwords = [" ", "　", " ", ",", "，", ".", "。", "、", "!", "！", "?", "？", ";", "；", "~", "～", "·", "·", ".", "…", "-",
              "#_", "—", "+", "=", "'", "\"", "‘", "’", "“", "”", "*", "&", "^", "%", "$", "/", "\\", "@"]
         self.stopwords,self.map_e2z = self.addStopwords()
-        self.blackwords = ['自杀','死','火葬']
+        self.blackwords = ['自杀','死','火葬','我是你爸爸','我是你妈妈']
         self.specialwords_pre = ['祝福', '祝愿', '预祝']
         self.specialwords_gen = ['生日','新年','新春','春节','节日','元旦']
         self.singlewords = ['哈','啊','哦','哦','呵','嘿','哎','哼']

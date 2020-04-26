@@ -41,6 +41,8 @@ def postprocess(S,prefix,config_postprocess,specialWordFilter=True,dropPerson=Tr
         if removeEndPunc:
             s0 = remove_endPunc(s0,stopwords,punc_end)
         if len(s0)>min_contenlen:
+            if len(set(s0[len(prefix):]))==1:
+                continue
             if len(prefix)>10 and len(s0) - len(prefix)>5:
                 R.append(s0)
                 continue
