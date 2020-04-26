@@ -473,7 +473,7 @@ def untokenization(out,config,tokenizer,punc,continue_writing):
     tmp.append(tmptext[-1])
     tmptext = ''.join(tmp)
     return tmptext
-def generating(app,prefix,model,config,tokenizer,device,config_predict,quick=False,num=5,continue_writing=False,removeHighFreqWords=False,batchGenerating=False,gpu='0',onlyMax=False,maxNb = 20):
+def generating(app,prefix,model,config,tokenizer,device,config_predict,quick=False,num=5,continue_writing=False,removeHighFreqWords=False,batchGenerating=False,gpu='0',onlyMax=False,maxNb = 20,style=''):
     #print("start:",prefix)
     #os.environ["CUDA_VISIBLE_DEVICES"] = gpu
     if len(prefix)==0 or len(prefix)>model.config.n_ctx:
@@ -506,7 +506,10 @@ def generating(app,prefix,model,config,tokenizer,device,config_predict,quick=Fal
     repetition_penalty = config['repetition_penalty']
     if length == -1:
         length = model.config.n_ctx
-    raw_text = prefix
+    if style=='prose':
+        raw_text = prefix[0] + prefix
+    else:
+        raw_text = prefix
     context_tokens = tokenizer.convert_tokens_to_ids(tokenizer.tokenize(raw_text))
     t0 = time.time()
     if batchGenerating:
@@ -555,6 +558,8 @@ def generating(app,prefix,model,config,tokenizer,device,config_predict,quick=Fal
     t2 = time.time()
     #print('text generating and posprocess time:%0.4f and %0.4f' % (t1 - t0,t2-t1))
     S = S[:nsamples]
+    if style == 'prose':
+        S = [r[1:] for r in S]
     return S
 def generating_sentence(prefix,model,config,tokenizer):
     print("start:",prefix,config)
