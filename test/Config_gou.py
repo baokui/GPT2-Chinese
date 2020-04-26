@@ -7,7 +7,7 @@ class config_predict(Config):
         if gpus:
             self.gpus = gpus
         else:
-            self.gpus = '0'
+            self.gpus = '2'
         if model_config:
             self.model_configs = model_config
         else:
