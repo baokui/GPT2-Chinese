@@ -170,14 +170,15 @@ def remove_duplicate(s0,prefix,stopwords):
     S = []
     S0 = []
     for i in range(len(L)):
-        if L[i] not in S and len(L[i])>1:
+        if L[i] not in S:
             S.append(L[i])
             S0.append(L0[i])
     R = prefix+''.join(S0)
     return R
 def sentCutting(s0,prefix,stopwords,max_nb_sents,punc_end):
-    L, L0 = sent_split(s0[len(prefix):], prefix,stopwords)
-    L0 = L0[:max_nb_sents]
+    A, A0 = sent_split(s0[len(prefix):], prefix,stopwords)
+    L = [A[i] for i in range(len(A)) if len(A[i])>1]
+    L0 = [A0[i] for i in range(len(A)) if len(A[i])>1]
     L = L[:max_nb_sents]
     if len(L)==max_nb_sents:
         if len(L[-1])<4:
