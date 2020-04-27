@@ -831,7 +831,7 @@ def generating_poem_head(app,prefix,model,config,tokenizer,device,num=20,gpu='0'
             S = [untokenization_poem(out, tokenizer, config) for out in outs]
             if ii==nb_sents:
                 break
-            S = [tmptext for tmptext in S if len(tmptext)>ii * (len_sent+1)]
+            S = [tmptext for tmptext in S if len(tmptext)>ii * (len_sent+1)-1]
             if ii % 2 == 0:
                 S1 = [tt[:ii * (len_sent+1)] for tt in S if tt[ii * (len_sent+1)-1] in punc_end]
             else:
