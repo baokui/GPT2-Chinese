@@ -479,8 +479,9 @@ def generating(app,prefix,model,config,tokenizer,device,config_predict,quick=Fal
     if len(prefix)==0 or len(prefix)>model.config.n_ctx:
         return []
     torch.cuda.set_device(int(gpu))
-    if style=='prose':
-        prefix = prefix[0] + prefix
+    prefix = '[MASK]'+prefix
+    #if style=='prose':
+        #prefix = prefix[0] + prefix
     prefix0 = prefix
     if config_predict.prefixTrim:
         prefix = sentTriming(prefix0)
@@ -557,8 +558,8 @@ def generating(app,prefix,model,config,tokenizer,device,config_predict,quick=Fal
     t2 = time.time()
     #print('text generating and posprocess time:%0.4f and %0.4f' % (t1 - t0,t2-t1))
     S = S[:nsamples]
-    if style == 'prose':
-        S = [r[1:] for r in S]
+    #if style == 'prose':
+        #S = [r[1:] for r in S]
     return S
 def generating_sentence(prefix,model,config,tokenizer):
     print("start:",prefix,config)
