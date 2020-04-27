@@ -716,7 +716,8 @@ def generating_poem(app,prefix,model,config,tokenizer,device,config_predict,quic
     repetition_penalty = config['repetition_penalty']
     if length == -1:
         length = model.config.n_ctx
-    raw_text = prefix[0] + prefix
+    #raw_text = prefix[0] + prefix
+    raw_text = '[MASK]' + prefix
     context_tokens = tokenizer.convert_tokens_to_ids(tokenizer.tokenize(raw_text))
     t0 = time.time()
     outs = []
@@ -753,7 +754,7 @@ def generating_poem(app,prefix,model,config,tokenizer,device,config_predict,quic
     S = []
     for out in outs:
         tmptext = untokenization_poem(out, tokenizer, config)
-        poem = poemFilter1(tmptext[1:])
+        poem = poemFilter1(tmptext)
         if poem:
             S.append(poem)
     S = dropDuplicateContent(S)
@@ -818,7 +819,8 @@ def generating_poem_head(app,prefix,model,config,tokenizer,device,num=20,gpu='0'
             prefix0 = list(prefix)+['']*(nb_sents-len(prefix)+1)
         else:
             prefix0 = list(prefix)
-        raw_text = prefix0[0] + prefix0[0]
+        raw_text = '[MASK]' + prefix0[0]
+        #raw_text = prefix0[0] + prefix0[0]
         context = tokenizer.convert_tokens_to_ids(tokenizer.tokenize(raw_text))
         contexts = [[c for c in context]  for _ in range(nsamples)]
         inputs = [[c for c in context]  for _ in range(nsamples)]
@@ -846,7 +848,7 @@ def generating_poem_head(app,prefix,model,config,tokenizer,device,num=20,gpu='0'
                t = s + '。'
             else:
                 t = s
-            poem = poemFilter1(t[1:])
+            poem = poemFilter1(t)
             if poem:
                 R.append(poem)
         return R
