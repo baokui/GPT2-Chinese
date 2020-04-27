@@ -693,6 +693,8 @@ def untokenization_poem(out,tokenizer,config):
 def generating_poem(app,prefix,model,config,tokenizer,device,config_predict,quick=False,num=5,continue_writing=False,removeHighFreqWords=False,batchGenerating=False,gpu='0',onlyMax=False,maxNb = 20):
     if len(prefix)==0 or len(prefix)>model.config.n_ctx:
         return []
+    if sum([_is_chinese_char(c) for c in prefix])<len(prefix)*0.75:
+        return []
     if gpu:
         torch.cuda.set_device(int(gpu))
         device = "cuda" if torch.cuda.is_available() else "cpu"
