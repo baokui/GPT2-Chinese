@@ -478,7 +478,11 @@ def generating(app,prefix,model,config,tokenizer,device,config_predict,quick=Fal
     #os.environ["CUDA_VISIBLE_DEVICES"] = gpu
     if len(prefix)==0 or len(prefix)>model.config.n_ctx:
         return []
-    torch.cuda.set_device(int(gpu))
+    if gpu:
+        torch.cuda.set_device(int(gpu))
+        device = "cuda" if torch.cuda.is_available() else "cpu"
+    else:
+        device = 'cpu'
     #if style=='prose':
         #prefix = prefix[0] + prefix
     prefix0 = prefix
@@ -510,7 +514,6 @@ def generating(app,prefix,model,config,tokenizer,device,config_predict,quick=Fal
         length = model.config.n_ctx
     raw_text = '[MASK]'+prefix
     context_tokens = tokenizer.convert_tokens_to_ids(tokenizer.tokenize(raw_text))
-    t0 = time.time()
     if batchGenerating:
         S = []
         if onlyMax:
@@ -528,11 +531,9 @@ def generating(app,prefix,model,config,tokenizer,device,config_predict,quick=Fal
                                          top_k=topk,
                                          top_p=topp, repitition_penalty=repetition_penalty,
                                          device=device)
-        #print('model predict all time:%0.4f' % (t1 - t0))
         for out in outs:
             tmptext = untokenization(out, config, tokenizer, punc, continue_writing)
             S.append(tmptext)
-        #print('model untokenization time:%0.4f' % (t2 - t1))
     else:
         S = []
         for _ in range(maxNb):
@@ -546,7 +547,6 @@ def generating(app,prefix,model,config,tokenizer,device,config_predict,quick=Fal
             )
             tmptext = untokenization(out,config,tokenizer,punc,continue_writing)
             S.append(tmptext)
-    t1 = time.time()
     if config_predict.prefixTrim:
         S = [prefix0+s[len(prefix):] for s in S]
     S = postprocess(S,prefix0,config_predict,removeHighFreqWords=removeHighFreqWords)
@@ -554,8 +554,6 @@ def generating(app,prefix,model,config,tokenizer,device,config_predict,quick=Fal
     if config_predict.resort:
         if len(S)>0:
             S = resort(prefix0, S, config_predict)
-    t2 = time.time()
-    #print('text generating and posprocess time:%0.4f and %0.4f' % (t1 - t0,t2-t1))
     S = S[:nsamples]
     #if style == 'prose':
         #S = [r[1:] for r in S]
