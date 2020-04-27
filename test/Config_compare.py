@@ -10,7 +10,7 @@ class config_predict0(Config):
         if model_config:
             self.model_configs = model_config
         else:
-            self.model_configs = '../bin/config/config_godText_small_finetune_merged.json'
+            self.model_configs = '../bin/config/config_dabaigou.json'
             #self.model_configs = '../bin/config/config_godText_large1.json'
         self.predict_nums = 5
         self.tags = '(0)'
@@ -30,7 +30,7 @@ class config_predict1(Config):
         if model_config:
             self.model_configs = model_config
         else:
-            self.model_configs = 'demo_config/config_godText_small_finetune_merged_finetuneGodText.json'
+            self.model_configs = 'demo_config/config_dabaigou_small.json'
             #self.model_configs = '../bin/config/config_godText_large1.json'
         self.predict_nums = 5
         self.tags = '(1)'
