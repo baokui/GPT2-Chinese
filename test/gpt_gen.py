@@ -833,10 +833,10 @@ def generating_poem_head(app,prefix,model,config,tokenizer,device,num=20,gpu='0'
                 break
             S = [tmptext for tmptext in S if len(tmptext)>ii * (len_sent+1)]
             if ii % 2 == 0:
-                S1 = [tt[:ii * (len_sent+1)+1] for tt in S if tt[ii * (len_sent+1)] in punc_end]
+                S1 = [tt[:ii * (len_sent+1)] for tt in S if tt[ii * (len_sent+1)-1] in punc_end]
             else:
-                S1 = [tt[:ii * (len_sent+1)+1] for tt in S if tt[ii * (len_sent+1)] in punc_mid]
-            raw_texts = [s+prefix0[ii] for s in S1]
+                S1 = [tt[:ii * (len_sent+1)] for tt in S if tt[ii * (len_sent+1)-1] in punc_mid]
+            raw_texts = ['[MASK]'+s+prefix0[ii] for s in S1]
             num = len(raw_texts)
             contexts = [tokenizer.convert_tokens_to_ids(tokenizer.tokenize(raw)) for raw in raw_texts]
             inputs = contexts
