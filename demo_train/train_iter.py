@@ -49,7 +49,7 @@ def build_files(data_path, tokenized_data_path, num_pieces, full_tokenizer, min_
                 f.write(str(id) + ' ')
     print('finish')
 
-def iterData(path_data,rate=0.0001,padding=True,n_ctx=64,BS=64*300):
+def iterData(path_data,rate=0.001,padding=True,n_ctx=64,BS=64*300):
     files = os.listdir(path_data)
     random.shuffle(files)
     S = []
@@ -207,8 +207,10 @@ def main():
         now = datetime.now()
         print('time: {}'.format(now))
         iter = iterData(path_data=tokenized_data_path)
-        Data = next(iter)
-        while Data!='__STOP__':
+        while True:
+            Data = next(iter)
+            if Data == '__STOP__':
+                break
             piece_num,_,samples = Data
             random.shuffle(samples)
             nb_steps = len(samples) // batch_size
