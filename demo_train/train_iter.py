@@ -49,6 +49,33 @@ def build_files(data_path, tokenized_data_path, num_pieces, full_tokenizer, min_
                 f.write(str(id) + ' ')
     print('finish')
 
+def iterData(path_data,rate=0.01,padding=True,n_ctx=64,BS=10000):
+    files = os.listdir(path_data)
+    random.shuffle(files)
+    S = []
+    for i in range(len(files)):
+        f = open(os.path.join(path_data,files[i]),'r')
+        for line in f:
+            if random.uniform(0,1)>rate:
+                continue
+            tokens = line.split()
+            tokens = [int(token) for token in tokens]
+            if padding:
+                start_point = 0
+            else:
+                start_point = random.randint(0, n_ctx - 1)
+            samples = []
+            while start_point < len(tokens) - n_ctx:
+                samples.append(tokens[start_point: start_point + n_ctx])
+                start_point += n_ctx
+            if start_point < len(tokens):
+                samples.append(tokens[len(tokens) - n_ctx:])
+            S.extend(samples)
+            if len(S)>BS:
+                yield i,len(files),S
+                S = []
+        f.close()
+    yield '__STOP__'
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--device', default='0,1,2,3', type=str, required=False, help='设置使用哪些显卡')
@@ -179,26 +206,12 @@ def main():
         print('epoch {}'.format(epoch + 1))
         now = datetime.now()
         print('time: {}'.format(now))
-        x = np.linspace(0, num_pieces - 1, num_pieces, dtype=np.int32)
-        random.shuffle(x)
-        piece_num = 0
-        for i in x:
-            with open(os.path.join(tokenized_data_path,trainfiles[i]), 'r') as f:
-                line = f.read().strip()
-            tokens = line.split()
-            tokens = [int(token) for token in tokens]
-            if padding:
-                start_point = 0
-            else:
-                start_point = random.randint(0,n_ctx-1)
-            samples = []
-            while start_point < len(tokens) - n_ctx:
-                samples.append(tokens[start_point: start_point + n_ctx])
-                start_point += stride
-            if start_point < len(tokens):
-                samples.append(tokens[len(tokens)-n_ctx:])
+        iter = iterData(path_data=tokenized_data_path)
+        Data = next(iter)
+        while Data!='__STOP__':
+            piece_num,_,samples = Data
             random.shuffle(samples)
-            nb_steps = min(args.max_steps_perEpoch_perPiece,len(samples) // batch_size)
+            nb_steps = len(samples) // batch_size
             for step in range(nb_steps):  # drop last
                 #  prepare data
                 batch = samples[step * batch_size: (step + 1) * batch_size]
