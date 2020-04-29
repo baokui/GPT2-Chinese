@@ -49,7 +49,7 @@ def build_files(data_path, tokenized_data_path, num_pieces, full_tokenizer, min_
                 f.write(str(id) + ' ')
     print('finish')
 
-def iterData(path_data,rate=0.001,padding=True,n_ctx=64,BS=64*300):
+def iterData(path_data,rate=0.0001,padding=True,n_ctx=64,BS=64*300):
     files = os.listdir(path_data)
     random.shuffle(files)
     S = []
