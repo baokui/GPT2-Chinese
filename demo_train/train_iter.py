@@ -221,59 +221,55 @@ def main():
                 for ids in batch:
                     int_ids = [int(x) for x in ids]
                     batch_inputs.append(int_ids)
-                try:
-                    batch_inputs = torch.tensor(batch_inputs).long().to(device)
+                batch_inputs = torch.tensor(batch_inputs).long().to(device)
 
-                    #  forward pass
-                    outputs = model.forward(input_ids=batch_inputs, labels=batch_inputs)
-                    loss, logits = outputs[:2]
+                #  forward pass
+                outputs = model.forward(input_ids=batch_inputs, labels=batch_inputs)
+                loss, logits = outputs[:2]
 
-                    #  get loss
-                    if multi_gpu:
-                        loss = loss.mean()
-                    if gradient_accumulation > 1:
-                        loss = loss / gradient_accumulation
+                #  get loss
+                if multi_gpu:
+                    loss = loss.mean()
+                if gradient_accumulation > 1:
+                    loss = loss / gradient_accumulation
 
-                    #  loss backward
-                    if fp16:
-                        with amp.scale_loss(loss, optimizer) as scaled_loss:
-                            scaled_loss.backward()
-                            torch.nn.utils.clip_grad_norm_(amp.master_params(optimizer), max_grad_norm)
-                    else:
-                        loss.backward()
-                        torch.nn.utils.clip_grad_norm_(model.parameters(), max_grad_norm)
+                #  loss backward
+                if fp16:
+                    with amp.scale_loss(loss, optimizer) as scaled_loss:
+                        scaled_loss.backward()
+                        torch.nn.utils.clip_grad_norm_(amp.master_params(optimizer), max_grad_norm)
+                else:
+                    loss.backward()
+                    torch.nn.utils.clip_grad_norm_(model.parameters(), max_grad_norm)
 
-                    #  optimizer step
-                    if (overall_step + 1) % gradient_accumulation == 0:
-                        running_loss += loss.item()
-                        optimizer.step()
-                        optimizer.zero_grad()
-                        #scheduler.step()
-                    if (overall_step + 1) % log_step == 0:
-                        #tb_writer.add_scalar('loss', loss.item() * gradient_accumulation, overall_step)
-                        print('now time: {}:{}. Step {} (total {}) of piece {} (total {})  of epoch {}, loss {}'.format(
-                            datetime.now().hour,
-                            datetime.now().minute,
-                            step + 1,
-                            nb_steps,
-                            piece_num,
-                            num_pieces,
-                            epoch + 1,
-                            running_loss * gradient_accumulation / (log_step / gradient_accumulation)))
-                        loss_ = running_loss * gradient_accumulation / (log_step / gradient_accumulation)
-                        running_loss = 0
-                    if overall_step%args.steps_savemodel==0:
-                        print('saving model for epoch {}'.format(epoch + 1))
-                        output_dir_ = output_dir + 'model_epoch{}_step{}_loss-{}'.format(epoch + 1, overall_step,'%0.3f'%loss_)
-                        if not os.path.exists(output_dir_):
-                            os.mkdir(output_dir_)
-                        model_to_save = model.module if hasattr(model, 'module') else model
-                        model_to_save.save_pretrained(output_dir_)
-                    overall_step += 1
-                except:
-                    print("TRAIN ERROR:")
-                    print('step:%d'%step)
-                    #print(batch_inputs)
+                #  optimizer step
+                if (overall_step + 1) % gradient_accumulation == 0:
+                    running_loss += loss.item()
+                    optimizer.step()
+                    optimizer.zero_grad()
+                    #scheduler.step()
+                if (overall_step + 1) % log_step == 0:
+                    #tb_writer.add_scalar('loss', loss.item() * gradient_accumulation, overall_step)
+                    print('now time: {}:{}. Step {} (total {}) of piece {} (total {})  of epoch {}, loss {}'.format(
+                        datetime.now().hour,
+                        datetime.now().minute,
+                        step + 1,
+                        nb_steps,
+                        piece_num,
+                        num_pieces,
+                        epoch + 1,
+                        running_loss * gradient_accumulation / (log_step / gradient_accumulation)))
+                    loss_ = running_loss * gradient_accumulation / (log_step / gradient_accumulation)
+                    running_loss = 0
+                if overall_step%args.steps_savemodel==0:
+                    print('saving model for epoch {}'.format(epoch + 1))
+                    output_dir_ = output_dir + 'model_epoch{}_step{}_loss-{}'.format(epoch + 1, overall_step,'%0.3f'%loss_)
+                    if not os.path.exists(output_dir_):
+                        os.mkdir(output_dir_)
+                    model_to_save = model.module if hasattr(model, 'module') else model
+                    model_to_save.save_pretrained(output_dir_)
+                overall_step += 1
+                #print(batch_inputs)
             piece_num += 1
         if not os.path.exists(output_dir + 'model_epoch{}'.format(epoch + 1)):
             os.mkdir(output_dir + 'model_epoch{}'.format(epoch + 1))
