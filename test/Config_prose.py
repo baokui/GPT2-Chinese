@@ -10,7 +10,7 @@ class config_predict(Config):
         if model_config:
             self.model_configs = model_config
         else:
-            self.model_configs = '../bin/config/config_godText_small_finetune_merged.json'
+            self.model_configs = '/search/odin/vpaTextGenerating/bin/config/config_godText_small_finetune_merged.json'
             #self.model_configs = '../bin/config/config_godText_large1.json'
         self.predict_nums = 5
         self.tags = '(文)'

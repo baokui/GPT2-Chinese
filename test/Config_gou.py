@@ -11,7 +11,7 @@ class config_predict(Config):
         if model_config:
             self.model_configs = model_config
         else:
-            self.model_configs = '../bin/config/config_dabaigou.json'
+            self.model_configs = '/search/odin/vpaTextGenerating/bin/config/config_dabaigou.json'
         self.predict_nums = 5
         self.tags = '(大白狗)'
         self.rmHFW = True
