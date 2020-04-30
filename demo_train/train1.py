@@ -1,8 +1,8 @@
 #-- coding:UTF-8 --
 import transformers
-import torch
 import os
-os.environ["CUDA_VISIBLE_DEVICES"] = '7,6,5,4'
+#os.environ["CUDA_VISIBLE_DEVICES"] = '7,6,5,4'
+import torch
 import json
 import random
 import numpy as np

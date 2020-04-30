@@ -14,7 +14,7 @@ class Config(object):
         self.removed_words = ['⊙']
         self.punc_end = '.?!。？！》>'
         self.path_HighFreqWords = '../bin/data/words_highFreq.txt'
-        self.HighFreqWords = self.getHFW()
+        #self.HighFreqWords = self.getHFW()
         self.min_contenlen = 8
         self.rate_gen2inp = 1.4
         self.batchGenerating = True
