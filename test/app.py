@@ -88,9 +88,11 @@ def test2():
                                                             D_simi=D_simi, D_next=D_next, maxNext=maxNext, maxChoice=10)
             result = result_poem + result_other
         else:
-            result = gpt_gen_thread.generating_thread(app, data, model, config, tokenizer, device, ConfigPredict,quick, num0,
-                                                   removeHighFreqWordss=rmHFW, batchGenerating=batchGenerating,tags=tags,
-                                                  D_simi=D_simi,D_next=D_next,maxNext=maxNext,maxChoice=10)
+            L = [0,2,3]
+            model1, config1, tokenizer1, device1, ConfigPredict1 = [model[t] for t in L], [config[t] for t in L], [tokenizer[t] for t in L], [device[t] for t in L],[ConfigPredict[t] for t in L]
+            result = gpt_gen_thread.generating_thread(app, data, model1, config1, tokenizer1, device1, ConfigPredict1,
+                                                      quick, num0,removeHighFreqWordss=rmHFW, batchGenerating=batchGenerating,tags=tags,
+                                                      D_simi=D_simi, D_next=D_next, maxNext=maxNext, maxChoice=10)
         t1 = time.time()
         app.logger.info('used time: {} s'.format('%0.4f'%(t1-t0)))
         then = datetime.now()
