@@ -21,7 +21,7 @@ def generating(prefix,model,config,tokenizer,device,num,gpu):
     return r
 def fun(S,path_config,gpu,nsamples):
     model, tokenizer, config, device = getModel(path_config=path_config,gpu=gpu)
-    path_target = 'data/'
+    path_target = 'data/new.txt'
     if not os.path.exists(path_target):
         os.mkdir(path_target)
     N = 0
@@ -39,7 +39,7 @@ def fun(S,path_config,gpu,nsamples):
             if len(r)==0:
                 continue
             r = [s+'\t'+rr[len(s):] for rr in r]
-            with open(path_target+'/'+s[0]+'.txt','a+') as f:
+            with open(path_target,'a+') as f:
                 f.write('\n'.join(r)+'\n')
             f.close()
 def main(path_source, path_config, idx0, idx1, gpu, nsamples):
