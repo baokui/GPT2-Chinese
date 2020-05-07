@@ -73,27 +73,29 @@ def test2():
         if data[-3:]=='#hd':
             result_poem = gpt_gen.generating_poem_head(app,data[:-3],model[0],config[0],tokenizer[0],device[0],num=10,gpu=ConfigPredict[0].gpus)
             result_poem = [r+ConfigPredict[0].tags for r in result_poem]
-            result_other = gpt_gen_thread.generating_thread(app, data[:-3], model[-2:], config[-2:], tokenizer[-2:], device[-2:], ConfigPredict[-2:],quick, num0,
-                                                   removeHighFreqWordss=rmHFW, batchGenerating=batchGenerating,tags=tags,
+            result_other = gpt_gen_thread.generating_thread(app, data[:-3], model[-2:], config[-2:], tokenizer[-2:], device[-2:], ConfigPredict[-2:],quick, num0[-2:],
+                                                   removeHighFreqWordss=rmHFW[-2:], batchGenerating=batchGenerating,tags=tags[-2:],
                                                   D_simi=D_simi,D_next=D_next,maxNext=maxNext,maxChoice=10)
             result = result_poem+result_other
         elif data[-3:]=='#lv':
             model1, config1, tokenizer1, device1, ConfigPredict1 = model[1:], config[1:], tokenizer[1:], device[1:], ConfigPredict[1:]
-            result = gpt_gen_thread.generating_thread(app, data[:-3], model1, config1, tokenizer1, device1, ConfigPredict1, quick,num0,
-                                                      removeHighFreqWordss=rmHFW, batchGenerating=batchGenerating,tags=tags,
+            num1,rmHFW1,tags1 = num0[1:],rmHFW[1:],tags[1:]
+            result = gpt_gen_thread.generating_thread(app, data[:-3], model1, config1, tokenizer1, device1, ConfigPredict1, quick,num1,
+                                                      removeHighFreqWordss=rmHFW1, batchGenerating=batchGenerating,tags=tags1,
                                                       D_simi=D_simi, D_next=D_next, maxNext=maxNext, maxChoice=10)
         elif data[-5:]=='#hdlv':
             result_poem = gpt_gen.generating_poem_head(app,data[:-5],model[1],config[1],tokenizer[1],device[1],num=10,gpu=ConfigPredict[0].gpus)
             result_poem = [r + ConfigPredict[1].tags for r in result_poem]
-            result_other = gpt_gen_thread.generating_thread(app, data[:-5], model[-2:], config[-2:], tokenizer[-2:],device[-2:], ConfigPredict[-2:], quick, num0,
-                                                            removeHighFreqWordss=rmHFW, batchGenerating=batchGenerating,tags=tags,
+            result_other = gpt_gen_thread.generating_thread(app, data[:-5], model[-2:], config[-2:], tokenizer[-2:],device[-2:], ConfigPredict[-2:], quick, num0[-2:],
+                                                            removeHighFreqWordss=rmHFW[-2:], batchGenerating=batchGenerating,tags=tags[-2:],
                                                             D_simi=D_simi, D_next=D_next, maxNext=maxNext, maxChoice=10)
             result = result_poem + result_other
         else:
             L = [0,2,3]
             model1, config1, tokenizer1, device1, ConfigPredict1 = [model[t] for t in L], [config[t] for t in L], [tokenizer[t] for t in L], [device[t] for t in L],[ConfigPredict[t] for t in L]
-            result = gpt_gen_thread.generating_thread(app, data, model1, config1, tokenizer1, device1, ConfigPredict1,
-                                                      quick, num0,removeHighFreqWordss=rmHFW, batchGenerating=batchGenerating,tags=tags,
+            num1, rmHFW1, tags1 = [num0[t] for t in L], [rmHFW[t] for t in L], [tags[t] for t in L]
+            result = gpt_gen_thread.generating_thread(app, data[:-3], model1, config1, tokenizer1, device1,
+                                                      ConfigPredict1, quick, num1,removeHighFreqWordss=rmHFW1, batchGenerating=batchGenerating,tags=tags1,
                                                       D_simi=D_simi, D_next=D_next, maxNext=maxNext, maxChoice=10)
         t1 = time.time()
         app.logger.info('used time: {} s'.format('%0.4f'%(t1-t0)))
