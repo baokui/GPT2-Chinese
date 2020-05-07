@@ -78,7 +78,7 @@ def test2():
             result = result_poem+result_other
         elif data[-3:]=='#lv':
             model1, config1, tokenizer1, device1, ConfigPredict1 = model[1:], config[1:], tokenizer[1:], device[1:], ConfigPredict[1:]
-            result = gpt_gen_thread.generating_thread(app, data[-3:], model1, config1, tokenizer1, device1, ConfigPredict1, quick,num0,
+            result = gpt_gen_thread.generating_thread(app, data[:-3], model1, config1, tokenizer1, device1, ConfigPredict1, quick,num0,
                                                       removeHighFreqWordss=rmHFW, batchGenerating=batchGenerating,tags=tags,
                                                       D_simi=D_simi, D_next=D_next, maxNext=maxNext, maxChoice=10)
         elif data[-5:]=='#hdlv':
