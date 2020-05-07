@@ -1,8 +1,8 @@
 mkdir log
 mkdir data
-path_source=../data/poetry_small.json
+path_source=/search/odin/user/guobk/vpa-godText/data/poem.new1.json
 nsamples=15
-path_config=../web/demo_config/config_poem.json
+path_config=../bin/config/config_poem.json
 
 
 idx0=0

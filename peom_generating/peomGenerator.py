@@ -3,7 +3,7 @@ import sys
 import os
 import json
 def peomSplit(s):
-    syms = '。，？；！'
+    syms = '。，？；！：；“”、'
     i0 = 0
     i1 = 0
     R = []
@@ -31,7 +31,9 @@ def fun(S,path_config,gpu,nsamples):
             print("proceed {} poem (total {}), get {} prefix and generate {} poems".format(i,len(S),n,N))
         sents = peomSplit(S[i])
         for s in sents:
-            n+=1
+            n += 1
+            if '□' in s:
+                continue
             r = generating(s, model, config, tokenizer, device, nsamples, gpu)
             N+=len(r)
             if len(r)==0:
