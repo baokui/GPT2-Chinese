@@ -22,8 +22,8 @@ def generating(prefix,model,config,tokenizer,device,num,gpu):
 def fun(S,path_config,gpu,nsamples):
     model, tokenizer, config, device = getModel(path_config=path_config,gpu=gpu)
     path_target = 'data/new.txt'
-    if not os.path.exists(path_target):
-        os.mkdir(path_target)
+    #if not os.path.exists(path_target):
+        #os.mkdir(path_target)
     N = 0
     n = 0
     for i in range(len(S)):
