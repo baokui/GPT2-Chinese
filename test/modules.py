@@ -230,7 +230,7 @@ def poemFilter(poem):
     if not flag:
         flag = False
     return flag
-def poemFilter1(poem):
+def poemFilter1(poem,prefix='',blackwords=[]):
     syms = '。？；！，'
     sents = []
     i0 = 0
@@ -252,7 +252,9 @@ def poemFilter1(poem):
             R.append(sents[2*i])
             R.append(sents[2*i+1])
     if len(R)>2 and len(R[0])>3:
-        return ''.join(R)
+        s = ''.join(R)
+        s = drop_blackwords(s,prefix,blackwords)
+        return s
     else:
         return ''
 def dropDuplicateContent(S0):

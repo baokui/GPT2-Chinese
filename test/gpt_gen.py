@@ -754,7 +754,7 @@ def generating_poem(app,prefix,model,config,tokenizer,device,config_predict,quic
     S = []
     for out in outs:
         tmptext = untokenization_poem(out, tokenizer, config)
-        poem = poemFilter1(tmptext)
+        poem = poemFilter1(tmptext,prefix,config_predict.blackwords)
         if poem:
             S.append(poem)
     S = dropDuplicateContent(S)
@@ -798,7 +798,7 @@ def fast_sample_sequence_batch_poemHead(model, contexts, inputs,length, nsamples
                 A1.append(NT_np[ii])
     return generate
 
-def generating_poem_head(app,prefix,model,config,tokenizer,device,num=20,gpu='0'):
+def generating_poem_head(app,prefix,model,config,tokenizer,device,config_predict,num=20,gpu='0'):
     if len(prefix) == 0 or len(prefix) > model.config.n_ctx:
         return []
     if gpu:
@@ -848,7 +848,7 @@ def generating_poem_head(app,prefix,model,config,tokenizer,device,num=20,gpu='0'
                t = s + '。'
             else:
                 t = s
-            poem = poemFilter1(t)
+            poem = poemFilter1(t,prefix,config_predict.blackwords)
             if poem:
                 R.append(poem)
         return R
