@@ -58,7 +58,9 @@ def iterData(path_data,rate=0.001,padding=True,n_ctx=64,BS=64*300):
         for line in f:
             if random.uniform(0,1)>rate:
                 continue
-            tokens = line.split()
+            tokens = line.strip().split()
+            tokens = tokens[tokens.index('4'):]
+            tokens = tokens[:int(len(tokens)/n_ctx)*n_ctx]
             tokens = [int(token) for token in tokens]
             if padding:
                 start_point = 0
