@@ -46,14 +46,14 @@ class config_predict2(Config):
         super().__init__()
         if gpus:
             self.gpus = gpus
-        else:self.gpus = '0'
+        else:self.gpus = '2'
         if model_config:
             self.model_configs = model_config
         else:
             self.model_configs = 'demo_config/config_godText_small_finetune_merged_finetuneGodText.json'
             #self.model_configs = '../bin/config/config_godText_large1.json'
         self.predict_nums = 5
-        self.tags = '(文)'
+        self.tags = '(2)'
         self.rmHFW = False
         self.repetition_penalty = 1.2
         self.temperature = 0.6
