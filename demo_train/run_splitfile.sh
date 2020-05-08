@@ -11,6 +11,6 @@ do
 echo $i-$j
 pathsource=$path_source0${L0[$i]}${L1[$i]}${H[$j]}.txt
 pathtarget=$path_target0${L0[$i]}${L1[$i]}${H[$j]}.txt
-split -b 100m $pathtarget data_vpa_dialogue1/$pathtarget
+split -b 100m $pathtarget data_vpa_dialogue1/${L0[$i]}${L1[$i]}${H[$j]} &
 done
 done
