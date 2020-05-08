@@ -1,0 +1,1 @@
+nohup python -u dataReline.py >> log/datareline.log 2>&1 &
