@@ -8,6 +8,7 @@ for((i=0;i<6;i++))
 do
 for((j=0;j<24;j++))
 do
+echo $i-$j
 pathsource=$path_source0${L0[$i]}${L1[$i]}${H[$j]}.txt
 pathtarget=$path_target0${L0[$i]}${L1[$i]}${H[$j]}.txt
 split -b 100m $pathtarget data_vpa_dialogue1/$pathtarget
