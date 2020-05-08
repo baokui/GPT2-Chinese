@@ -10,9 +10,11 @@ do
 pathsource=$path_source0${L0[$i]}${L1[$i]}${H[$j]}.txt
 pathtarget=$path_target0${L0[$i]}${L1[$i]}${H[$j]}.txt
 nohup python -u vpalog_dialogue.py $pathsource $pathtarget >> log/vpalog_d-${L0[$i]}${L1[$i]}${H[$j]}.log 2>&1 &
+echo $pathsource
 done
 j=23
 pathsource=$path_source0${L0[$i]}${L1[$i]}${H[$j]}.txt
 pathtarget=$path_target0${L0[$i]}${L1[$i]}${H[$j]}.txt
 nohup python -u vpalog_dialogue.py $pathsource $pathtarget >> log/vpalog_d-${L0[$i]}${L1[$i]}${H[$j]}.log 2>&1
+echo $pathsource
 done
