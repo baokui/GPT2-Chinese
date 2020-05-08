@@ -233,7 +233,7 @@ def main():
         print('epoch {}'.format(epoch + 1))
         now = datetime.now()
         print('time: {}'.format(now))
-        iter = iterData1(path_data=tokenized_data_path)
+        iter = iterData(path_data=tokenized_data_path)
         while True:
             Data = next(iter)
             if Data == '__STOP__':
