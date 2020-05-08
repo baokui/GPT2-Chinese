@@ -14,13 +14,13 @@ def fun(path_source,path_target,n_ctx=64,n=100):
     S = '\n'.join(T)
     with open(path_target,'w') as f:
         f.write(S)
-def main(path_source0):
+def main(path_source0,path_target0):
     files = os.listdir(path_source0)
     for i in range(len(files)):
         path_source = os.path.join(path_source0,files[i])
-        path_target = path_source
+        path_target = os.path.join(path_target0,files[i])
         fun(path_source, path_target)
         print('proceed-{}(total {})'.format(i,len(files)))
 if __name__=='__main__':
-    main('data_vpa_dialogue1')
+    main('data_vpa_dialogue1','data_vpa_dialogue2')
 
