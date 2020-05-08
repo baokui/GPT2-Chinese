@@ -78,6 +78,31 @@ def iterData(path_data,rate=0.001,padding=True,n_ctx=64,BS=64*300):
                 S = []
         f.close()
     yield '__STOP__'
+def iterData1(path_data,rate=0.001,padding=True,n_ctx=64,BS=64*300):
+    files = os.listdir(path_data)
+    random.shuffle(files)
+    S = []
+    for i in range(len(files)):
+        f = open(os.path.join(path_data,files[i]),'r')
+        for line in f:
+            tokens = line.strip().split()
+            tokens = tokens[tokens.index('4'):]
+            tokens = tokens[:int(len(tokens)/n_ctx)*n_ctx]
+            tokens = [int(token) for token in tokens]
+            if padding:
+                start_point = 0
+            else:
+                start_point = random.randint(0, n_ctx - 1)
+            samples = []
+            while start_point < len(tokens) - n_ctx:
+                if random.uniform(0, 1) < rate:
+                    samples.append(tokens[start_point: start_point + n_ctx])
+                start_point += n_ctx
+            S.extend(samples)
+        yield i,len(files),S
+        S = []
+        f.close()
+    yield '__STOP__'
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--device', default='0,1,2,3', type=str, required=False, help='设置使用哪些显卡')
@@ -208,7 +233,7 @@ def main():
         print('epoch {}'.format(epoch + 1))
         now = datetime.now()
         print('time: {}'.format(now))
-        iter = iterData(path_data=tokenized_data_path)
+        iter = iterData1(path_data=tokenized_data_path)
         while True:
             Data = next(iter)
             if Data == '__STOP__':
