@@ -35,7 +35,11 @@ def build_files(full_tokenizer,path_source,path_target,padding,n_ctx=64,min_leng
         nb_lines += 1
         if len(line)<min_length:
             continue
-        subline = full_tokenizer.convert_tokens_to_ids(list(line))
+        tmpText = list(line)
+        for ii in range(len(tmpText)):
+            if tmpText[ii]=='\n':
+                tmpText[ii] = '[SEP]'
+        subline = full_tokenizer.convert_tokens_to_ids(tmpText)
         if padding:
             tmp,line = token_pad(line,full_tokenizer,subline,n_ctx)
             full_line.extend(tmp)
