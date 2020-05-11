@@ -94,7 +94,7 @@ def test2():
             L = [0,2,3]
             model1, config1, tokenizer1, device1, ConfigPredict1 = [model[t] for t in L], [config[t] for t in L], [tokenizer[t] for t in L], [device[t] for t in L],[ConfigPredict[t] for t in L]
             num1, rmHFW1, tags1 = [num0[t] for t in L], [rmHFW[t] for t in L], [tags[t] for t in L]
-            result = gpt_gen_thread.generating_thread(app, data[:-3], model1, config1, tokenizer1, device1,
+            result = gpt_gen_thread.generating_thread(app, data, model1, config1, tokenizer1, device1,
                                                       ConfigPredict1, quick, num1,removeHighFreqWordss=rmHFW1, batchGenerating=batchGenerating,tags=tags1,
                                                       D_simi=D_simi, D_next=D_next, maxNext=maxNext, maxChoice=10)
         t1 = time.time()

@@ -32,7 +32,7 @@ class config_predict_prosepoem(Config):
         if model_config:
             self.model_configs = model_config
         else:
-            self.model_configs = 'demo_config/config_prosepoem_pre.json'
+            self.model_configs = 'demo_config/config_prosepoem_godTextFinetune.json'
             #self.model_configs = '../bin/config/config_godText_large1.json'
         self.predict_nums = 5
         self.tags = ''
