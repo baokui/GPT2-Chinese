@@ -120,7 +120,7 @@ def fun(S,path_config,gpu,nsamples,model, tokenizer, config, device,configpredic
 def main(path_source, path_config, idx0, idx1, gpu, nsamples):
     model, tokenizer, config, device = getModel(path_config=path_config, gpu=gpu)
     from Config import config_predict
-    config_predict = config_predict()
+    configpredict = config_predict()
     with open(path_source, 'r') as f:
         data = json.load(f)
     S0 = data[idx0:idx1]
