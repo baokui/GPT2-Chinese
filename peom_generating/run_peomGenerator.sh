@@ -8,7 +8,7 @@ path_config=../bin/config/config_poem.json
 idx0=0
 idx1=1300
 gpu=0
-nohup python -u peomGenerator.py $path_source $path_config $idx0 $idx1 $gpu $nsamples >> ./log/poemGen-$idx0-$idx1.log 2>&1 &
+nohup python -u peom_white_generate.py $path_source $path_config $idx0 $idx1 $gpu $nsamples >> ./log/poemGen-$idx0-$idx1.log 2>&1 &
 
 idx0=1000
 idx1=2000

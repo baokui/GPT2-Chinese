@@ -675,17 +675,25 @@ def untokenization_poem(out,tokenizer,config):
             if len(tmptext) >= config["min_length"]:
                 break
     return tmptext
-def generating_poem(app,prefix,model,config,tokenizer,device,quick=False,num=5,batchGenerating=False,gpu='0',onlyMax=False,fast_pattern=False):
-    torch.cuda.set_device(int(gpu))
-    if len(prefix)>7:
+def generating_poem(app,prefix,model,config,tokenizer,device,config_predict,quick=False,num=5,continue_writing=False,removeHighFreqWords=False,batchGenerating=False,gpu='0',onlyMax=False,maxNb = 20):
+    if len(prefix)==0 or len(prefix)>model.config.n_ctx:
         return []
-    #print("start:", prefix)
+    if sum([_is_chinese_char(c) for c in prefix])<len(prefix)*0.75:
+        return []
+    if gpu:
+        torch.cuda.set_device(int(gpu))
+        device = "cuda" if torch.cuda.is_available() else "cpu"
+    else:
+        device = 'cpu'
+    punc = '.,?!;\t 。，？！；'
     global a
     a = app
+    fast_pattern = config_predict.fast_pattern
     n_ctx = model.config.n_ctx
     length = config['length']
     nsamples = num
-    batch_size = config['batch_size']
+    #maxNb = max(nsamples,maxNb)
+    maxNb = nsamples
     temperature = config['temperature']
     topk = config['topk']
     topp = config['topp']
@@ -693,44 +701,47 @@ def generating_poem(app,prefix,model,config,tokenizer,device,quick=False,num=5,b
     repetition_penalty = config['repetition_penalty']
     if length == -1:
         length = model.config.n_ctx
-    #print('generating-begin for %s'%prefix)
-    raw_text = prefix[0]+prefix
+    #raw_text = prefix[0] + prefix
+    raw_text = '[MASK]' + prefix
     context_tokens = tokenizer.convert_tokens_to_ids(tokenizer.tokenize(raw_text))
+    t0 = time.time()
+    outs = []
     if batchGenerating:
+        S = []
         if onlyMax:
             outs = sample_sequence_batch_max(model, context_tokens, length, n_ctx, tokenizer, nsamples=2,
-                                              temperature=temperature, top_k=topk,
+                                              temperature=temperature,
+                                              top_k=topk,
                                               top_p=topp, repitition_penalty=repetition_penalty,
                                               device=device)
         else:
             if fast_pattern:
-                outs = fast_sample_sequence_batch(model, context_tokens, length, nsamples=nsamples,
-                                                  temperature=temperature, top_k=topk,
-                                                  repitition_penalty=repetition_penalty, device=device)
+                outs = fast_sample_sequence_batch(model, context_tokens, length, nsamples=maxNb,
+                                           temperature=temperature, top_k=topk, repitition_penalty=repetition_penalty,device=device)
             else:
-                outs = sample_sequence_batch_opti(model, context_tokens, length, n_ctx, tokenizer, nsamples, temperature=temperature, top_k=topk,
-                                  top_p=topp, repitition_penalty=repetition_penalty,
-                                  device=device)
-        S = []
-        for out in outs:
-            tmptext = untokenization_poem(out, tokenizer, config)
-            poem = poemFilter1(tmptext[1:])
-            if poem:
-                S.append(poem)
+                outs = sample_sequence_batch_opti(model, context_tokens, length, n_ctx, tokenizer, maxNb, temperature=temperature,
+                                         top_k=topk,
+                                         top_p=topp, repitition_penalty=repetition_penalty,
+                                         device=device)
     else:
         S = []
-        for _ in range(nsamples):
+        for _ in range(maxNb):
             out = generate(
                 n_ctx=n_ctx,
                 model=model,
                 context=context_tokens,
                 length=length,
-                is_fast_pattern=fast_pattern, tokenizer=tokenizer,
+                is_fast_pattern=fast_pattern, tokenizer=tokenizer,is_quick=quick_pattern,
                 temperature=temperature, top_k=topk, top_p=topp, repitition_penalty=repetition_penalty, device=device
             )
-            tmptext = untokenization_poem(out, tokenizer, config)
-            poem = poemFilter1(tmptext[1:])
-            if poem:
-                S.append(poem)
+            tmptext = untokenization(out,config,tokenizer,punc,continue_writing)
+            S.append(tmptext)
+    S = []
+    for out in outs:
+        tmptext = untokenization_poem(out, tokenizer, config)
+        poem = poemFilter1(tmptext,prefix,config_predict.blackwords)
+        if poem:
+            S.append(poem)
     S = dropDuplicateContent(S)
+    S = S[:nsamples]
     return S
