@@ -79,20 +79,61 @@ def generating(prefix,model,config,tokenizer,config_predict,max_genlen = 1000,qu
     if config_predict.prefixTrim:
         S = [prefix0+s[len(prefix):] for s in S]
     return S
+def poemFilter_prose(t,maxlen=12,minlen=2,minlines=6,maxlines=12,maxlen_smallSents=4,rate_smallSents=1/4):
+    punc_end = '，。！？?；'
+    t = t.strip()
+    s = ''
+    for i in range(1,len(t)):
+        if t[i] == '\n':
+            if t[i-1] not in punc_end:
+                s += t[i-1]
+        else:
+            s += t[i-1]
+    s+=t[-1]
+    s = s.split('\n')
+    s = [tt.strip() for tt in s]
+    S = []
+    n = int(1/rate_smallSents)-1
+    S.append(s[0])
+    ii = 0
+    for i in range(1,len(s)):
+        ss = s[i]
+        if len(ss)<=maxlen and len(ss)>=minlen:
+            if len(ss)<=maxlen_smallSents:
+                if ii>=n:
+                    S.append(ss)
+                    ii=0
+            else:
+                S.append(ss)
+                ii+=1
+    S = S[:maxlines]
+    while True:
+        if len(S)==0:
+            break
+        if len(S[-1])>maxlen_smallSents:
+            break
+        S = S[:-1]
+    if len(S)<minlines:
+        return ''
+    return '\n'.join(S)
 def main(path_source,path_target):
+    import os
     config_predict = config_predict_prosepoem()
     model,tokenizer,config,device = getModel(config_predict.model_configs, gpu=config_predict.gpus)
     with open(path_source,'r') as f:
         Data = f.read().strip().split('\n')
     num = 10
     max_genlen = 1024
-    S = []
     for data in Data:
         T = generating(data,model,config,tokenizer,config_predict,num=num,max_genlen=max_genlen)
-        T = [data+'--\n'+t+'\n' for t in T]
-        S.extend(T)
-        with open(path_target,'w') as f:
-            f.write('\n'.join(S))
+        S = []
+        for t in T:
+            tmp = poemFilter_prose(t)
+            if tmp:
+                S.append(tmp)
+        T = [data+'-------\n'+t+'\n' for t in S]
+        with open(os.path.join(path_target,data+'.txt'),'w') as f:
+            f.write('##################################\n'+'\n'.join(T))
 if __name__=='__main__':
     path_source, path_target = sys.argv[1:3]
     main(path_source,path_target)
