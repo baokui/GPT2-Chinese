@@ -15,6 +15,8 @@ def peomSplit(s):
             i1 = i1+1
         else:
             i1 = i1+1
+    if i1>i0:
+        R.append(s[i0:i1])
     return R
 def generating(prefix,model,config,tokenizer,device,num,gpu):
     r = generating_poem(0,prefix,model,config,tokenizer,device,quick=False,num=num,batchGenerating=True,gpu=gpu,fast_pattern=True)

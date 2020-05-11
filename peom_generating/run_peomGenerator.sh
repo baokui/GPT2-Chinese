@@ -1,6 +1,6 @@
 mkdir log
 mkdir data
-path_source=/search/odin/user/guobk/vpa-godText/data/诗词6600 5.7-3(1).json
+path_source=data/poem_new_white.json
 nsamples=15
 path_config=../bin/config/config_poem.json
 
