@@ -137,6 +137,12 @@ def poemFilter_prose(t,maxlen=12,minlen=2,minlines=6,maxlines=12,maxlen_smallSen
         S = S[:-1]
     if len(S)<minlines:
         return ''
+    L = ['(', '<', '{', '[', '‘', '“', '《', '［', '（', '【','"']
+    R = [')', '>', '}', ']', '’', '”', '》', '］', '）', '】','"']
+    sym = '"“”\''
+    for i in range(len(S)):
+        for j in range(len(sym)):
+            S[i] = S[i].replace(sym[j],'')
     return '\n'.join(S)
 def main(path_source,path_target):
     import os
