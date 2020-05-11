@@ -11,7 +11,7 @@ class config_predict(object):
         self.singlewords = ['哈','啊','哦','哦','呵','嘿','哎','哼']
         self.removed_words = ['⊙']
         self.punc_end = '.?!。？！'
-        self.path_HighFreqWords = '../data/words_highFreq.txt'
+        self.path_HighFreqWords = '../bin/data/words_highFreq.txt'
         self.HighFreqWords = self.getHFW()
         self.min_contenlen = 8
         self.rate_gen2inp = 1.4
