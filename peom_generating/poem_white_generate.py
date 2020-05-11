@@ -93,7 +93,7 @@ def fun(S,path_config,gpu,nsamples):
             N+=len(r)
             if len(r)==0:
                 continue
-            r = [s+'\t'+rr[len(s):] for rr in r]
+            #r = [s+rr[len(s):] for rr in r]
             with open(path_target,'a+') as f:
                 f.write('\n'.join(r)+'\n')
             f.close()

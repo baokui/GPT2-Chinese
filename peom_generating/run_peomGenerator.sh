@@ -1,7 +1,7 @@
 mkdir log
 mkdir data
 path_source=data/poem_new_white.json
-nsamples=15
+nsamples=20
 path_config=../bin/config/config_poem.json
 
 
