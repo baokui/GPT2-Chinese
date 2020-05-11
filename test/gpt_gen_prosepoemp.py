@@ -153,9 +153,9 @@ def main(path_source,path_target):
             tmp = poemFilter_prose(t)
             if tmp:
                 S.append(tmp)
-        T = [data+'-------\n'+t+'\n' for t in S]
+        T = ['###############'+data+'-------\n'+t+'\n' for t in S]
         with open(os.path.join(path_target,data+'.txt'),'w') as f:
-            f.write('##################################\n'+'\n'.join(T))
+            f.write('\n'.join(T))
 if __name__=='__main__':
     path_source, path_target = sys.argv[1:3]
     main(path_source,path_target)
