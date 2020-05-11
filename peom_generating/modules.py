@@ -1,4 +1,5 @@
-def postprocess(S,prefix,config_postprocess,dropPerson=True,maxNbSents=True,removeEndPunc=True,removeWords = True, removeSingleWord=True,transfer = True,sentEndcontent=True,removeDupulicate=True,dropSpecial=True,removeHighFreqWords=False):
+import numpy as np
+def postprocess(S,prefix,config_postprocess,specialWordFilter=True,dropPerson=True,maxNbSents=True,removeEndPunc=True,removeWords = True, removeSingleWord=True,transfer = True,sentEndcontent=True,removeDupulicate=True,dropSpecial=True,removeHighFreqWords=False,removeIncompletePunc=True):
     stopwords = config_postprocess.stopwords
     map_e2z = config_postprocess.map_e2z
     blackwords = config_postprocess.blackwords
@@ -9,8 +10,13 @@ def postprocess(S,prefix,config_postprocess,dropPerson=True,maxNbSents=True,remo
     min_contenlen = config_postprocess.min_contenlen
     r = config_postprocess.rate_gen2inp
     max_nb_sents=config_postprocess.max_nb_sents
+    specialwords_pre = config_postprocess.specialwords_pre
+    specialwords_gen = config_postprocess.specialwords_gen
     R = []
     for s0 in S:
+        if specialWordFilter:
+            if not hasSpectialWords(s0,prefix,specialwords_pre,specialwords_gen):
+                continue
         if removeWords:
             s0 = removewords(s0,removed_words)
         if transfer:
@@ -27,11 +33,16 @@ def postprocess(S,prefix,config_postprocess,dropPerson=True,maxNbSents=True,remo
             s0 = drop_blackwords(s0,prefix,blackwords = blackwords)
         if dropPerson:
             s0 = drop_person(s0,prefix)
+        if maxNbSents:
+            s0 = sentCutting(s0,prefix,stopwords,max_nb_sents,punc_end)
         if removeEndPunc:
             s0 = remove_endPunc(s0,stopwords,punc_end)
-        if maxNbSents:
-            s0 = sentCutting(s0,prefix,stopwords,max_nb_sents)
+        if removeIncompletePunc:
+            if not hasCompletePunc(s0[len(prefix):]):
+                continue
         if len(s0)>min_contenlen:
+            if len(set(s0[len(prefix):]))==1:
+                continue
             if len(prefix)>10 and len(s0) - len(prefix)>5:
                 R.append(s0)
                 continue
@@ -41,16 +52,53 @@ def postprocess(S,prefix,config_postprocess,dropPerson=True,maxNbSents=True,remo
             if len(prefix)<=7 and len(s0) - len(prefix) > r*len(prefix):
                 R.append(s0)
     return R
+def hasSpectialWords(s0,prefix,specialwords_pre,specialwords_gen):
+    for t in specialwords_pre:
+        if t in prefix:
+            return True#可以包含特殊词汇
+    s1 = s0[len(prefix):]
+    for t in specialwords_gen:
+        if t in s1:
+            return False#句首没有特殊词汇，那么生成文本不能包含特殊词汇
+    return True
 def removewords(s0,removed_words):
     sn = s0
     for t in removed_words:
         sn = sn.replace(t,'')
     return sn
+def hasCompletePunc(s):
+    L = ['(', '<', '{', '[', '‘', '“', '《', '［', '（', '【']
+    R = [')', '>', '}', ']', '’', '”', '》', '］', '）', '】']
+    D = {k:0 for k in L}
+    Flag = True
+    for i in range(len(s)):
+        if s[i] in L:
+            D[s[i]] += 1
+            continue
+        if s[i] in R:
+            idx = R.index(s[i])
+            if D[L[idx]]==0:
+                Flag = False
+                break
+            D[L[idx]]-=1
+    for d in D:
+        if D[d]!=0:
+            Flag = False
+    if Flag:
+        n0 = s.count('\'')
+        if n0%2==0:
+            n1 = s.count('"')
+            if n1%2!=0:
+                Flag=False
+        else:
+            Flag = False
+    return Flag
 def remove_endPunc(tmptext,stopwords,punc_end):
     if len(tmptext)==0:
         return tmptext
     if tmptext[-1] in stopwords and tmptext[-1] not in punc_end:
         tmptext = tmptext[:-1]
+        tmptext = tmptext+'。'
     return tmptext
 def Transfer(s0,map_e2z):
     s0 = strQ2B(s0)
@@ -127,12 +175,17 @@ def remove_duplicate(s0,prefix,stopwords):
             S0.append(L0[i])
     R = prefix+''.join(S0)
     return R
-def sentCutting(s0,prefix,stopwords,max_nb_sents):
-    L, L0 = sent_split(s0[len(prefix):], prefix,stopwords)
+def sentCutting(s0,prefix,stopwords,max_nb_sents,punc_end):
+    A, A0 = sent_split(s0[len(prefix):], prefix,stopwords)
+    L = [A[i] for i in range(len(A)) if len(A[i])>1]
+    L0 = [A0[i] for i in range(len(A)) if len(A[i])>1]
     L0 = L0[:max_nb_sents]
     L = L[:max_nb_sents]
     if len(L)==max_nb_sents:
         if len(L[-1])<4:
+            L0 = L0[:-1]
+    if len(s0)>5*len(prefix):
+        if len(L0)>0 and len(s0)-len(L0[-1])>4*len(prefix) and L0[-1][-1] not in punc_end:
             L0 = L0[:-1]
     R = prefix + ''.join(L0)
     return R
@@ -177,8 +230,8 @@ def poemFilter(poem):
     if not flag:
         flag = False
     return flag
-def poemFilter1(poem):
-    syms = '。？；'
+def poemFilter1(poem,prefix='',blackwords=[]):
+    syms = '。？；！，'
     sents = []
     i0 = 0
     i1 = 0
@@ -189,12 +242,19 @@ def poemFilter1(poem):
             i1 = i1+1
         else:
             i1 = i1+1
+    if len(sents)<2:
+        return ''
     R = []
-    for i in range(len(sents)):
-        if len(sents[i])==len(sents[0]):
-            R.append(sents[i])
-    if len(R)>1:
-        return ''.join(R)
+    R.append(sents[0])
+    R.append(sents[1])
+    for i in range(1,int(len(sents)/2)):
+        if len(sents[2*i])==len(sents[0]) and len(sents[2*i+1])==len(sents[1]):
+            R.append(sents[2*i])
+            R.append(sents[2*i+1])
+    if len(R)>2 and len(R[0])>3:
+        s = ''.join(R)
+        s = drop_blackwords(s,prefix,blackwords)
+        return s
     else:
         return ''
 def dropDuplicateContent(S0):
@@ -234,6 +294,8 @@ def sentTriming(s0='@Charon 你打的咋样'):
     for t in tmp:
         if not _is_chinese_char(t):
             s = s.replace(t,'')
+    if len(s)>5:
+        s = s[-5:]
     return s
 def findMaxMatch(inputStr,D_simi,D_next,config_predict):
     punc = ''
@@ -260,3 +322,97 @@ def findMaxMatch(inputStr,D_simi,D_next,config_predict):
             prefix = s
         i -= 1
     return prefix,punc
+def resort(prefix,S,config,useNumSents=True,useSentLen=True,useNumLessChar=True,useMaxMinLen=False,useStdSentLen=True):
+    Score = []
+    stopwords = config.stopwords
+    W = [1000,100,10,1]
+    len_prefix = len(prefix)
+    for sent in S:
+        score = []
+        sents,sents0 = sent_split(sent,prefix,stopwords)
+        if useNumSents:
+            nb = len(sents)
+            t = 0
+            if nb==3:
+                t = 1
+            if nb==4:
+                t = 0.5
+            score.append(t)
+        if useSentLen:
+            t = 0
+            len_sent = len(sent)
+            if len(prefix)<10:
+                if len_sent > len_prefix*2.5 and len_sent < len_prefix*3.5:
+                    t = 1
+                elif len_sent < len_prefix*1.5 or len_sent > len_prefix*5:
+                    t = -1
+            else:
+                if len_sent > len_prefix*1.5 and len_sent < len_prefix*2.5:
+                    t = 1
+                elif len_sent < len_prefix*0.5 or len_sent > len_prefix*3:
+                    t = -1
+            score.append(t)
+        if useNumLessChar:
+            n = len([t for t in sents if len(t)<=3])
+            t = 0
+            if n>2:
+                t = -1
+            if n==2:
+                t = -0.7
+            if n==1:
+                t = -0.5
+            score.append(t)
+        if useMaxMinLen:
+            p = [len(t) for t in sents]
+            a = (max(p)-min(p))/max(p)
+            score.append(-a)
+        if useStdSentLen:
+            t = -3
+            a = [len(k) for k in sents]
+            if len(a)>2:
+                t = -np.std(a,ddof=1)
+            if len(a)==2:
+                t = -2
+            score.append(t)
+        Score.append(score)
+    Score = np.array(Score)
+    Max = np.max(Score,axis=0)
+    Min = np.min(Score,axis=0)
+    eps = 1e-5
+    Score = (Score-Min)/(Max-Min+eps)
+    Score = np.sum(Score,axis=-1)
+    R = [(S[i],Score[i]) for i in range(len(S))]
+    R = sorted(R,key=lambda x:-x[-1])
+    R = [r[0] for r in R]
+    return R
+def demo_resort():
+    path_data = 'data/test_text.txt'
+    path_source = 'result/test_text.json'
+    path_target = 'result/test_text-resort.json'
+    from Config import config_predict
+    import json
+    config = config_predict()
+    with open(path_data,'r') as f:
+        Data = f.read().strip().split('\n')
+    with open(path_source,'r') as f:
+        S = json.load(f)
+    D = []
+    for i in range(len(Data)):
+        prefix = Data[i]
+        outputs = S[i]['result']
+        s1 = [s[:-3] for s in outputs if '(文)' in s]
+        s2 = [s[:-5] for s in outputs if '(大白狗)' in s]
+        if len(s1)==0:
+            r1 = []
+        else:
+            r1 = resort(prefix,s1,config)
+        if len(s2)==0:
+            r2 = []
+        else:
+            r2 = resort(prefix,s2,config)
+        R = [r+'(文)' for r in r1]
+        R += [r+'(大白狗)' for r in r2]
+        d = {'input':prefix,'outputs':R}
+        D.append(d)
+    with open(path_target,'w') as f:
+        json.dump(D,f,ensure_ascii=False,indent=4)
