@@ -23,7 +23,7 @@ def _is_chinese_char(char):
             (cp >= 0x2F800 and cp <= 0x2FA1F)):  #
         return True
     return False
-def generating_poem(app,prefix,model,config,tokenizer,device,config_predict,quick=False,num=5,continue_writing=False,removeHighFreqWords=False,batchGenerating=False,gpu='0',onlyMax=False,maxNb = 20):
+def generating_poem1(app,prefix,model,config,tokenizer,device,config_predict,quick=False,num=5,continue_writing=False,removeHighFreqWords=False,batchGenerating=False,gpu='0',onlyMax=False,maxNb = 20):
     if len(prefix)==0 or len(prefix)>model.config.n_ctx:
         return []
     if sum([_is_chinese_char(c) for c in prefix])<len(prefix)*0.75:
@@ -93,7 +93,7 @@ def peomSplit(s):
         R.append(s[i0:i1])
     return R
 def generating(prefix,model,config,tokenizer,device,num,gpu,config_predict):
-    r = generating_poem(0,prefix,model,config,tokenizer,device,config_predict,quick=False,num=num,batchGenerating=True,gpu=gpu)
+    r = generating_poem1(0,prefix,model,config,tokenizer,device,config_predict,quick=False,num=num,batchGenerating=True,gpu=gpu)
     return r
 def fun(S,path_config,gpu,nsamples,model, tokenizer, config, device,configpredict):
     path_target = 'data/poem_white_generated.txt'
