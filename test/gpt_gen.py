@@ -799,7 +799,7 @@ def fast_sample_sequence_batch_poemHead(model, contexts, inputs,length, nsamples
     return generate
 
 def generating_poem_head(app,prefix,model,config,tokenizer,device,config_predict,num=20,gpu='0'):
-    if len(prefix) == 0 or len(prefix) > model.config.n_ctx:
+    if len(prefix) == 0 or len(prefix) > 10:
         return []
     if gpu:
         torch.cuda.set_device(int(gpu))
@@ -826,7 +826,7 @@ def generating_poem_head(app,prefix,model,config,tokenizer,device,config_predict
         inputs = [[c for c in context]  for _ in range(nsamples)]
         num = nsamples
         for ii in range(1,nb_sents+1):
-            outs = fast_sample_sequence_batch_poemHead(model, contexts, inputs, length=len_sent, nsamples=num, temperature=temperature, top_k=topk,
+            outs = fast_sample_sequence_batch_poemHead(model, contexts, inputs, length=len_sent+1, nsamples=num, temperature=temperature, top_k=topk,
                                                 repitition_penalty=repetition_penalty, device=device)
             S = [untokenization_poem(out, tokenizer, config) for out in outs]
             if ii==nb_sents:

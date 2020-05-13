@@ -2,6 +2,33 @@ from gpt_gen import *
 import sys
 import os
 import json
+def poemFilter1(poem,prefix='',blackwords=[]):
+    syms = '。？；！，'
+    sents = []
+    i0 = 0
+    i1 = 0
+    while i1<len(poem):
+        if poem[i1] in syms:
+            sents.append(poem[i0:i1+1])
+            i0 = i1+1
+            i1 = i1+1
+        else:
+            i1 = i1+1
+    if len(sents)<1:
+        return ''
+    R = []
+    R.append(sents[0])
+    R.append(sents[1])
+    for i in range(1,int(len(sents)/2)):
+        if len(sents[2*i])==len(sents[0]) and len(sents[2*i+1])==len(sents[1]):
+            R.append(sents[2*i])
+            R.append(sents[2*i+1])
+    if len(R)>1 and len(R[0])>3:
+        s = ''.join(R)
+        s = drop_blackwords(s,prefix,blackwords)
+        return s
+    else:
+        return ''
 def _is_chinese_char(char):
     """Checks whether CP is the codepoint of a CJK character."""
     # This defines a "chinese character" as anything in the CJK Unicode block:
@@ -57,7 +84,8 @@ def generating_poem1(app,prefix,model,config,tokenizer,device,config_predict,qui
     outs = fast_sample_sequence_batch(model, context_tokens, length, nsamples=maxNb,
                                    temperature=temperature, top_k=topk, repitition_penalty=repetition_penalty,device=device)
     S = []
-    for out in outs:
+    outs1 = [o[:4]+[22]+o[5:] for o in outs]
+    for out in outs1:
         tmptext = untokenization_poem(out, tokenizer, config)
         if len(tmptext)==prefix:
             continue
