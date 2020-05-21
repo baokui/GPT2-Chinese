@@ -34,16 +34,16 @@ def main(url,path_data,tails=''):
 def demo0():
     path_data='data/test_headlove.txt'
     url = 'http://10.141.104.42:5000/api/gen'
-    tails = '#hdlv'
+    blackwords = '白头'
+    tails = '#lv'
     R = main(url,path_data,tails)
     maxnb = 0
-    D = []
     res = []
     for r in R:
-        words = r['input']
+        words = r['input'][:-len(tails)]
         T = r['result']
         T = [t for t in T if '(诗)' in t]
-        T = [t.replace('(诗)','') for t in t]
+        T = [t.replace('(诗)','') for t in T]
         if maxnb<len(T):
             maxnb = len(T)
         res.append([words]+T)
