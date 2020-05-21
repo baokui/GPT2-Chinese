@@ -64,6 +64,8 @@ def main(path_config,path_source='../bin/data/2020-05-18.txt',path_target='../bi
     R = []
     for prefix in Data:
         print(prefix)
+        if prefix>model.config.n_ctx-2:
+            continue
         R0 = modelpredict(model, prefix, tokenizer, config, ConfigPredict)
         r = {'input':prefix,'output':R0}
         R.append(r)
