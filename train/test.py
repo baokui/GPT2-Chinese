@@ -5,6 +5,7 @@ import json
 import logging
 import sys
 from Config import Config
+import time
 class config_predict(Config):
     # 定义构造方法
     def __init__(self, model_config='', gpus=''):  # __init__() 是类的初始化方法；它在类的实例化操作后 会自动调用，不需要手动调用；
@@ -34,7 +35,7 @@ def getmodel(path_config,gpu='3'):
     config['temperature'] = ConfigPredict.temperature
     config['length'] = ConfigPredict.length
     return model,config,tokenizer,ConfigPredict
-def modelpredict(model,prefix,tokenizer,config,ConfigPredict,maxNb=5):
+def modelpredict(model,prefix,tokenizer,config,ConfigPredict,maxNb=10):
     prefix0 = prefix
     punc = '.,?!;\t 。，？！；'
     device = 'cuda'
@@ -62,6 +63,7 @@ def main(path_config,path_source='../bin/data/2020-05-18.txt',path_target='../bi
     Data = [S[i].split('\t')[0] for i in range(100)]
     model,config,tokenizer,ConfigPredict = getmodel(path_config)
     R = []
+    t0 = time.time()
     for prefix in Data:
         print(prefix)
         if len(prefix)>model.config.n_ctx-2:
@@ -71,6 +73,8 @@ def main(path_config,path_source='../bin/data/2020-05-18.txt',path_target='../bi
         R.append(r)
         with open(path_target,'w') as f:
             json.dump(R,f, ensure_ascii=False,indent=4)
+    t1 = time.time()
+    print('use time {}s for {} samples'.format('%0.2f'%(t1-t0),len(Data)))
 if __name__ == "__main__":
     path_config,path_source,path_target = sys.argv[1:4]
     main(path_config,path_source,path_target)
