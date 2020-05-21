@@ -23,7 +23,7 @@ def iterData(path_data,rate=1.0,batch_size=32,epochs = 20):
                     continue
                 tokens = line.strip().split()
                 tokens = [int(token) for token in tokens]
-                S.extend(tokens)
+                S.append(tokens)
                 if len(S)>batch_size:
                     yield epoch,epochs,i,len(files),S
                     S = []
