@@ -5,7 +5,7 @@ nohup python -u train.py \
         --tokenizer_path=model/model0/vocab.txt \
         --tokenized_data_path=../comments/tokens/ \
         --epochs=100 \
-        --log_step=10 \
+        --log_step=100 \
         --min_length=8 \
         --stride=64 \
         --max_steps_perEpoch_perPiece=1000 \

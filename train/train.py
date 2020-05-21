@@ -172,7 +172,7 @@ def main():
             print('now time: {}:{}. step: {}, progress-innerEpoch: {}/{}, progress-outerEpoch: {}/{}, loss {}'.format(
                     datetime.now().hour,
                     datetime.now().minute,
-                    step,
+                    step+1,
                     idx_file+1,
                     nb_files,
                     epoch + 1,
