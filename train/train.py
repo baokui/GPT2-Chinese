@@ -138,9 +138,12 @@ def main():
     running_loss = 10
     loss_ = 10
     iter = iterData(args.tokenized_data_path, rate=1.0, batch_size=batch_size, epochs=epochs)
-    data = next(iter)
     step = 0
-    while data!='__STOP__':
+    epoch0 = -1
+    while True:
+        data = next(iter)
+        if data=='__STOP__':
+            break
         epoch, epochs, idx_file, nb_files, batch_inputs = data
         random.shuffle(batch_inputs)
         batch_inputs = torch.tensor(batch_inputs).long().to(device)
@@ -187,7 +190,13 @@ def main():
             model_to_save = model.module if hasattr(model, 'module') else model
             model_to_save.save_pretrained(output_dir_)
         step += 1
-        data = next(iter)
+        if epoch!=epoch0:
+            if not os.path.exists(output_dir + 'model_epoch{}'.format(epoch + 1)):
+                os.mkdir(output_dir + 'model_epoch{}'.format(epoch + 1))
+            model_to_save = model.module if hasattr(model, 'module') else model
+            model_to_save.save_pretrained(output_dir + 'model_epoch{}'.format(epoch + 1))
+            epoch0 = epoch
+            print('epoch {} finished'.format(epoch + 1))
     if not os.path.exists(output_dir + 'final_model'):
         os.mkdir(output_dir + 'final_model')
     model_to_save = model.module if hasattr(model, 'module') else model
