@@ -4,6 +4,7 @@ import random
 import json
 import logging
 import sys
+from Config import Config
 class config_predict(Config):
     # 定义构造方法
     def __init__(self, model_config='', gpus=''):  # __init__() 是类的初始化方法；它在类的实例化操作后 会自动调用，不需要手动调用；
