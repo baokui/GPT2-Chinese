@@ -182,7 +182,7 @@ def main():
             running_loss = 0
         if step%args.steps_savemodel==0:
             print('saving model for epoch {}'.format(epoch + 1))
-            output_dir_ = output_dir + 'model_epoch{}_step{}_loss-{}'.format(epoch + 1, overall_step,'%0.2f'%loss_)
+            output_dir_ = output_dir + 'model_epoch{}_step{}_loss-{}'.format(epoch + 1, step,'%0.2f'%loss_)
             if not os.path.exists(output_dir_):
                 os.mkdir(output_dir_)
             model_to_save = model.module if hasattr(model, 'module') else model
