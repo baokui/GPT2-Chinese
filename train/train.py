@@ -172,9 +172,8 @@ def main():
             print('now time: {}:{}. step: {}, progress-innerEpoch: {}/{}, progress-outerEpoch: {}/{}, loss {}'.format(
                     datetime.now().hour,
                     datetime.now().minute,
-                    idx_file+1,
                     step,
-                    idx_file,
+                    idx_file+1,
                     nb_files,
                     epoch + 1,
                     epochs,
@@ -188,6 +187,7 @@ def main():
             model_to_save = model.module if hasattr(model, 'module') else model
             model_to_save.save_pretrained(output_dir_)
         step += 1
+        data = next(iter)
     if not os.path.exists(output_dir + 'final_model'):
         os.mkdir(output_dir + 'final_model')
     model_to_save = model.module if hasattr(model, 'module') else model

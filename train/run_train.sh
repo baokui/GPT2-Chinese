@@ -9,5 +9,5 @@ nohup python -u train.py \
         --min_length=8 \
         --stride=64 \
         --max_steps_perEpoch_perPiece=1000 \
-        --batch_size=32 \
+        --batch_size=64 \
         --output_dir=model/model0/ >> log/train0.log 2>&1 &
