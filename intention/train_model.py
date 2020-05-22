@@ -189,6 +189,7 @@ if __name__ == '__main__':
     tokenizer = Tokenizer(vocab_dir)
     config.vocab_size = len(tokenizer.vocab)
     model = TextRNN(config)
+    print('参数总量：%d'%np.sum([np.prod(v.get_shape().as_list()) for v in tf.trainable_variables()]))
     option = 'train'
 
     iter = batch_iter(train_dir, tokenizer,epochs=config.num_epochs)
