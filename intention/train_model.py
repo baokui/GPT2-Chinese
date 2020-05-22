@@ -116,7 +116,7 @@ def train():
             else:
                 improved_str = ''
             '''
-            loss_val, acc_val, improved_str = 0,0,0
+            loss_val, acc_val, improved_str = 0.0,0.0,0.0
             time_dif = get_time_dif(start_time)
             msg = 'Iter: {0:>6}, Train Loss: {1:>6.2}, Train Acc: {2:>7.2%},' \
                   + ' Val Loss: {3:>6.2}, Val Acc: {4:>7.2%}, Time: {5} {6}'
