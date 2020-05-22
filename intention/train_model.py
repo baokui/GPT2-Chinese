@@ -12,7 +12,7 @@ import tensorflow as tf
 from sklearn import metrics
 
 from rnn_model import TRNNConfig, TextRNN, Tokenizer
-from data_loader import read_vocab, read_category, batch_iter, process_file, build_vocab
+from data_loader import read_vocab, read_category, batch_iter,batch_iter_test, process_file, build_vocab
 
 base_dir = 'data/'
 train_dir = os.path.join(base_dir, 'train.txt')
@@ -104,6 +104,10 @@ def train():
             # 每多少轮次输出在训练集和验证集上的性能
             feed_dict[model.keep_prob] = 1.0
             loss_train, acc_train = session.run([model.loss, model.acc], feed_dict=feed_dict)
+            x_test_batch, y_test_batch = next(iter_test)
+            feed_dict = feed_data(x_test_batch, y_test_batch, config.dropout_keep_prob)
+            feed_dict[model.keep_prob] = 1.0
+            loss_val, acc_val = session.run([model.loss, model.acc], feed_dict=feed_dict)
             '''
             _, loss_val, acc_val = evaluate(session,x_batch, y_batch)  # todo
 
@@ -116,7 +120,7 @@ def train():
             else:
                 improved_str = ''
             '''
-            loss_val, acc_val, improved_str = 0.0,0.0,0.0
+            improved_str = 0.0
             time_dif = get_time_dif(start_time)
             msg = 'Iter: {0:>6}, Train Loss: {1:>6.2}, Train Acc: {2:>7.2%},' \
                   + ' Val Loss: {3:>6.2}, Val Acc: {4:>7.2%}, Time: {5} {6}'
@@ -188,6 +192,7 @@ if __name__ == '__main__':
     option = 'train'
 
     iter = batch_iter(train_dir, tokenizer,epochs=config.num_epochs)
+    iter_test = batch_iter_test(test_dir,tokenizer)
     if option == 'train':
         train()
     else:
