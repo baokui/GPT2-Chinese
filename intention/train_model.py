@@ -31,7 +31,7 @@ def get_time_dif(start_time):
     return timedelta(seconds=int(round(time_dif)))
 
 
-def feed_data(x_batch, y_batch, keep_prob):
+def feed_data(x_batch, y_batch, keep_prob,model):
     feed_dict = {
         model.input_x: x_batch,
         model.input_y: y_batch,
@@ -97,21 +97,20 @@ def train():
         if epoch0!=epoch:
             print('EPOCH: '+str(epoch))
             epoch0 = epoch
-        feed_dict = feed_data(x_batch, y_batch, config.dropout_keep_prob)
-
+        feed_dict = feed_data(x_batch, y_batch, config.dropout_keep_prob,model)
         if total_batch % config.save_per_batch == 0:
             # 每多少轮次将训练结果写入tensorboard scalar
-            s = session.run(merged_summary, feed_dict=feed_dict)
-            writer.add_summary(s, total_batch)
-
+            #s = session.run(merged_summary, feed_dict=feed_dict)
+            #writer.add_summary(s, total_batch)
+            pass
         if total_batch % config.print_per_batch == 0:
             # 每多少轮次输出在训练集和验证集上的性能
             feed_dict[model.keep_prob] = 1.0
             loss_train, acc_train = session.run([model.loss, model.acc], feed_dict=feed_dict)
             x_test_batch, y_test_batch = next(iter_test)
-            feed_dict = feed_data(x_test_batch, y_test_batch, config.dropout_keep_prob)
-            feed_dict[model.keep_prob] = 1.0
-            loss_val, acc_val = session.run([model.loss, model.acc], feed_dict=feed_dict)
+            feed_dict_test = feed_data(x_test_batch, y_test_batch, config.dropout_keep_prob,model)
+            feed_dict_test[model.keep_prob] = 1.0
+            loss_val, acc_val = session.run([model.loss, model.acc], feed_dict=feed_dict_test)
             if acc_val > best_acc_val:
                 # 保存最好结果
                 best_acc_val = acc_val
@@ -125,18 +124,10 @@ def train():
             msg = 'Iter: {0:>6}, Train Loss: {1:>6.2}, Train Acc: {2:>7.2%},' \
                   + ' Val Loss: {3:>6.2}, Val Acc: {4:>7.2%}, Time: {5} {6}'
             print(msg.format(total_batch, loss_train, acc_train, loss_val, acc_val, time_dif, improved_str))
-
+        feed_dict[model.keep_prob] = config.dropout_keep_prob
         session.run(model.optim, feed_dict=feed_dict)  # 运行优化
         total_batch += 1
-        '''
-                if total_batch - last_improved > require_improvement:
-            # 验证集正确率长期不提升，提前结束训练
-            print("No optimization for a long time, auto-stopping...")
-            flag = True
-            break  # 跳出循环
-        if flag:  # 同上
-            break
-        '''
+
 
 
 def test():
@@ -191,7 +182,6 @@ if __name__ == '__main__':
     model = TextRNN(config)
     print('参数总量：%d'%np.sum([np.prod(v.get_shape().as_list()) for v in tf.trainable_variables()]))
     option = 'train'
-
     iter = batch_iter(train_dir, tokenizer,epochs=config.num_epochs)
     iter_test = batch_iter_test(test_dir,tokenizer)
     if option == 'train':
