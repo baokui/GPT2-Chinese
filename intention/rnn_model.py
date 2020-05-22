@@ -2,19 +2,39 @@
 # -*- coding: utf-8 -*-
 
 import tensorflow as tf
-
+class Tokenizer(object):
+    def __init__(self, path_vocab):
+        self.vocab = self.getVocab(path_vocab)
+    def getVocab(self,path_vocab):
+        with open(path_vocab,'r') as f:
+            v = f.read().strip().split('\n')
+        v.append('[UNK]')
+        v.append('[PAD]')
+        return v
+    def token2word(self,token):
+        return self.vocab[token]
+    def word2token(self,word):
+        if word in self.vocab:
+            return self.vocab.index(word)
+        return self.vocab.index('[UNK]')
+    def tokenization(self,sent,max_len=10):
+        t = [self.word2token(w) for w in sent]
+        if len(t)<max_len:
+            t+=[self.vocab.index('[PAD]')]*(max_len-len(t))
+        t = t[:max_len]
+        return t
+    def untokenization(self,seq):
+        return [self.token2word(s) for s in seq]
 class TRNNConfig(object):
     """RNN配置参数"""
-
     # 模型参数
-    embedding_dim = 64  # 词向量维度
-    seq_length = 600  # 序列长度
-    num_classes = 10  # 类别数
-    vocab_size = 5000  # 词汇表达小
-
+    embedding_dim = 128  # 词向量维度
+    seq_length = 10  # 序列长度
+    num_classes = 2  # 类别数
+    vocab_size = 4002  # 词汇表达小
     num_layers = 2  # 隐藏层层数
     hidden_dim = 128  # 隐藏层神经元
-    rnn = 'gru'  # lstm 或 gru
+    rnn = 'lstm'  # lstm 或 gru
 
     dropout_keep_prob = 0.8  # dropout保留比例
     learning_rate = 1e-3  # 学习率
