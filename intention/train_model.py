@@ -88,11 +88,15 @@ def train():
     last_improved = 0  # 记录上一次提升批次
     require_improvement = 1000  # 如果超过1000轮未提升，提前结束训练
     flag = False
+    epoch0 = -1
     while True:
         batch_train = next(iter)
         if batch_train=='__STOP__':
             break
         epoch,x_batch, y_batch = batch_train
+        if epoch0!=epoch:
+            print('EPOCH: '+str(epoch))
+            epoch0 = epoch
         feed_dict = feed_data(x_batch, y_batch, config.dropout_keep_prob)
 
         if total_batch % config.save_per_batch == 0:
@@ -108,9 +112,6 @@ def train():
             feed_dict = feed_data(x_test_batch, y_test_batch, config.dropout_keep_prob)
             feed_dict[model.keep_prob] = 1.0
             loss_val, acc_val = session.run([model.loss, model.acc], feed_dict=feed_dict)
-            '''
-            _, loss_val, acc_val = evaluate(session,x_batch, y_batch)  # todo
-
             if acc_val > best_acc_val:
                 # 保存最好结果
                 best_acc_val = acc_val
@@ -119,7 +120,6 @@ def train():
                 improved_str = '*'
             else:
                 improved_str = ''
-            '''
             improved_str = 0.0
             time_dif = get_time_dif(start_time)
             msg = 'Iter: {0:>6}, Train Loss: {1:>6.2}, Train Acc: {2:>7.2%},' \
