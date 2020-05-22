@@ -186,15 +186,12 @@ if __name__ == '__main__':
 
     print('Configuring RNN model...')
     config = TRNNConfig()
-    if not os.path.exists(vocab_dir):  # 如果不存在词汇表，重建
-        build_vocab(train_dir, vocab_dir, config.vocab_size)
-    categories, cat_to_id = read_category()
-    words, word_to_id = read_vocab(vocab_dir)
-    config.vocab_size = len(words)
+    tokenizer = Tokenizer(vocab_dir)
+    config.vocab_size = len(tokenizer.vocab)
     model = TextRNN(config)
     option = 'train'
-    tokenizer = Tokenizer(vocab_dir)
-    iter = batch_iter(train_dir, tokenizer,epoch=config.num_epochs)
+
+    iter = batch_iter(train_dir, tokenizer,epochs=config.num_epochs)
     if option == 'train':
         train()
     else:
