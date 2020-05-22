@@ -27,10 +27,10 @@ def batch_iter(path_data,tokenizer,max_len=10,batch_size=64,epochs = 1):
                 y = []
     yield '__STOP__'
 def batch_iter_test(path_data,tokenizer,max_len=10,batch_size=10000):
-    f = open(path_data,'r')
     x = []
     y = []
     while True:
+        f = open(path_data, 'r')
         for line in f:
             s = line.strip().split('\t')
             if len(s)!=2:
@@ -46,6 +46,7 @@ def batch_iter_test(path_data,tokenizer,max_len=10,batch_size=10000):
                 yield x,y
                 x = []
                 y = []
+        f.close()
 def process_file():
     pass
 def build_vocab():
