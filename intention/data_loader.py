@@ -48,6 +48,19 @@ def batch_iter_test(path_data,tokenizer,max_len=10,batch_size=10000):
                 x = []
                 y = []
         f.close()
+def getTestData(path_data,tokenizer,max_len=10):
+    x = []
+    y = []
+    S = []
+    f = open(path_data, 'r')
+    for line in f:
+        s = line.strip().split('\t')
+        t = tokenizer.tokenization(s[0],max_len=max_len)
+        x.append(t)
+        y.append([1, 0])
+        S.append(s[0][:max_len])
+    f.close()
+    return x,y,S
 def process_file():
     pass
 def build_vocab():

@@ -1,4 +1,5 @@
 from modules import *
+import random
 def getVocab(S):
     D = {}
     for i in range(len(S)):
@@ -37,54 +38,59 @@ def tokenization(S,vocab,padding=True,n_ctx = 64,min_len=8,punc_end='，。？�
         T = T+[vocab.index('[PAD]') for _ in range(n_ctx-1-len(T))]
     T = T+T2
     return T
-def getdata(path_source='D:\\项目\\输入法\\神配文数据\\淘宝评论\\taobao_comments.txt'):
-    with open(path_source,'r',encoding='utf-8') as f:
-        s = f.read().strip().split('\n')
-    T0 = {}
-    T1 = {}
-    S = []
-    for i in range(len(s)):
-        t = s[i].split('\t')
-        if t[0] in T0:
-            T0[t[0]].append(t[-1])
-        else:
-            T0[t[0]] = [t[-1]]
-        if t[1] in T1:
-            T1[t[1]].append(t[-1])
-        else:
-            T1[t[1]] = [t[-1]]
-        S.append(t[-1])
-    Len = [len(t) for t in S]
-    A = set(Len)
-    B = []
-    for a in A:
-        B.append([a,sum([t==a for t in Len])])
-    B = sorted(B,key=lambda x:x[0])
-    C = [[b[0],b[1]/len(S)] for b in B]
-    S0 = []
-    S1 = []
-    min_nb_zh = 8
-    min_rate_zh = 0.6
-    for i in range(len(S)):
-        s = S[i]
-        t = [_is_chinese_char(ss) for ss in s]
-        nb_zh = sum(t)
-        rate_zh = sum(t)/len(t)
-        if nb_zh<min_nb_zh or rate_zh<min_rate_zh:
-            S1.append(s)
-        else:
-            S0.append(s)
-    V = getVocab(S0)
-    V = [v[0] for v in V if v[1]>=100]
-    V = VocabExtend(V)
+def getdata(path_source0='D:\\项目\\输入法\\神配文数据\\淘宝评论\\data'):
+    files = os.listdir(path_source0)
+    files = [os.path.join(path_source0,file) for file in files]
+    S00 = []
+    for path_source in files:
+        with open(path_source,'r',encoding='utf-8') as f:
+            s = f.read().strip().split('\n')
+        S = []
+        for i in range(len(s)):
+            t = s[i].split('\t')
+            if len(t)<5:
+                continue
+            S.append(t[4])
+        S0 = []
+        S1 = []
+        min_nb_zh = 8
+        min_rate_zh = 0.6
+        for i in range(len(S)):
+            s = S[i]
+            t = [_is_chinese_char(ss) for ss in s]
+            nb_zh = sum(t)
+            rate_zh = sum(t)/len(t)
+            if nb_zh<min_nb_zh or rate_zh<min_rate_zh:
+                S1.append(s)
+            else:
+                S0.append(s)
+        print(path_source)
+        print(S0[:3])
+        S00.extend(S0)
+    V = getVocab(S00)
+    V1 = [v[0] for v in V if v[1]>=100]
+    V1 = VocabExtend(V1)
     with open('comments/data/vocab.txt','w',encoding='utf-8') as f:
-        f.write('\n'.join(V))
+        f.write('\n'.join(V1))
+
+    random.shuffle(S00)
+    with open('comments/data/comments_all.txt','w',encoding='utf-8') as f:
+        f.write('\n'.join(S00))
     T = []
-    for s in S0:
-        t = tokenization(s,V)
+    for s in S00:
+        t = tokenization(s,V1)
         if t:
             T.append(t)
     T = [[str(tt) for tt in t] for t in T]
     T = [' '.join(t) for t in T]
-    with open('comments/tokens/token1.txt','w') as f:
-        f.write('\n'.join(T))
+    i = 0
+    N = 100000
+    i0 = i*N
+    i1 = (i+1)*N
+    while i0<len(T):
+        print(i)
+        with open('comments/tokens/token'+str(i)+'.txt','w') as f:
+            f.write('\n'.join(T[i0:i1]))
+        i+=1
+        i0 = i * N
+        i1 = (i + 1) * N
