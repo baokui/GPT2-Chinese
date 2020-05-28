@@ -57,6 +57,7 @@ def main(path_config,path_data):
     S = ['\t'.join(s) for s in S]
     with open(path_target,'w') as f:
         f.write('\n'.join(S))
+    print('eval over!')
 if __name__=='__main__':
     path_config,path_data = sys.argv[1:3]
     main(path_config, path_data)
