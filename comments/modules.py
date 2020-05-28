@@ -22,4 +22,5 @@ def _is_chinese_char(char):
 def VocabExtend(V,nb_unused=100):
     V0 = ['[PAD]', '[UNK]', '[CLS]', '[SEP]', '[MASK]', '<S>', '<T>']
     V1 = ['unused'+str(i) for i in range(nb_unused)]
-    return V0+V+V1
+    Vn = V0+[v for v in V]+V1
+    return Vn

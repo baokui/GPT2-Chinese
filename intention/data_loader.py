@@ -48,7 +48,7 @@ def batch_iter_test(path_data,tokenizer,max_len=10,batch_size=10000):
                 x = []
                 y = []
         f.close()
-def getTestData(path_data,tokenizer,max_len=10):
+def getTestData(path_data,tokenizer,max_len=10,max_lines = 10000):
     x = []
     y = []
     S = []
@@ -59,6 +59,8 @@ def getTestData(path_data,tokenizer,max_len=10):
         x.append(t)
         y.append([1, 0])
         S.append(s[0][:max_len])
+        if len(x)>=max_lines:
+            break
     f.close()
     return x,y,S
 def process_file():

@@ -1,5 +1,6 @@
 from modules import *
 import random
+import os
 def getVocab(S):
     D = {}
     for i in range(len(S)):
@@ -65,32 +66,38 @@ def getdata(path_source0='D:\\项目\\输入法\\神配文数据\\淘宝评论\\
             else:
                 S0.append(s)
         print(path_source)
+        print(len(S0))
         print(S0[:3])
         S00.extend(S0)
     V = getVocab(S00)
     V1 = [v[0] for v in V if v[1]>=100]
     V1 = VocabExtend(V1)
-    with open('comments/data/vocab.txt','w',encoding='utf-8') as f:
+    with open('data/vocab.txt','w',encoding='utf-8') as f:
         f.write('\n'.join(V1))
 
     random.shuffle(S00)
-    with open('comments/data/comments_all.txt','w',encoding='utf-8') as f:
+    with open('data/comments_all.txt','w',encoding='utf-8') as f:
         f.write('\n'.join(S00))
     T = []
     for s in S00:
         t = tokenization(s,V1)
         if t:
             T.append(t)
-    T = [[str(tt) for tt in t] for t in T]
-    T = [' '.join(t) for t in T]
+        if len(T)%10000==0:
+            print(len(T),len(T)/len(S00))
+    #T = [[str(tt) for tt in t] for t in T]
+    #T = [' '.join(t) for t in T]
     i = 0
     N = 100000
     i0 = i*N
     i1 = (i+1)*N
     while i0<len(T):
         print(i)
-        with open('comments/tokens/token'+str(i)+'.txt','w') as f:
-            f.write('\n'.join(T[i0:i1]))
+        s = T[i0:i1]
+        s = [[str(tt) for tt in t] for t in s]
+        s = [' '.join(t) for t in s]
+        with open('tokens/token'+str(i)+'.txt','w') as f:
+            f.write('\n'.join(s))
         i+=1
         i0 = i * N
         i1 = (i + 1) * N

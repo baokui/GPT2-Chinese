@@ -140,11 +140,15 @@ def test():
     session.run(tf.global_variables_initializer())
     print('finish loading model!')
     print('predicting...')
-    while True:
-        x, y, S = getTestData(predict_dir,tokenizer)
-        feed_dict = feed_data(x, y, config.dropout_keep_prob, model)
-        feed_dict[model.keep_prob] = 1.0
-        predict_y = session.run([model.y_pred_cls], feed_dict=feed_dict)
+    x, y, S = getTestData(predict_dir,tokenizer)
+    feed_dict = feed_data(x, y, config.dropout_keep_prob, model)
+    feed_dict[model.keep_prob] = 1.0
+    modelpredict = tf.nn.softmax(model.logits)
+    predict_y = session.run(modelpredict, feed_dict=feed_dict)
+    predict_y = predict_y[:,0]
+    T = [S[i]+'\t'+'%0.4f'%predict_y[i] for i in range(len(S))]
+    with open(predict_dir.replace('predict','predict_result'),'w') as f:
+        f.write('\n'.join(T))
 if __name__ == '__main__':
     if len(sys.argv)>1:
         option = sys.argv[1]
