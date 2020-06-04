@@ -46,11 +46,11 @@ def build_files(data_path, tokenized_data_path, full_tokenizer, n_ctx=64,min_len
             print('processing file %s with %d lines %d samples'%(data_path,nb_lines,nb_samples))
         nb_lines += 1
         if len(T)>=maxlines:
-            with open(os.path.join(tokenized_data_path, str(idx)+'.txt'), 'w') as f_w:
+            with open(os.path.join(tokenized_data_path, 'godText-'+str(idx)+'.txt'), 'w') as f_w:
                 f_w.write('\n'.join(T)+'\n')
             idx+=1
             T = []
-    with open(os.path.join(tokenized_data_path, str(idx) + '.txt'), 'w') as f_w:
+    with open(os.path.join(tokenized_data_path, 'godText-'+str(idx) + '.txt'), 'w') as f_w:
         f_w.write('\n'.join(T) + '\n')
     f_w.close()
     print('finish')
