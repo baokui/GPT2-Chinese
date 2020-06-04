@@ -1,6 +1,31 @@
-from modules import *
 import random
 import os
+def _is_chinese_char(char):
+    """Checks whether CP is the codepoint of a CJK character."""
+    # This defines a "chinese character" as anything in the CJK Unicode block:
+    #   https://en.wikipedia.org/wiki/CJK_Unified_Ideographs_(Unicode_block)
+    #
+    # Note that the CJK Unicode block is NOT all Japanese and Korean characters,
+    # despite its name. The modern Korean Hangul alphabet is a different block,
+    # as is Japanese Hiragana and Katakana. Those alphabets are used to write
+    # space-separated words, so they are not treated specially and handled
+    # like the all of the other languages.
+    cp = ord(char)
+    if ((cp >= 0x4E00 and cp <= 0x9FFF) or  #
+            (cp >= 0x3400 and cp <= 0x4DBF) or  #
+            (cp >= 0x20000 and cp <= 0x2A6DF) or  #
+            (cp >= 0x2A700 and cp <= 0x2B73F) or  #
+            (cp >= 0x2B740 and cp <= 0x2B81F) or  #
+            (cp >= 0x2B820 and cp <= 0x2CEAF) or
+            (cp >= 0xF900 and cp <= 0xFAFF) or  #
+            (cp >= 0x2F800 and cp <= 0x2FA1F)):  #
+        return True
+    return False
+def VocabExtend(V,nb_unused=100):
+    V0 = ['[PAD]', '[UNK]', '[CLS]', '[SEP]', '[MASK]', '<S>', '<T>']
+    V1 = ['unused'+str(i) for i in range(nb_unused)]
+    Vn = V0+[v for v in V]+V1
+    return Vn
 def getVocab(S):
     D = {}
     for i in range(len(S)):
@@ -72,11 +97,11 @@ def getdata(path_source0='D:\\项目\\输入法\\神配文数据\\淘宝评论\\
     V = getVocab(S00)
     V1 = [v[0] for v in V if v[1]>=100]
     V1 = VocabExtend(V1)
-    with open('data/vocab.txt','w',encoding='utf-8') as f:
+    with open('data/vocab_addpdd.txt','w',encoding='utf-8') as f:
         f.write('\n'.join(V1))
 
     random.shuffle(S00)
-    with open('data/comments_all.txt','w',encoding='utf-8') as f:
+    with open('comments/data/comments_all_addpdd.txt','w',encoding='utf-8') as f:
         f.write('\n'.join(S00))
     T = []
     for s in S00:
@@ -96,7 +121,7 @@ def getdata(path_source0='D:\\项目\\输入法\\神配文数据\\淘宝评论\\
         s = T[i0:i1]
         s = [[str(tt) for tt in t] for t in s]
         s = [' '.join(t) for t in s]
-        with open('tokens/token'+str(i)+'.txt','w') as f:
+        with open('comments/tokens_addpdd/token'+str(i)+'.txt','w') as f:
             f.write('\n'.join(s))
         i+=1
         i0 = i * N

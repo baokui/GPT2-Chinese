@@ -69,10 +69,10 @@ def changenames():
         if i%100==0:
             print(i,oldpath,newpath)
 
-def main(data_path,idx,dataname,tokenized_data_path,padding):
-    tokenizer_path = '../data/vocab/vocab_god_userdata.txt'
+def main(data_path,idx,dataname,tokenized_data_path,path_vocab,padding):
+    #tokenizer_path = '../data/vocab/vocab_god_userdata.txt'
     #tokenized_data_path = '../data/userdata_tokenized_new/'
-    full_tokenizer = tokenization_bert.BertTokenizer(vocab_file=tokenizer_path)
+    full_tokenizer = tokenization_bert.BertTokenizer(vocab_file=path_vocab)
     build_files(data_path, dataname, tokenized_data_path, full_tokenizer,idx,padding=padding)
     #shutil.rmtree(data_path)
 def main_seg(data_path,dataname):
@@ -114,10 +114,10 @@ def remove_unk(idx = 0,unk='100'):
 if __name__=='__main__':
     mode = sys.argv[1]
     if mode=='char':
-        data_path,idx,dataname,tokenized_data_path,padding = sys.argv[2:7]
+        data_path,idx,dataname,tokenized_data_path,path_vocab,padding = sys.argv[2:8]
         idx = int(idx)
         padding = padding=='1'
-        main(data_path,idx,dataname,tokenized_data_path,padding)
+        main(data_path,idx,dataname,tokenized_data_path,path_vocab,padding)
     if mode=='word':
         data_path, dataname = sys.argv[2:4]
         main_seg(data_path, dataname)
