@@ -65,6 +65,7 @@ def generating(prefix,model,config,tokenizer,config_predict,quick=False,num=5,co
     raw_text = prefix
     S0 = []
     for token in ['[MASK_gou]','[MASK_prose]']:
+        tag = token[6:-1]
         S = []
         id_msk = tokenizer.convert_tokens_to_ids(token)
         context_tokens = [id_msk] + tokenizer.convert_tokens_to_ids(tokenizer.tokenize(raw_text))
@@ -82,7 +83,7 @@ def generating(prefix,model,config,tokenizer,config_predict,quick=False,num=5,co
             if len(S)>0:
                 S = resort(prefix0, S, config_predict)
         S = S[:nsamples]
-        S0.extend([s+'('+token+')' for s in S])
+        S0.extend([s+'('+tag+')' for s in S])
     #if style == 'prose':
         #S = [r[1:] for r in S]
     return S0
@@ -92,4 +93,8 @@ def main():
     gpu = '0'
     model, tokenizer, config, device = getModel(path_config=path_configs, gpu=gpu)
     data = '我们'
+    data = '想你了'
+    data = '我们'
     result = generating(data, model, config, tokenizer, ConfigPredict)
+    for r in result:
+        print(r)

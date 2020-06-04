@@ -131,9 +131,9 @@ def train():
 def test():
     # 配置 Saver
     saver = tf.train.Saver()
-    tensorboard_dir = 'tensorboard1/textrnn'
+    #tensorboard_dir = 'tensorboard1/textrnn'
     print("Loading training and validation data...")
-    ckpt = tf.train.latest_checkpoint(tensorboard_dir)  # 找到存储变量值的位置
+    ckpt = tf.train.latest_checkpoint(save_path)  # 找到存储变量值的位置
     # 创建session
     session = tf.Session()
     saver.restore(session, ckpt)
