@@ -39,6 +39,8 @@ def build_files(data_path, dataname, tokenized_data_path, full_tokenizer, idx, n
             if len(line)<min_length:
                 continue
             full_line = token_pad(line,full_tokenizer,n_ctx)
+            if len(full_line)==0:
+                continue
             nb_samples+=len(full_line)
             if nb_lines%10000==0:
                 print('processing file %s with %d lines %d samples'%(file,nb_lines,nb_samples))
