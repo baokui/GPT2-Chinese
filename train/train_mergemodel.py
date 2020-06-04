@@ -137,7 +137,7 @@ def main():
     step_loss = 0
     running_loss = 10
     loss_ = 10
-    iter0 = iterData(args.tokenized_data_path0, rate=1.0, batch_size=batch_size, epochs=epochs)
+    iter0 = iterData(args.tokenized_data_path0, rate=0.04, batch_size=batch_size, epochs=epochs)
     iter1 = iterData(args.tokenized_data_path1, rate=1.0, batch_size=batch_size, epochs=epochs)
     step = 0
     epoch0 = -1

@@ -94,7 +94,7 @@ def main():
     model, tokenizer, config, device = getModel(path_config=path_configs, gpu=gpu)
     data = '我们'
     data = '想你了'
-    data = '我们'
-    result = generating(data, model, config, tokenizer, ConfigPredict)
-    for r in result:
-        print(r)
+    for data in ['我们','想你了']:
+        result = generating(data, model, config, tokenizer, ConfigPredict)
+        for r in result:
+            print(r)

@@ -11,5 +11,5 @@ nohup python -u train_mergemodel.py \
         --stride=64 \
         --max_steps_perEpoch_perPiece=1000 \
         --batch_size=64 \
-        --pretrained_model=model/model_merged/model_epoch1_step10000_loss-3.01/ \
-        --output_dir=model/model_merged/ >> log/train-mergemodel2.log 2>&1 &
+        --pretrained_model=model/model_merged/model_epoch1_step50000_loss-2.74/ \
+        --output_dir=model/model_merged/ >> log/train-mergemodel3.log 2>&1 &
