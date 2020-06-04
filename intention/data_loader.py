@@ -68,8 +68,9 @@ def process_file():
 def build_vocab():
     pass
 def build_dataset(path_pos,path_neg,nb_test_pos = 100000,nb_test_neg = 100000,min_len=2,max_len=10):
-    path_pos = '../data/GodText/merge/'
+    path_pos = '../data/GodText/merge/godText_noXinNian.json'
     path_neg = '../data/userdata/'
+    blackwords = ['封了', '疫情', '传染', '病毒', '肺炎']
     with open(path_pos,'r') as f:
         s = json.load(f)
     random.shuffle(s)
@@ -89,11 +90,18 @@ def build_dataset(path_pos,path_neg,nb_test_pos = 100000,nb_test_neg = 100000,mi
     x_test_neg = []
     punc = '.;!?。；！？'
     for file in files:
-        print(file)
+        print(file,len(x_pos),len(x_neg))
         f = open(file,'r')
         x0 = []
         x1 = []
         for line in f:
+            flag = False
+            for b in blackwords:
+                if b in line:
+                    flag = True
+                    break
+            if flag and random.uniform(0,1)>0.01:
+                continue
             line = line.strip()
             S = [line[0]]
             for i in range(1, len(line)):
@@ -118,10 +126,10 @@ def build_dataset(path_pos,path_neg,nb_test_pos = 100000,nb_test_neg = 100000,mi
     STst = [t.replace('\t','')+'\t'+'1' for t in x_test_pos]
     STst += [t.replace('\t','')+'\t'+'0' for t in x_test_neg]
     random.shuffle(STrn)
-    with open('data/train.txt','w') as f:
+    with open('data1/train.txt','w') as f:
         f.write('\n'.join(STrn))
     random.shuffle(STst)
-    with open('data/test.txt','w') as f:
+    with open('data1/test.txt','w') as f:
         f.write('\n'.join(STst))
     D = {}
     x = x_pos+x_neg
@@ -136,5 +144,5 @@ def build_dataset(path_pos,path_neg,nb_test_pos = 100000,nb_test_neg = 100000,mi
     T = [(d,D[d]) for d in D]
     T = sorted(T,key=lambda x:-x[-1])
     T = [t[0] for t in T]
-    with open('data/vocab.txt','w') as f:
+    with open('data1/vocab.txt','w') as f:
         f.write('\n'.join(T))

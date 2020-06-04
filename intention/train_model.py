@@ -14,13 +14,13 @@ from sklearn import metrics
 from rnn_model import TRNNConfig, TextRNN, Tokenizer
 from data_loader import read_vocab, read_category, batch_iter,batch_iter_test, process_file, build_vocab,getTestData
 
-base_dir = 'data/'
+base_dir = sys.argv[1]
+save_dir = sys.argv[2]
 train_dir = os.path.join(base_dir, 'train.txt')
 test_dir = os.path.join(base_dir, 'test.txt')
 val_dir = os.path.join(base_dir, 'val.txt')
 vocab_dir = os.path.join(base_dir, 'vocab.txt')
 predict_dir = os.path.join(base_dir, 'predict.txt')
-save_dir = 'checkpoints/textrnn'
 save_path = os.path.join(save_dir, 'best_validation')  # 最佳验证结果保存路径
 
 
@@ -59,7 +59,7 @@ def evaluate(sess, x_, y_):
 def train():
     print("Configuring TensorBoard and Saver...")
     # 配置 Tensorboard，重新训练时，请将tensorboard文件夹删除，不然图会覆盖
-    tensorboard_dir = 'tensorboard/textrnn'
+    tensorboard_dir = 'tensorboard1/textrnn'
     if not os.path.exists(tensorboard_dir):
         os.makedirs(tensorboard_dir)
     tf.summary.scalar("loss", model.loss)
@@ -131,7 +131,7 @@ def train():
 def test():
     # 配置 Saver
     saver = tf.train.Saver()
-    tensorboard_dir = 'tensorboard/textrnn'
+    tensorboard_dir = 'tensorboard1/textrnn'
     print("Loading training and validation data...")
     ckpt = tf.train.latest_checkpoint(tensorboard_dir)  # 找到存储变量值的位置
     # 创建session
@@ -150,8 +150,8 @@ def test():
     with open(predict_dir.replace('predict','predict_result'),'w') as f:
         f.write('\n'.join(T))
 if __name__ == '__main__':
-    if len(sys.argv)>1:
-        option = sys.argv[1]
+    if len(sys.argv)>3:
+        option = sys.argv[3]
     else:
         option = 'train'
     print('Configuring RNN model...')
