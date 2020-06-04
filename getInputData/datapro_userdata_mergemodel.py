@@ -31,19 +31,20 @@ def build_files(data_path, dataname, tokenized_data_path, full_tokenizer, idx, n
             continue
         if int(file[7:9])!=idx:
             continue
-        full_line = []
+        nb_samples =  0
         print(file)
         f = open(os.path.join(data_path,file), 'r', encoding='utf8')
+        f_w = open(os.path.join(tokenized_data_path, dataname+file[-1]+'.txt'), 'a+')
         for line in f:
             if len(line)<min_length:
                 continue
-            full_line.extend(token_pad(line,full_tokenizer,n_ctx))
+            full_line = token_pad(line,full_tokenizer,n_ctx)
+            nb_samples+=len(full_line)
             if nb_lines%10000==0:
-                print('processing file %s with %d lines %d samples'%(file,nb_lines,len(full_line)))
+                print('processing file %s with %d lines %d samples'%(file,nb_lines,nb_samples))
             nb_lines += 1
-        f.close()
-        with open(os.path.join(tokenized_data_path, dataname+file[-1]+'.txt'), 'w') as f:
-            f.write('\n'.join(full_line))
+            f_w.write('\n'.join(full_line)+'\n')
+        f_w.close()
     print('finish')
 def changenames():
     path = './data/sogouInput_tokenized/'
