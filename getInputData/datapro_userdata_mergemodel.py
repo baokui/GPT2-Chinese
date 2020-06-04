@@ -32,14 +32,15 @@ def build_files(data_path, dataname, tokenized_data_path, full_tokenizer, idx, n
             continue
         if int(file[7:9])!=idx:
             continue
+        print(file)
         f = open(os.path.join(data_path,file), 'r', encoding='utf8')
         for line in f:
-            nb_lines += 1
             if len(line)<min_length:
                 continue
             full_line.extend(token_pad(line,full_tokenizer,n_ctx))
-            if nb_lines%100000==0:
-                print('processing file %s with %d lines'%(file,nb_lines))
+            if nb_lines%10000==0:
+                print('processing file %s with %d lines %d samples'%(file,nb_lines,len(full_line)))
+            nb_lines += 1
         f.close()
     with open(os.path.join(tokenized_data_path, dataname), 'w') as f:
         f.write('\n'.join(full_line))
