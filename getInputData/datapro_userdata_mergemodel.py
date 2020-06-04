@@ -23,7 +23,6 @@ def token_pad(line,vocab,n_ctx):
 def build_files(data_path, dataname, tokenized_data_path, full_tokenizer, idx, n_ctx=64,min_length=10,padding=False):
     if not os.path.exists(tokenized_data_path):
         os.mkdir(tokenized_data_path)
-    full_line = []
     print('reading lines')
     nb_lines = 0
     files = os.listdir(data_path)
@@ -32,6 +31,7 @@ def build_files(data_path, dataname, tokenized_data_path, full_tokenizer, idx, n
             continue
         if int(file[7:9])!=idx:
             continue
+        full_line = []
         print(file)
         f = open(os.path.join(data_path,file), 'r', encoding='utf8')
         for line in f:
@@ -42,8 +42,8 @@ def build_files(data_path, dataname, tokenized_data_path, full_tokenizer, idx, n
                 print('processing file %s with %d lines %d samples'%(file,nb_lines,len(full_line)))
             nb_lines += 1
         f.close()
-    with open(os.path.join(tokenized_data_path, dataname), 'w') as f:
-        f.write('\n'.join(full_line))
+        with open(os.path.join(tokenized_data_path, dataname+file[-1]+'.txt'), 'w') as f:
+            f.write('\n'.join(full_line))
     print('finish')
 def changenames():
     path = './data/sogouInput_tokenized/'

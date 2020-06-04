@@ -9,11 +9,11 @@ do
     for((i=0;i<9;i++))
     do
         idx=$j$i
-        name=$idx.txt
+        name=$idx
         nohup python -u datapro_userdata_mergemodel.py $path_data $idx $name $path_target $path_vocab $padding >> log/datapro-userdata-$name.log 2>&1 &
     done
     i=9
     idx=$j$i
-    name=$idx.txt
+    name=$idx
     nohup python -u datapro_userdata_mergemodel.py $path_data $idx $name $path_target $path_vocab $padding >> log/datapro-userdata-$name.log 2>&1
 done
