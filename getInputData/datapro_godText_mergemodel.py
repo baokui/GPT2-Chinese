@@ -67,7 +67,7 @@ def main(data_path,tokenized_data_path,path_vocab,padding):
     with open(path_vocab,'r') as f:
         full_tokenizer = f.read().strip().split('\n')
     #full_tokenizer = tokenization_bert.BertTokenizer(vocab_file=path_vocab)
-    build_files(data_path, tokenized_data_path, full_tokenizer,padding=padding)
+    build_files(data_path, tokenized_data_path, full_tokenizer)
     #shutil.rmtree(data_path)
 
 if __name__=='__main__':
