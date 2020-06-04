@@ -9,16 +9,16 @@ def token_pad(line,vocab,n_ctx):
             continue
         S.append(line[i])
     T = []
-    t = [vocab.index('[MASK_gou]')]
+    t = [str(vocab.index('[MASK_gou]'))]
     for s in S:
         if s in vocab:
-            t.append(vocab.index(s))
+            t.append(str(vocab.index(s)))
         else:
-            t.append(vocab.index('[UNK]'))
+            t.append(str(vocab.index('[UNK]')))
         if len(t)==n_ctx-1:
-            t.append(vocab.index('[CLS]'))
-            T.append(t)
-            t = [vocab.index('[MASK_gou]')]
+            t.append(str(vocab.index('[CLS]')))
+            T.append(' '.join(t))
+            t = [str(vocab.index('[MASK_gou]'))]
     return T
 def build_files(data_path, dataname, tokenized_data_path, full_tokenizer, idx, n_ctx=64,min_length=10,padding=False):
     if not os.path.exists(tokenized_data_path):
