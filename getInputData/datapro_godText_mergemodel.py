@@ -19,6 +19,10 @@ def token_pad(line,vocab,n_ctx):
             t.append(str(vocab.index('[CLS]')))
             T.append(' '.join(t))
             t = [str(vocab.index('[MASK_prose]'))]
+    if len(T)==0:
+        t.extend([str(vocab.index('[PAD]')) for i in range(n_ctx-len(t)-1)])
+        t.append(str(vocab.index('[CLS]')))
+        T.append(' '.join(t))
     return T
 def build_files(data_path, tokenized_data_path, full_tokenizer, n_ctx=64,min_length=10,maxlines=200000):
     if not os.path.exists(tokenized_data_path):
