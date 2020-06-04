@@ -52,7 +52,6 @@ def evaluate(sess, x_, y_):
         y_pred_class, loss, acc = sess.run([model.y_pred_cls, model.loss, model.acc], feed_dict=feed_dict)
         total_loss += loss * batch_len
         total_acc += acc * batch_len
-
     return y_pred_class, total_loss / data_len, total_acc / data_len
 
 
@@ -133,11 +132,11 @@ def test():
     saver = tf.train.Saver()
     #tensorboard_dir = 'tensorboard1/textrnn'
     print("Loading training and validation data...")
-    ckpt = tf.train.latest_checkpoint(save_path)  # 找到存储变量值的位置
+    ckpt = tf.train.latest_checkpoint(save_dir)  # 找到存储变量值的位置
     # 创建session
     session = tf.Session()
     saver.restore(session, ckpt)
-    session.run(tf.global_variables_initializer())
+    #session.run(tf.global_variables_initializer())
     print('finish loading model!')
     print('predicting...')
     x, y, S = getTestData(predict_dir,tokenizer)
@@ -148,6 +147,11 @@ def test():
     predict_y = predict_y[:,0]
     T = [S[i]+'\t'+'%0.4f'%predict_y[i] for i in range(len(S))]
     with open(predict_dir.replace('predict','predict_result'),'w') as f:
+        f.write('\n'.join(T))
+    T = [[S[i],predict_y[i]] for i in range(len(S))]
+    T = sorted(T,key=lambda x:-x[-1])
+    T = ['\t'.join([t[0],str(t[1])]) for t in T]
+    with open(predict_dir.replace('predict','predict_result_sorted'),'w') as f:
         f.write('\n'.join(T))
 if __name__ == '__main__':
     if len(sys.argv)>3:
