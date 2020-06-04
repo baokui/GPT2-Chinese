@@ -43,8 +43,6 @@ def generating(prefix,model,config,tokenizer,config_predict,quick=False,num=5,co
         if len(prefix)==0:
             prefix = prefix0
     punc = '.,?!;\t 。，？！；'
-    global a
-    a = app
     fast_pattern = config_predict.fast_pattern
     n_ctx = model.config.n_ctx
     len_prefix = len(prefix)
@@ -89,9 +87,9 @@ def generating(prefix,model,config,tokenizer,config_predict,quick=False,num=5,co
         #S = [r[1:] for r in S]
     return S0
 def main():
-    ConfigPredict = config_predict()
+    ConfigPredict = config_predict(model_config='config/config_mergemodel.json')
     path_configs = ConfigPredict.model_configs
     gpu = '0'
     model, tokenizer, config, device = getModel(path_config=path_configs, gpu=gpu)
     data = '我们'
-    result = generating(data, model, config, tokenizer, device, ConfigPredict)
+    result = generating(data, model, config, tokenizer, ConfigPredict)

@@ -12,6 +12,8 @@ from tqdm import tqdm
 from torch.nn import DataParallel
 from tokenizations.bpe_tokenizer import get_encoder
 def iterData(path_data,rate=1.0,batch_size=32,epochs = 20):
+    blackwords = ['封了','疫情','传染','病毒','肺炎']
+    blackwords_tokens = ['1400 29', '1107 49', '503 1061', '493 938', '1371 1250']
     files = os.listdir(path_data)
     S = []
     for epoch in range(epochs):
@@ -20,6 +22,13 @@ def iterData(path_data,rate=1.0,batch_size=32,epochs = 20):
             f = open(os.path.join(path_data,files[i]),'r')
             for line in f:
                 if random.uniform(0,1)>rate:
+                    continue
+                flag = False
+                for b in blackwords_tokens:
+                    if b in line:
+                        flag = True
+                        break
+                if flag and random.uniform(0,1)>0.01:
                     continue
                 tokens = line.strip().split()
                 tokens = [int(token) for token in tokens]

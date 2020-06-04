@@ -68,6 +68,8 @@ def process_file():
 def build_vocab():
     pass
 def build_dataset(path_pos,path_neg,nb_test_pos = 100000,nb_test_neg = 100000,min_len=2,max_len=10):
+    path_pos = '../data/GodText/merge/'
+    path_neg = '../data/userdata/'
     with open(path_pos,'r') as f:
         s = json.load(f)
     random.shuffle(s)
@@ -80,20 +82,27 @@ def build_dataset(path_pos,path_neg,nb_test_pos = 100000,nb_test_neg = 100000,mi
         L = random.randint(min_len,max_len)
         x_test_pos.append(s[i][:L])
     files = os.listdir(path_neg)
-    files = [os.path.join(path_neg,file,'part-00001') for file in files]
+    files = [os.path.join(path_neg,file) for file in files]
     nb_neg_each = int(len(x_pos)/len(files))
     nb_test_neg_each = int(nb_test_neg/len(files))
     x_neg = []
     x_test_neg = []
+    punc = '.;!?。；！？'
     for file in files:
         print(file)
         f = open(file,'r')
         x0 = []
         x1 = []
         for line in f:
-            t = line.strip().split('\t')[1]
+            line = line.strip()
+            S = [line[0]]
+            for i in range(1, len(line)):
+                if line[i - 1] in punc and line[i] == '，':
+                    continue
+                S.append(line[i])
+            S = ''.join(line)
             L = random.randint(min_len, max_len)
-            t = t[:L]
+            t = S[:L]
             if len(x0)<nb_neg_each:
                 x0.append(t)
                 continue
