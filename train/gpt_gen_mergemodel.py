@@ -98,3 +98,5 @@ def main():
         result = generating(data, model, config, tokenizer, ConfigPredict)
         for r in result:
             print(r)
+if __name__=='__main__':
+    main()
