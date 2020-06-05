@@ -44,12 +44,16 @@ def main(path_config,path_data,mask_tokens='MASK'):
         data = f.read().strip().split('\n')
     mask_tokens = mask_tokens.split(',')
     for mask_token in mask_tokens:
+        print(mask_token)
         PPL = []
+        ii = 0
         for s in data:
             id_msk = tokenizer.convert_tokens_to_ids('['+mask_token+']')
             context_tokens = [id_msk] + tokenizer.convert_tokens_to_ids(tokenizer.tokenize(s))
             ppl = getppl(model, context_tokens,tokenizer,device)
             PPL.append(ppl)
+            if ii%100==0:
+                print(mask_token,len(data),ii)
         idx0 = path_config.find('config_')+len('config_')
         path_target = path_data[:-4]+'_'+path_config[idx0:-5]+'_'+mask_token+'-ppl.txt'
         m = sum(PPL)/len(PPL)
