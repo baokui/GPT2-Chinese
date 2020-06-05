@@ -37,8 +37,8 @@ def getppl(model, context_tokens,tokenizer,device='cpu'):
         S *= p
     ppl = S**(-1/(length-1))
     return ppl
-def main(path_config,path_data,mask_tokens='MASK'):
-    model, config, tokenizer, ConfigPredict = getmodel(path_config)
+def main(path_config,path_data,mask_tokens='MASK',gpu='3'):
+    model, config, tokenizer, ConfigPredict = getmodel(path_config,gpu=gpu)
     device = 'cuda'
     with open(path_data,'r') as f:
         data = f.read().strip().split('\n')
@@ -54,6 +54,7 @@ def main(path_config,path_data,mask_tokens='MASK'):
             PPL.append(ppl)
             if ii%100==0:
                 print(mask_token,len(data),ii)
+            ii+=1
         idx0 = path_config.find('config_')+len('config_')
         path_target = path_data[:-4]+'_'+path_config[idx0:-5]+'_'+mask_token+'-ppl.txt'
         m = sum(PPL)/len(PPL)
@@ -67,8 +68,8 @@ def main(path_config,path_data,mask_tokens='MASK'):
             f.write('\n'.join(S))
     print('eval over!')
 if __name__=='__main__':
-    path_config,path_data = sys.argv[1:3]
+    path_config,path_data,gpu = sys.argv[1:4]
     mask = 'MASK'
-    if len(sys.argv)>3:
-        mask = sys.argv[3]
+    if len(sys.argv)>4:
+        mask = sys.argv[4]
     main(path_config, path_data,mask_tokens=mask)
