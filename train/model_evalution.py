@@ -72,4 +72,4 @@ if __name__=='__main__':
     mask = 'MASK'
     if len(sys.argv)>4:
         mask = sys.argv[4]
-    main(path_config, path_data,mask_tokens=mask)
+    main(path_config, path_data,gpu=gpu,mask_tokens=mask)
