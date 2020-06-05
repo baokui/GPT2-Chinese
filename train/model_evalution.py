@@ -37,27 +37,34 @@ def getppl(model, context_tokens,tokenizer,device='cpu'):
         S *= p
     ppl = S**(-1/(length-1))
     return ppl
-def main(path_config,path_data):
+def main(path_config,path_data,mask_tokens='MASK'):
     model, config, tokenizer, ConfigPredict = getmodel(path_config)
     device = 'cuda'
     with open(path_data,'r') as f:
         data = f.read().strip().split('\n')
-    PPL = []
-    for s in data:
-        id_msk = tokenizer.convert_tokens_to_ids('[MASK]')
-        context_tokens = [id_msk] + tokenizer.convert_tokens_to_ids(tokenizer.tokenize(s))
-        ppl = getppl(model, context_tokens,tokenizer,device)
-        PPL.append(ppl)
-    idx0 = path_config.find('config_')+len('config_')
-    path_target = path_data[:-4]+'_'+path_config[idx0:-5]+'-ppl.txt'
-    m = sum(PPL)/len(PPL)
-    S = [['mean','%0.4f'%m]]
-    for i in range(len(PPL)):
-        S.append([data[i],'%0.4f'%PPL[i]])
-    S = ['\t'.join(s) for s in S]
-    with open(path_target,'w') as f:
-        f.write('\n'.join(S))
+    mask_tokens = mask_tokens.split(',')
+    for mask_token in mask_tokens:
+        PPL = []
+        for s in data:
+            id_msk = tokenizer.convert_tokens_to_ids('['+mask_token+']')
+            context_tokens = [id_msk] + tokenizer.convert_tokens_to_ids(tokenizer.tokenize(s))
+            ppl = getppl(model, context_tokens,tokenizer,device)
+            PPL.append(ppl)
+        idx0 = path_config.find('config_')+len('config_')
+        path_target = path_data[:-4]+'_'+path_config[idx0:-5]+'_'+mask_token+'-ppl.txt'
+        m = sum(PPL)/len(PPL)
+        S = [['mean','%0.4f'%m]]
+        T = [[data[i],PPL[i]] for i in range(len(data))]
+        T = sorted(T,key=lambda x:x[-1])
+        for i in range(len(PPL)):
+            S.append(['%0.4f'%T[i][1],T[i][0]])
+        S = ['\t'.join(s) for s in S]
+        with open(path_target,'w') as f:
+            f.write('\n'.join(S))
     print('eval over!')
 if __name__=='__main__':
     path_config,path_data = sys.argv[1:3]
-    main(path_config, path_data)
+    mask = 'MASK'
+    if len(sys.argv)>3:
+        mask = sys.argv[3]
+    main(path_config, path_data,mask_tokens=mask)
