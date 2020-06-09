@@ -12,14 +12,15 @@ from gevent.pywsgi import WSGIServer
 from gevent import monkey
 import json
 import logging
+import sys
 monkey.patch_all()
 app = Flask(__name__)
-port = 1001
+port = sys.argv[1]
+base_dir = sys.argv[2]
+save_dir = sys.argv[3]
 max_len = 10
-#base_dir = sys.argv[1]
-#save_dir = sys.argv[2]
-base_dir = 'data1'
-save_dir = 'checkpoints1/textrnn'
+#base_dir = 'data1'
+#save_dir = 'checkpoints1/textrnn'
 vocab_dir = os.path.join(base_dir, 'vocab.txt')
 save_path = os.path.join(save_dir, 'best_validation')
 config = TRNNConfig()
