@@ -19,8 +19,10 @@ monkey.patch_all()
 app = Flask(__name__)
 
 max_len = 10
-base_dir = sys.argv[1]
-save_dir = sys.argv[2]
+#base_dir = sys.argv[1]
+#save_dir = sys.argv[2]
+base_dir = 'data1'
+save_dir = 'checkpoints1/textrnn'
 vocab_dir = os.path.join(base_dir, 'vocab.txt')
 save_path = os.path.join(save_dir, 'best_validation')
 config = TRNNConfig()
