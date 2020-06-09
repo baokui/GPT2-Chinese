@@ -1,10 +1,5 @@
 # coding: utf-8
-
-from __future__ import print_function
-
 import os
-import time
-from datetime import timedelta
 from rnn_model import TRNNConfig, TextRNN, Tokenizer
 import tensorflow as tf
 from flask import Flask, request, Response
@@ -15,7 +10,7 @@ import logging
 import sys
 monkey.patch_all()
 app = Flask(__name__)
-port = sys.argv[1]
+port = int(sys.argv[1])
 base_dir = sys.argv[2]
 save_dir = sys.argv[3]
 max_len = 10
