@@ -58,12 +58,19 @@ def main(path_config,path_data,mask_tokens='MASK',gpu='3'):
         idx0 = path_config.find('config_')+len('config_')
         path_target = path_data[:-4]+'_'+path_config[idx0:-5]+'_'+mask_token+'-ppl.txt'
         m = sum(PPL)/len(PPL)
+        T = [[data[i], PPL[i]] for i in range(len(data))]
+        S = []
+        for i in range(len(PPL)):
+            S.append(['%0.4f' % T[i][1], T[i][0]])
+        with open(path_target,'w') as f:
+            f.write('\n'.join(S))
         S = [['mean','%0.4f'%m]]
         T = [[data[i],PPL[i]] for i in range(len(data))]
         T = sorted(T,key=lambda x:x[-1])
         for i in range(len(PPL)):
             S.append(['%0.4f'%T[i][1],T[i][0]])
         S = ['\t'.join(s) for s in S]
+        path_target = path_data[:-4] + '_' + path_config[idx0:-5] + '_' + mask_token + 'sort-ppl.txt'
         with open(path_target,'w') as f:
             f.write('\n'.join(S))
     print('eval over!')

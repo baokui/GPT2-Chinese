@@ -2,6 +2,7 @@
 import os
 from rnn_model import TRNNConfig, TextRNN, Tokenizer
 import tensorflow as tf
+#tf.__version__='1.12.0'
 from flask import Flask, request, Response
 from gevent.pywsgi import WSGIServer
 from gevent import monkey
