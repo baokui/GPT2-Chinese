@@ -62,6 +62,7 @@ def main(path_config,path_data,mask_tokens='MASK',gpu='3'):
         S = []
         for i in range(len(PPL)):
             S.append(['%0.4f' % T[i][1], T[i][0]])
+        S = ['\t'.join(s) for s in S]
         with open(path_target,'w') as f:
             f.write('\n'.join(S))
         S = [['mean','%0.4f'%m]]
