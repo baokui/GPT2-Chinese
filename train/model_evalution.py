@@ -50,7 +50,7 @@ def main(path_config,path_data,mask_tokens='MASK',gpu='3'):
         for s in data:
             id_msk = tokenizer.convert_tokens_to_ids('['+mask_token+']')
             context_tokens = [id_msk] + tokenizer.convert_tokens_to_ids(tokenizer.tokenize(s))
-            if len(data)==0:
+            if len(context_tokens)==1:
                 ppl = -1
             else:
                 ppl = getppl(model, context_tokens,tokenizer,device)
