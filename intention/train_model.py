@@ -9,7 +9,6 @@ from datetime import timedelta
 
 import numpy as np
 import tensorflow as tf
-from sklearn import metrics
 
 from rnn_model import TRNNConfig, TextRNN, Tokenizer
 from data_loader import read_vocab, read_category, batch_iter,batch_iter_test, process_file, build_vocab,getTestData
