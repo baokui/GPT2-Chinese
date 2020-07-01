@@ -58,17 +58,20 @@ def evaluate(sess, x_, y_):
 def train():
     print("Configuring TensorBoard and Saver...")
     # 配置 Tensorboard，重新训练时，请将tensorboard文件夹删除，不然图会覆盖
-    tensorboard_dir = 'tensorboard1/textrnn'
-    if not os.path.exists(tensorboard_dir):
-        os.makedirs(tensorboard_dir)
     tf.summary.scalar("loss", model.loss)
     tf.summary.scalar("accuracy", model.acc)
-    merged_summary = tf.summary.merge_all()
-    writer = tf.summary.FileWriter(tensorboard_dir)
     # 配置 Saver
     saver = tf.train.Saver()
+    print("Loading training and validation data...")
+    # 创建session
+    session = tf.Session()
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
+        session.run(tf.global_variables_initializer())
+    else:
+        ckpt = tf.train.latest_checkpoint(save_dir)  # 找到存储变量值的位置
+        saver.restore(session, ckpt)
+        print('restore model from %s'%ckpt)
     print("Loading training and validation data...")
     # 载入训练集与验证集
     start_time = time.time()
@@ -76,17 +79,10 @@ def train():
     #x_val, y_val = process_file(val_dir, word_to_id, cat_to_id, config.seq_length)
     time_dif = get_time_dif(start_time)
     print("Time usage:", time_dif)
-    # 创建session
-    session = tf.Session()
-    session.run(tf.global_variables_initializer())
-    writer.add_graph(session.graph)
     print('Training and evaluating...')
     start_time = time.time()
     total_batch = 0  # 总批次
     best_acc_val = 0.0  # 最佳验证集准确率
-    last_improved = 0  # 记录上一次提升批次
-    require_improvement = 1000  # 如果超过1000轮未提升，提前结束训练
-    flag = False
     epoch0 = -1
     while True:
         batch_train = next(iter)
@@ -113,11 +109,7 @@ def train():
             if acc_val > best_acc_val:
                 # 保存最好结果
                 best_acc_val = acc_val
-                last_improved = total_batch
                 saver.save(sess=session, save_path=save_path)
-                improved_str = '*'
-            else:
-                improved_str = ''
             improved_str = 0.0
             time_dif = get_time_dif(start_time)
             msg = 'Iter: {0:>6}, Train Loss: {1:>6.2}, Train Acc: {2:>7.2%},' \
