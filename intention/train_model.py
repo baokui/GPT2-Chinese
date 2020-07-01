@@ -125,7 +125,8 @@ def test():
     feed_dict = feed_data(x, y, config.dropout_keep_prob, model)
     feed_dict[model.keep_prob] = 1.0
     modelpredict = tf.nn.softmax(model.logits)
-    predict_y = session.run(modelpredict, feed_dict=feed_dict)
+    predict_y,acc = session.run([modelpredict,model.acc], feed_dict=feed_dict)
+    print(acc)
     predict_y = predict_y[:,0]
     T = [S[i]+'\t'+'%0.4f'%predict_y[i] for i in range(len(S))]
     with open(predict_dir.replace('predict','predict_result'),'w') as f:
@@ -136,6 +137,7 @@ def test():
     with open(predict_dir.replace('predict','predict_result_sorted'),'w') as f:
         f.write('\n'.join(T))
 if __name__ == '__main__':
+    tf.reset_default_graph()
     base_dir = sys.argv[1]
     save_dir = sys.argv[2]
     ckpt_dir = sys.argv[3]
