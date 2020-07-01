@@ -16,6 +16,7 @@ from data_loader import read_vocab, read_category, batch_iter,batch_iter_test, p
 
 base_dir = sys.argv[1]
 save_dir = sys.argv[2]
+ckpt_dir = sys.argv[3]
 train_dir = os.path.join(base_dir, 'train.txt')
 test_dir = os.path.join(base_dir, 'test.txt')
 val_dir = os.path.join(base_dir, 'val.txt')
@@ -67,9 +68,10 @@ def train():
     session = tf.Session()
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
+    if not os.path.exists(ckpt_dir):
         session.run(tf.global_variables_initializer())
     else:
-        ckpt = tf.train.latest_checkpoint(save_path)  # 找到存储变量值的位置
+        ckpt = tf.train.latest_checkpoint(ckpt_dir)  # 找到存储变量值的位置
         saver.restore(session, ckpt)
         print('restore model from %s'%ckpt)
     print("Loading training and validation data...")
@@ -124,7 +126,7 @@ def test():
     saver = tf.train.Saver()
     #tensorboard_dir = 'tensorboard1/textrnn'
     print("Loading training and validation data...")
-    ckpt = tf.train.latest_checkpoint(save_path)  # 找到存储变量值的位置
+    ckpt = tf.train.latest_checkpoint(ckpt_dir)  # 找到存储变量值的位置
     # 创建session
     session = tf.Session()
     saver.restore(session, ckpt)
@@ -146,8 +148,8 @@ def test():
     with open(predict_dir.replace('predict','predict_result_sorted'),'w') as f:
         f.write('\n'.join(T))
 if __name__ == '__main__':
-    if len(sys.argv)>3:
-        option = sys.argv[3]
+    if len(sys.argv)>4:
+        option = sys.argv[4]
     else:
         option = 'train'
     print('Configuring RNN model...')
