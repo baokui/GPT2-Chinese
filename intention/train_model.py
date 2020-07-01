@@ -43,7 +43,35 @@ def evaluate(sess, x_, y_):
         total_acc += acc * batch_len
     return y_pred_class, total_loss / data_len, total_acc / data_len
 
-
+def calAUC(prob, labels):
+    f = list(zip(prob, labels))
+    rank = [values2 for values1, values2 in sorted(f, key=lambda x: x[0])]
+    rankList = [i + 1 for i in range(len(rank)) if rank[i] == 1]
+    posNum = 0.0
+    negNum = 0.0
+    for i in range(len(labels)):
+        if (labels[i] == 1):
+            posNum += 1
+        else:
+            negNum += 1
+    auc = (sum(rankList) - (posNum * (posNum + 1)) / 2) / (posNum * negNum)
+    # print(auc)
+    return auc
+def calF1(labels,probs):
+    thr0 = [0.1*i for i in range(1,10)]
+    F1 = []
+    for thr in thr0:
+        y = [int(p>thr) for p in probs]
+        TP = len([i for i in range(len(labels)) if labels[i]==1 and y[i]==1])
+        TN = len([i for i in range(len(labels)) if labels[i]==0 and y[i]==0])
+        FP = len([i for i in range(len(labels)) if labels[i]==0 and y[i]==1])
+        FN = len([i for i in range(len(labels)) if labels[i]==1 and y[i]==0])
+        precision = TP / (TP + FP)
+        recall = TP / (TP + FN)
+        accuracy = (TP + TN) / (TP + FP + TN + FN)
+        F1Score = 2 * precision * recall / (precision + accuracy)
+        F1.append([thr,F1Score])
+    return F1
 def train():
     print("Configuring TensorBoard and Saver...")
     # 配置 Tensorboard，重新训练时，请将tensorboard文件夹删除，不然图会覆盖
@@ -72,7 +100,7 @@ def train():
     print('Training and evaluating...')
     start_time = time.time()
     total_batch = 0  # 总批次
-    best_acc_val = 0.0  # 最佳验证集准确率
+    best_auc_val = 0.0  # 最佳验证集准确率
     epoch0 = -1
     while True:
         batch_train = next(iter)
@@ -82,29 +110,38 @@ def train():
         if epoch0!=epoch:
             print('EPOCH: '+str(epoch))
             epoch0 = epoch
-        feed_dict = feed_data(x_batch, y_batch, config.dropout_keep_prob,model)
         if total_batch % config.save_per_batch == 0:
             # 每多少轮次将训练结果写入tensorboard scalar
             #s = session.run(merged_summary, feed_dict=feed_dict)
             #writer.add_summary(s, total_batch)
             pass
         if total_batch % config.print_per_batch == 0:
-            # 每多少轮次输出在训练集和验证集上的性能
-            feed_dict[model.keep_prob] = 1.0
+            feed_dict = feed_data(x_batch, y_batch, config.dropout_keep_prob, model)
+            feed_dict[model.keep_prob] = config.dropout_keep_prob
             loss_train, acc_train = session.run([model.loss, model.acc], feed_dict=feed_dict)
-            x_test_batch, y_test_batch = next(iter_test)
-            feed_dict_test = feed_data(x_test_batch, y_test_batch, config.dropout_keep_prob,model)
-            feed_dict_test[model.keep_prob] = 1.0
-            loss_val, acc_val = session.run([model.loss, model.acc], feed_dict=feed_dict_test)
-            if acc_val > best_acc_val:
+            # 每多少轮次输出在训练集和验证集上的性能
+            x, y, S = getTestData(predict_dir, tokenizer)
+            feed_dict = feed_data(x, y, config.dropout_keep_prob, model)
+            feed_dict[model.keep_prob] = 1.0
+            modelpredict = tf.nn.softmax(model.logits)
+            predict_y, acc = session.run([modelpredict, model.acc], feed_dict=feed_dict)
+            labels = [int(y[i][0] == 1) for i in range(len(y))]
+            p = [predict_y[i][0] for i in range(len(predict_y))]
+            auc = calAUC(prob=p, labels=labels)
+            F1 = calF1(labels=labels, probs=p)
+            #F1 = ['%0.1f' % tt[0] + '\t' + '%0.2f' % tt[1] for tt in F1]
+            #print('acc:%0.2f' % auc)
+            #print('F1:\n' + '\n'.join(F1))
+            if auc > best_auc_val:
                 # 保存最好结果
-                best_acc_val = acc_val
+                best_auc_val = auc
                 saver.save(sess=session, save_path=save_path)
             improved_str = 0.0
             time_dif = get_time_dif(start_time)
             msg = 'Iter: {0:>6}, Train Loss: {1:>6.2}, Train Acc: {2:>7.2%},' \
-                  + ' Val Loss: {3:>6.2}, Val Acc: {4:>7.2%}, Time: {5} {6}'
-            print(msg.format(total_batch, loss_train, acc_train, loss_val, acc_val, time_dif, improved_str))
+                  + ' Val Auc: {3:>6.2}, Val F1: {4:>7.2%}, Time: {5} {6}'
+            print(msg.format(total_batch, loss_train, acc_train, auc, np.mean(F1), time_dif, improved_str))
+        feed_dict = feed_data(x_batch, y_batch, config.dropout_keep_prob, model)
         feed_dict[model.keep_prob] = config.dropout_keep_prob
         session.run(model.optim, feed_dict=feed_dict)  # 运行优化
         total_batch += 1
@@ -119,23 +156,21 @@ def test():
     session = tf.Session()
     saver.restore(session, ckpt)
     #session.run(tf.global_variables_initializer())
-    print('finish loading model!')
+    print('finish loading model from %s !'%ckpt)
     print('predicting...')
     x, y, S = getTestData(predict_dir,tokenizer)
     feed_dict = feed_data(x, y, config.dropout_keep_prob, model)
     feed_dict[model.keep_prob] = 1.0
     modelpredict = tf.nn.softmax(model.logits)
     predict_y,acc = session.run([modelpredict,model.acc], feed_dict=feed_dict)
-    print(acc)
-    predict_y = predict_y[:,0]
-    T = [S[i]+'\t'+'%0.4f'%predict_y[i] for i in range(len(S))]
-    with open(predict_dir.replace('predict','predict_result'),'w') as f:
-        f.write('\n'.join(T))
-    T = [[S[i],predict_y[i]] for i in range(len(S))]
-    T = sorted(T,key=lambda x:-x[-1])
-    T = ['\t'.join([t[0],str(t[1])]) for t in T]
-    with open(predict_dir.replace('predict','predict_result_sorted'),'w') as f:
-        f.write('\n'.join(T))
+    labels = [int(y[i][0]==1) for i in range(len(y))]
+    p = [predict_y[i][0] for i in range(len(predict_y))]
+    auc = calAUC(prob=p, labels=labels)
+    F1 = calF1(labels=labels, probs=p)
+    F1 = ['%0.1f'%tt[0]+'\t'+'%0.2f'%tt[1] for tt in F1]
+    print('acc:%0.2f'%auc)
+    print('F1:\n'+'\n'.join(F1))
+    return auc,F1
 if __name__ == '__main__':
     tf.reset_default_graph()
     base_dir = sys.argv[1]
