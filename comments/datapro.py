@@ -126,3 +126,32 @@ def getdata(path_source0='D:\\项目\\输入法\\神配文数据\\淘宝评论\\
         i+=1
         i0 = i * N
         i1 = (i + 1) * N
+def getData_zhihu():
+    path_data = 'D:\\项目\\输入法\\神配文数据\\评论\\知乎\\zhihu_all_res.txt'
+    with open(path_data,'r',encoding='utf-8') as f:
+        s = f.read().strip().split('\n')
+    s = [ss.split('\t') for ss in s]
+    S = [ss[4] for ss in s]
+    V = {}
+    for s in S:
+        for ss in s:
+            if ss not in V:
+                V[ss]=1
+            else:
+                V[ss]+=1
+    T = [(k,V[k]) for k in V]
+    T = sorted(T,key = lambda x:-x[-1])
+    D = [t[0] for t in T if t[1]>3]
+    D = VocabExtend(D)
+    path_vocab = 'D:\\项目\\输入法\\神配文数据\\评论\\知乎\\vocab.txt'
+    with open(path_vocab,'w',encoding='utf-8') as f:
+        f.write('\n'.join(D))
+    T = []
+    for s in S:
+        t = tokenization(s,D)
+        if t:
+            T.append(t)
+    T = [' '.join([str(tt) for tt in t]) for t in T]
+    path_token = 'D:\\项目\\输入法\\神配文数据\\评论\\知乎\\token.txt'
+    with open(path_token,'w') as f:
+        f.write('\n'.join(T))

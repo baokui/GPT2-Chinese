@@ -57,7 +57,10 @@ def getTestData(path_data,tokenizer,max_len=10,max_lines = 10000):
         s = line.strip().split('\t')
         t = tokenizer.tokenization(s[0],max_len=max_len)
         x.append(t)
-        y.append([1, 0])
+        if len(s)>1 and s[1]=='1':
+            y.append([1, 0])
+        else:
+            y.append([0, 1])
         S.append(s[0][:max_len])
         if len(x)>=max_lines:
             break
