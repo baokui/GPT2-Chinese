@@ -69,7 +69,7 @@ def train():
         os.makedirs(save_dir)
         session.run(tf.global_variables_initializer())
     else:
-        ckpt = tf.train.latest_checkpoint(save_dir)  # 找到存储变量值的位置
+        ckpt = tf.train.latest_checkpoint(save_path)  # 找到存储变量值的位置
         saver.restore(session, ckpt)
         print('restore model from %s'%ckpt)
     print("Loading training and validation data...")
@@ -124,7 +124,7 @@ def test():
     saver = tf.train.Saver()
     #tensorboard_dir = 'tensorboard1/textrnn'
     print("Loading training and validation data...")
-    ckpt = tf.train.latest_checkpoint(save_dir)  # 找到存储变量值的位置
+    ckpt = tf.train.latest_checkpoint(save_path)  # 找到存储变量值的位置
     # 创建session
     session = tf.Session()
     saver.restore(session, ckpt)
