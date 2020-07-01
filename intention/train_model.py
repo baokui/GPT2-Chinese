@@ -14,17 +14,6 @@ from sklearn import metrics
 from rnn_model import TRNNConfig, TextRNN, Tokenizer
 from data_loader import read_vocab, read_category, batch_iter,batch_iter_test, process_file, build_vocab,getTestData
 
-base_dir = sys.argv[1]
-save_dir = sys.argv[2]
-ckpt_dir = sys.argv[3]
-train_dir = os.path.join(base_dir, 'train.txt')
-test_dir = os.path.join(base_dir, 'test.txt')
-val_dir = os.path.join(base_dir, 'val.txt')
-vocab_dir = os.path.join(base_dir, 'vocab.txt')
-predict_dir = os.path.join(base_dir, 'predict.txt')
-save_path = os.path.join(save_dir, 'best_validation')  # 最佳验证结果保存路径
-
-
 def get_time_dif(start_time):
     """获取已使用时间"""
     end_time = time.time()
@@ -148,6 +137,15 @@ def test():
     with open(predict_dir.replace('predict','predict_result_sorted'),'w') as f:
         f.write('\n'.join(T))
 if __name__ == '__main__':
+    base_dir = sys.argv[1]
+    save_dir = sys.argv[2]
+    ckpt_dir = sys.argv[3]
+    train_dir = os.path.join(base_dir, 'train.txt')
+    test_dir = os.path.join(base_dir, 'test.txt')
+    val_dir = os.path.join(base_dir, 'val.txt')
+    vocab_dir = os.path.join(base_dir, 'vocab.txt')
+    predict_dir = os.path.join(base_dir, 'predict.txt')
+    save_path = os.path.join(save_dir, 'best_validation')  # 最佳验证结果保存路径
     if len(sys.argv)>4:
         option = sys.argv[4]
     else:
