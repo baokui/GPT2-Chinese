@@ -70,7 +70,7 @@ def calF1(labels,probs):
         recall = TP / (TP + FN)
         accuracy = (TP + TN) / (TP + FP + TN + FN)
         F1Score = 2 * precision * recall / (precision + accuracy)
-        F1.append([thr,F1Score])
+        F1.append([thr,F1Score,TP,TN,FP,FN])
     return F1
 def train():
     print("Configuring TensorBoard and Saver...")
@@ -110,17 +110,14 @@ def train():
         if epoch0!=epoch:
             print('EPOCH: '+str(epoch))
             epoch0 = epoch
+        loss_train, acc_train = 0,0
         if total_batch % config.save_per_batch == 0:
-            # 每多少轮次将训练结果写入tensorboard scalar
-            #s = session.run(merged_summary, feed_dict=feed_dict)
-            #writer.add_summary(s, total_batch)
-            pass
-        if total_batch % config.print_per_batch == 0:
             feed_dict = feed_data(x_batch, y_batch, config.dropout_keep_prob, model)
             feed_dict[model.keep_prob] = config.dropout_keep_prob
             loss_train, acc_train = session.run([model.loss, model.acc], feed_dict=feed_dict)
             # 每多少轮次输出在训练集和验证集上的性能
-            x, y, S = getTestData(predict_dir, tokenizer)
+            # x, y, S = getTestData(predict_dir, tokenizer)
+            x, y = next(iter_test)
             feed_dict = feed_data(x, y, config.dropout_keep_prob, model)
             feed_dict[model.keep_prob] = 1.0
             modelpredict = tf.nn.softmax(model.logits)
@@ -129,6 +126,31 @@ def train():
             p = [predict_y[i][0] for i in range(len(predict_y))]
             auc = calAUC(prob=p, labels=labels)
             F1 = calF1(labels=labels, probs=p)
+            F1 = [ff[1] for ff in F1]
+            # F1 = ['%0.1f' % tt[0] + '\t' + '%0.2f' % tt[1] for tt in F1]
+            # print('acc:%0.2f' % auc)
+            # print('F1:\n' + '\n'.join(F1))
+            if auc > best_auc_val:
+                # 保存最好结果
+                best_auc_val = auc
+                saver.save(sess=session, save_path=save_path)
+            improved_str = 0.0
+            time_dif = get_time_dif(start_time)
+            msg = 'Iter: {0:>6}, Train Loss: {1:>6.2}, Train Acc: {2:>7.2%},' \
+                  + ' Val Auc: {3:>6.2}, Val F1: {4:>7.2%}, Time: {5} {6}'
+            print(msg.format(total_batch, loss_train, acc_train, auc, np.mean(F1), time_dif, improved_str))
+        if total_batch % config.print_per_batch == 0:
+            # 每多少轮次输出在训练集和验证集上的性能
+            x, y, S = getTestData(test_dir, tokenizer)
+            feed_dict = feed_data(x, y, config.dropout_keep_prob, model)
+            feed_dict[model.keep_prob] = 1.0
+            modelpredict = tf.nn.softmax(model.logits)
+            predict_y, acc = session.run([modelpredict, model.acc], feed_dict=feed_dict)
+            labels = [int(y[i][0] == 1) for i in range(len(y))]
+            p = [predict_y[i][0] for i in range(len(predict_y))]
+            auc = calAUC(prob=p, labels=labels)
+            F1 = calF1(labels=labels, probs=p)
+            F1 = [ff[1] for ff in F1]
             #F1 = ['%0.1f' % tt[0] + '\t' + '%0.2f' % tt[1] for tt in F1]
             #print('acc:%0.2f' % auc)
             #print('F1:\n' + '\n'.join(F1))
@@ -139,7 +161,7 @@ def train():
             improved_str = 0.0
             time_dif = get_time_dif(start_time)
             msg = 'Iter: {0:>6}, Train Loss: {1:>6.2}, Train Acc: {2:>7.2%},' \
-                  + ' Val Auc: {3:>6.2}, Val F1: {4:>7.2%}, Time: {5} {6}'
+                  + ' Test Auc: {3:>6.2}, Test F1: {4:>7.2%}, Time: {5} {6}'
             print(msg.format(total_batch, loss_train, acc_train, auc, np.mean(F1), time_dif, improved_str))
         feed_dict = feed_data(x_batch, y_batch, config.dropout_keep_prob, model)
         feed_dict[model.keep_prob] = config.dropout_keep_prob
@@ -167,9 +189,12 @@ def test():
     p = [predict_y[i][0] for i in range(len(predict_y))]
     auc = calAUC(prob=p, labels=labels)
     F1 = calF1(labels=labels, probs=p)
-    F1 = ['%0.1f'%tt[0]+'\t'+'%0.2f'%tt[1] for tt in F1]
+    f1 = ['%0.1f'%tt[0]+'\t'+'%0.2f'%tt[1] for tt in F1]
     print('acc:%0.2f'%auc)
-    print('F1:\n'+'\n'.join(F1))
+    print('F1:\n'+'\n'.join(f1))
+    print('\t'.join(['thr','TP','TN','FP','FN']))
+    for f in F1:
+        print('\t'.join(['%0.1f'%f[0],str(f[2]),str(f[3]),str(f[4]),str(f[5])]))
     return auc,F1
 if __name__ == '__main__':
     tf.reset_default_graph()
@@ -194,7 +219,7 @@ if __name__ == '__main__':
     print('参数总量：%d'%np.sum([np.prod(v.get_shape().as_list()) for v in tf.trainable_variables()]))
     if option == 'train':
         iter = batch_iter(train_dir, tokenizer, epochs=config.num_epochs)
-        iter_test = batch_iter_test(test_dir, tokenizer)
+        iter_test = batch_iter_test(val_dir, tokenizer)
         train()
     else:
         test()

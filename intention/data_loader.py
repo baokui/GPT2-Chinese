@@ -27,7 +27,7 @@ def batch_iter(path_data,tokenizer,max_len=10,batch_size=64,epochs = 1):
                 y = []
         f.close()
     yield '__STOP__'
-def batch_iter_test(path_data,tokenizer,max_len=10,batch_size=10000):
+def batch_iter_test(path_data,tokenizer,max_len=10,batch_size=20000):
     x = []
     y = []
     while True:
@@ -149,3 +149,54 @@ def build_dataset(path_pos,path_neg,nb_test_pos = 100000,nb_test_neg = 100000,mi
     T = [t[0] for t in T]
     with open('data1/vocab.txt','w') as f:
         f.write('\n'.join(T))
+def read_excel(path_source1,index=0):
+    import xlrd
+    workbook = xlrd.open_workbook(path_source1)  # 打开excel文件
+    sheets = workbook.sheets()
+    R = []
+    for index in range(1,len(sheets)):
+        table = workbook.sheet_by_name(sheets[index].name)  # 将文件内容表格化
+        rows_num = table.nrows  # 获取行
+        cols_num = table.ncols  # 获取列
+        res = []  # 定义一个数组
+        for rows in range(rows_num):
+            r = []
+            for cols in range(cols_num):
+                r.append(table.cell(rows, cols).value)  # 获取excel中单元格的内容
+            res.append(r)
+        R.append(res)
+    return R
+def getData(path_source):
+    path_source='D:\\项目\\输入法\\意图判断模型\\朋友圈微博意图判断\\data\\语料标注——规则模型7.6.xlsx'
+    path_data = 'D:\\项目\\输入法\\意图判断模型\\朋友圈微博意图判断\\data\\'
+    R = read_excel(path_source)
+    S = []
+    for i in range(len(R)):
+        for j in range(1,len(R[i])):
+            if R[i][j][2]=='':
+                continue
+            S.append([R[i][j][0],R[i][j][2]])
+    D = {}
+    for s in S:
+        if s[1] not in D:
+            D[s[1]] = [s[0]]
+        else:
+            D[s[1]].append(s[0])
+    A = [[s[0],int(s[1]>=0)] for s in S]
+    random.shuffle(A)
+    rTrn = 0.75
+    rTst = 0.125
+    rVal = 0.125
+    idx0 = int(len(A)*rTrn)
+    idx1 = int(len(A)*(rTrn+rTst))
+    STrn = ['\t'.join([A[i][0],str(A[i][1])]) for i in range(idx0)]
+    STst = ['\t'.join([A[i][0],str(A[i][1])]) for i in range(idx0,idx1)]
+    SVal = ['\t'.join([A[i][0],str(A[i][1])]) for i in range(idx1,len(A))]
+    with open(path_data+'train.txt','w',encoding='utf-8') as f:
+        f.write('\n'.join(STrn))
+    with open(path_data+'test.txt','w',encoding='utf-8') as f:
+        f.write('\n'.join(STst))
+    with open(path_data+'valu.txt','w',encoding='utf-8') as f:
+        f.write('\n'.join(SVal))
+    with open(path_data+'predict.txt','w',encoding='utf-8') as f:
+        f.write('\n'.join(SVal))

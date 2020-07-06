@@ -1,7 +1,7 @@
 import os
 import numpy as np
 import random
-minlen = 6
+minlen = 10
 maxlen = 64
 path_source = 'D:\\项目\\输入法\\神配文数据\\评论\\抖音皮皮虾\\data1'
 path_target = 'D:\\项目\\输入法\\神配文数据\\评论\\抖音皮皮虾\\model'
@@ -69,7 +69,7 @@ with open(os.path.join(path_target,'vocab.txt'),'w',encoding='utf-8') as f:
     f.write('\n'.join(V))
 
 def tokenization(s):
-    r = [V.index('[MASK]')]
+    r = [V.index('[MASK_gou]')]
     for t in s:
         if t not in V:
             r.append(V.index('[UNK]'))
