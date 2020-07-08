@@ -64,4 +64,4 @@ def main(path_vocab,path_source,path_target,token_mask,maxline):
     #shutil.rmtree(data_path)
 if __name__=='__main__':
     path_vocab,path_source,path_target,token_mask,maxline = sys.argv[1:]
-    main(path_vocab,path_source,path_target,token_mask,maxline)
+    main(path_vocab,path_source,path_target,token_mask,int(maxline))
