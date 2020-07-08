@@ -3,13 +3,13 @@ import os
 from collections import Counter
 def token_pad(line,full_tokenizer,subline,n_ctx,token_mask='[MASK]'):
     punc = '.;!?。；！？'
-    tmp = [full_tokenizer.convert_tokens_to_ids(token_mask)]
+    tmp = [full_tokenizer.index(token_mask)]
     tmp = tmp + subline
     if len(tmp) > n_ctx - 1:
         tmp = tmp[:n_ctx - 1]
         idx_b = n_ctx-1
     else:
-        tmp = tmp + (n_ctx - 1 - len(tmp)) * [full_tokenizer.convert_tokens_to_ids('[PAD]')]
+        tmp = tmp + (n_ctx - 1 - len(tmp)) * [full_tokenizer.index('[PAD]')]
         idx_b = len(line)
     line = line[idx_b:]
     idx0 = 0
@@ -18,7 +18,7 @@ def token_pad(line,full_tokenizer,subline,n_ctx,token_mask='[MASK]'):
             idx0 = line.index(p)+1
             break
     line = line[idx0:]
-    tmp = tmp + [full_tokenizer.convert_tokens_to_ids('[CLS]')]
+    tmp = tmp + [full_tokenizer.index('[CLS]')]
     tmp = ' '.join([str(ss) for ss in tmp])
     return tmp,line
 def build_files(path_source,path_target, full_tokenizer,token_mask,maxline, n_ctx=64,min_length=10,padding=False):
@@ -35,7 +35,12 @@ def build_files(path_source,path_target, full_tokenizer,token_mask,maxline, n_ct
             nb_lines += 1
             if len(line)<min_length:
                 continue
-            subline = full_tokenizer.convert_tokens_to_ids(list(line))
+            subline = []
+            for a in line:
+                if a in full_tokenizer:
+                    subline.append(full_tokenizer.index(a))
+                else:
+                    subline.append(full_tokenizer.index('[UNK]'))
             if padding:
                 tmp,line = token_pad(line,full_tokenizer,subline,n_ctx,token_mask)
                 full_line.append(tmp)
