@@ -21,7 +21,7 @@ def token_pad(line,full_tokenizer,subline,n_ctx,token_mask='[MASK]'):
     tmp = tmp + [full_tokenizer.index('[CLS]')]
     tmp = ' '.join([str(ss) for ss in tmp])
     return tmp,line
-def build_files(path_source,path_target, full_tokenizer,token_mask,maxline, n_ctx=64,min_length=10,padding=False):
+def build_files(path_source,path_target, full_tokenizer,token_mask,maxline, n_ctx=64,min_length=10,padding=True):
     full_line = []
     print('reading lines')
     nb_lines = 0
@@ -48,9 +48,9 @@ def build_files(path_source,path_target, full_tokenizer,token_mask,maxline, n_ct
                     tmp, line = token_pad(line,full_tokenizer,subline,n_ctx,token_mask)
                     full_line.append(tmp)
             else:
-                tmp = [full_tokenizer.convert_tokens_to_ids('[MASK]')]
+                tmp = [full_tokenizer.index('[MASK]')]
                 tmp = tmp + subline
-                tmp = tmp + [full_tokenizer.convert_tokens_to_ids('[CLS]')]
+                tmp = tmp + [full_tokenizer.index('[CLS]')]
                 full_line.extend(tmp)
             if nb_lines%100000==0:
                 print('processing file %s with %d lines'%(file,nb_lines))
