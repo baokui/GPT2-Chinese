@@ -1,3 +1,8 @@
+alias mhadoop='/search/odin/software/MarsJs/bin/hadoop'
+hadoopclients=ml_research,3evrqV2R
+mhadoop fs -Dhadoop.client.ugi=$hadoopclients -get VpaOutput_guobk/session_join_android_vpa_alldata/202007/07 data1/vpalog
+
+
 path_vocab=model/model_merged6/vocab.txt
 path_source=data1/godtext
 path_target=data1/tokens_godtext
