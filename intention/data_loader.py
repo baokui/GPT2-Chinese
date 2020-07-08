@@ -196,7 +196,7 @@ def getData(path_source):
         f.write('\n'.join(STrn))
     with open(path_data+'test.txt','w',encoding='utf-8') as f:
         f.write('\n'.join(STst))
-    with open(path_data+'valu.txt','w',encoding='utf-8') as f:
+    with open(path_data+'val.txt','w',encoding='utf-8') as f:
         f.write('\n'.join(SVal))
     with open(path_data+'predict.txt','w',encoding='utf-8') as f:
-        f.write('\n'.join(SVal))
+        f.write('\n'.join(STst))
