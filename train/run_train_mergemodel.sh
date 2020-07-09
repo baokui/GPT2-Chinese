@@ -3,8 +3,8 @@ nohup python -u train_mergemodel.py \
         --device=0,1,2,3,4,5,6,7 \
         --model_config=model/model_merged6/config.json \
         --tokenizer_path=model/model_merged6/vocab.txt \
-        --tokenized_data_path0=../data1/tokens_vpalog/ \
-        --tokenized_data_path1=../data1/tokens_godtext/ \
+        --tokenized_data_path0=./data1/tokens_vpalog/ \
+        --tokenized_data_path1=./data1/tokens_godtext/ \
         --epochs=100 \
         --log_step=100 \
         --min_length=8 \
