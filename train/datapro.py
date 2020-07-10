@@ -33,6 +33,7 @@ def build_files(path_source,path_target, full_tokenizer,token_mask,maxline, n_ct
         f = open(os.path.join(path_source,file), 'r', encoding='utf8')
         for line in f:
             nb_lines += 1
+            line = line.strip().split('\t')[-1]
             if len(line)<min_length:
                 continue
             subline = []
