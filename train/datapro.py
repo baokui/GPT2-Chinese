@@ -55,7 +55,7 @@ def build_files(path_source,path_target, full_tokenizer,token_mask,maxline, n_ct
                 full_line.extend(tmp)
             if nb_lines%100000==0:
                 print('processing file %s with %d lines'%(file,nb_lines))
-            if len(full_line)>=maxline:
+            if len(full_line)>maxline:
                 with open(path_target+str(idx), 'w') as f:
                     f.write('\n'.join(full_line))
                 full_line = []
