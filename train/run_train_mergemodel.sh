@@ -1,4 +1,4 @@
-export CUDA_VISIBLE_DEVICES=2,3,4,5,6,7
+export CUDA_VISIBLE_DEVICES=0,1,2,3,4,5
 nohup python -u train_mergemodel.py \
         --device=0,1,2,3,4,5 \
         --model_config=model/model_merged6_finetune/config.json \
