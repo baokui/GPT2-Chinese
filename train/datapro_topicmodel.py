@@ -77,7 +77,7 @@ def build_files(path_source,path_target, full_tokenizer,token_mask,maxline, n_ct
 def main(path_vocab,path_source,path_target,token_mask,maxline):
     #tokenizer_path = '../data/vocab/vocab_god_userdata.txt'
     #tokenized_data_path = '../data/userdata_tokenized_new/'
-    full_tokenizer = open(path_vocab,'r').read().strip().split('\n')
+    full_tokenizer = open(path_vocab,'r',encoding='utf-8').read().strip().split('\n')
     build_files(path_source,path_target, full_tokenizer,token_mask,maxline)
     #shutil.rmtree(data_path)
 if __name__=='__main__':
