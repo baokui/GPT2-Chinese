@@ -5,4 +5,4 @@ mkdir $path_target
 token_mask=[MASK]
 maxline=200000
 mkdir $path_target
-nohup python -u datapro_topicmodel.py $path_vocab $path_source $path_target/god $token_mask $maxline >> log/god-0.log 2>&1 &
+nohup python -u datapro_topicmodel.py $path_vocab $path_source $path_target/god $token_mask $maxline >> log/god-topic.log 2>&1 &

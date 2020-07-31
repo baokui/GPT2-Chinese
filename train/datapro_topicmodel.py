@@ -31,7 +31,10 @@ def build_files(path_source,path_target, full_tokenizer,token_mask,maxline, n_ct
         f = open(os.path.join(path_source,file), 'r', encoding='utf8')
         for line in f:
             nb_lines += 1
-            topics,line = line.strip().split('\t')
+            aa = line.strip().split('\t')
+            if len(aa)!=2:
+                continue
+            topics,line = aa
             topics = topics.split('#')
             if len(line)<min_length:
                 continue
@@ -60,7 +63,7 @@ def build_files(path_source,path_target, full_tokenizer,token_mask,maxline, n_ct
                 tmp = tmp + subline
                 tmp = tmp + [full_tokenizer.index('[CLS]')]
                 full_line.extend(tmp)
-            if nb_lines%100000==0:
+            if nb_lines%10000==0:
                 print('processing file %s with %d lines'%(file,nb_lines))
             if len(full_line)>maxline:
                 with open(path_target+str(idx), 'w') as f:
