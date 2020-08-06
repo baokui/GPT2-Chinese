@@ -1,7 +1,6 @@
 path_vocab=model/model_merged6/vocab.txt
 path_source=data1/godtext_topic/
 path_target=data1/tokens_godtext_topic
-mkdir $path_target
 token_mask=[MASK]
 maxline=200000
 mkdir $path_target
